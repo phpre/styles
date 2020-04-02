@@ -1,12 +1,12 @@
 %%
 %% This is file `lipics-v2019.cls'.
-%% 
+%%
 %% -----------------------------------------------------------------
 %% Author:     Dagstuhl Publishing & le-tex publishing services
-%% 
+%%
 %% This file is part of the lipics package for preparing
 %% LIPICS articles.
-%% 
+%%
 %% Copyright (C) 2018 Schloss Dagstuhl
 %%
 %% This work may be distributed and/or modified under the
@@ -18,11 +18,11 @@
 %% version 2005/12/01 or later.
 %%
 %% This work has the LPPL maintenance status `maintained'.
-%% 
-%% The Current Maintainer of this work is 
+%%
+%% The Current Maintainer of this work is
 %% Schloss Dagstuhl (publishing@dagstuhl.de).
 %% -----------------------------------------------------------------
-%% 
+%%
 \ProvidesClass{lipics-v2019}
     [2019/07/19 v2.2 LIPIcs articles]
 \NeedsTeXFormat{LaTeX2e}[2015/01/01]
@@ -104,7 +104,7 @@
       #6{%
         \@hangfrom{\hskip #3\relax
           \ifnum #2=1
-            \colorbox{lipicsYellow}{\kern0.15em\@svsec\kern0.15em}\quad
+            \colorbox{lipicsLightGray}{\kern0.15em\@svsec\kern0.15em}\quad
           \else
             \@svsec\quad
           \fi}%
@@ -157,9 +157,9 @@
            {Schloss Dagstuhl -- Leibniz-Zentrum f{\"u}r Informatik, Dagstuhl Publishing, Germany}}%
   \fi}
 \def\ps@plain{\let\@mkboth\@gobbletwo
-  \let\@oddhead\@empty
   \let\@evenhead\@empty
-  \let\@evenfoot\copyrightline
+  \let\@oddhead\@empty
+  \let\@oddfoot\copyrightline
   \let\@oddfoot\copyrightline}
 \def\lipics@opterrshort{Option  "\CurrentOption" not supported}
 \def\lipics@opterrlong{The option "\CurrentOption" from article.cls is not supported by lipics.cls.}
@@ -181,13 +181,15 @@
 \DeclareOption{openbib}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
 \DeclareOption{a4paper}{\PassOptionsToClass{\CurrentOption}{article}
                         \advance\hoffset-2.95mm
-                        \advance\voffset8.8mm}
+                        \advance\voffset8.8mm
+                        \let\usedinpaper\relax}
 \DeclareOption{numberwithinsect}{\let\numberwithinsect\relax}
 \DeclareOption{cleveref}{\let\usecleveref\relax}
 \DeclareOption{autoref}{\let\useautoref\relax}
 \DeclareOption{anonymous}{\let\authoranonymous\relax}
 \DeclareOption{thm-restate}{\let\usethmrestate\relax}
 \DeclareOption{authorcolumns}{\let\authorcolumns\relax}
+\DeclareOption{refcheck}{\let\userefcheck\relax}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
 \ProcessOptions
 \LoadClass[twoside,notitlepage,fleqn]{article}
@@ -224,13 +226,21 @@
 \renewcommand\large{\@setfontsize\large{10.5}{13}}
 \renewcommand\Large{\@setfontsize\Large{12}{14}}
 \setlength\parindent{1.5em}
-\setlength\headheight{3mm}
 \setlength\headsep   {10mm}
 \setlength\footskip{3mm}
-\setlength\textwidth{140mm}
-\setlength\textheight{222mm}
-\setlength\oddsidemargin{32mm}
-\setlength\evensidemargin{38mm}
+\ifx\usedinpaper\@undefined
+   \setlength\headheight{13mm}
+   \setlength\textheight{215mm}
+   \setlength\textwidth{160mm}
+   \setlength\evensidemargin{22mm}
+   \setlength\oddsidemargin{28mm}
+\else
+   \setlength\textwidth{140mm}
+   \setlength\headheight{3mm}
+   \setlength\textheight{222mm}
+   \setlength\evensidemargin{32mm}
+   \setlength\oddsidemargin{38mm}
+\fi
 \setlength\marginparwidth{25mm}
 \setlength\topmargin{13mm}
 \setlength{\skip\footins}{2\baselineskip \@plus 4\p@ \@minus 2\p@}
@@ -254,27 +264,12 @@
               \partopsep \p@ \@plus\z@ \@minus\p@
               \itemsep   \z@ \@plus\p@}
 \def\ps@headings{%
-    \def\@evenhead{\large\sffamily\bfseries
+    \def\@oddhead{\large\sffamily\bfseries
                    \llap{\hbox to0.5\oddsidemargin{  \ifx\@hideLIPIcs\@undefined\ifx\@ArticleNo\@empty\textcolor{red}{XX}\else\@ArticleNo\fi:\fi\thepage\hss}}\leftmark\hfil}%
-    \def\@oddhead{\large\sffamily\bfseries\rightmark\hfil
+    \def\@evenhead{\large\sffamily\bfseries\rightmark\hfil
                   \rlap{\hbox to0.5\oddsidemargin{\hss  \ifx\@hideLIPIcs\@undefined\ifx\@ArticleNo\@empty\textcolor{red}{XX}\else\@ArticleNo\fi:\fi\thepage}}}%
-    \def\@oddfoot{\hfil
-                  \rlap{%
-                    \vtop{%
-                      \vskip10mm
-                      \colorbox{lipicsYellow}
-                                    {\@tempdima\evensidemargin
-                                     \advance\@tempdima1in
-                                     \advance\@tempdima\hoffset
-                                     \hb@xt@\@tempdima{%
-                                       \ifx\@hideLIPIcs\@undefined
-                                         \textcolor{lipicsGray}{\normalsize\sffamily
-                                         \bfseries\quad
-                                         \expandafter\textsolittle
-                                         \expandafter{\@EventShortTitle}}%
-                                       \fi
-                                     \strut\hss}}}}}
     \let\@evenfoot\@empty
+    \let\@oddfoot\@empty
     \let\@mkboth\markboth
   \let\sectionmark\@gobble
   \let\subsectionmark\@gobble}
@@ -311,6 +306,7 @@
 \newwrite\tocfile
 \def\@maketitle{%
   \newpage
+  \setcounter{page}{0}
   \null\vskip-\baselineskip
   \vskip-\headsep
   \@titlerunning
@@ -384,12 +380,12 @@
   \textcolor{lipicsGray}{\sffamily\bfseries\upshape\mathversion{bold}\theenumiv.}}
 \renewcommand\labelitemi{%
   \textcolor{lipicsBulletGray}{\ifnum\@listdepth=\@ne
-                                  \rule{0.67em}{0.33em}%
+                                  $\lipicsTriangleRight$%
                                 \else
-                                  \rule{0.45em}{0.225em}%
+                                  $\lipicsClaimTriangleRight$%
                                 \fi}}
 \renewcommand\labelitemii{%
-  \textcolor{lipicsBulletGray}{\rule{0.45em}{0.225em}}}
+  \textcolor{lipicsBulletGray}{$\lipicsClaimTriangleRight$}}
 \renewcommand\labelitemiii{%
   \textcolor{lipicsBulletGray}{\sffamily\bfseries\textasteriskcentered}}
 \renewcommand\labelitemiv{%
@@ -411,13 +407,10 @@
   \fontsize{9}{12}\selectfont
   \noindent\ignorespaces}
   {\vskip0.7\baselineskip\noindent
-   \subjclassHeading
-   \ifx\@ccsdescString\@empty
-     \textcolor{red}{Author: Please fill in 1 or more \string\ccsdesc\space macro}%
-   \else
-     \@ccsdescString
+   \ifx\@ccsdescString\@empty\else
+     \subjclassHeading\@ccsdescString
+     \vskip0.7\baselineskip
    \fi
-   \vskip0.7\baselineskip
    \noindent\keywordsHeading
    \ifx\@keywords\@empty
      \textcolor{red}{Author: Please fill in \string\keywords\space macro}%
@@ -517,7 +510,7 @@
 	\definecolor[named]{lipicsBulletGray}{rgb}{0.60,0.60,0.61}
 	\definecolor[named]{lipicsLineGray}{rgb}{0.51,0.50,0.52}
 	\definecolor[named]{lipicsLightGray}{rgb}{0.85,0.85,0.86}
-	\definecolor[named]{lipicsYellow}{rgb}{0.99,0.78,0.07}
+	\definecolor[named]{lipicsYellow}{rgb}{0.85,0.85,0.86}
 }
 \RequirePackage{babel}
 \RequirePackage[tbtags,fleqn]{amsmath}
@@ -577,13 +570,13 @@
   \patchBothAmsMathEnvironmentsForLineno{gather}%
   \patchBothAmsMathEnvironmentsForLineno{multline}}
 \RequirePackage{lastpage}
-\RequirePackage{hyperref}
+\RequirePackage[hypertexnames=false]{hyperref}
 \AtBeginDocument{
-	\pdfstringdefDisableCommands{% 
+	\pdfstringdefDisableCommands{%
 		\let\thanks\@gobble
 		\let\footnote\@gobble
 		\def\footnotemark{}
-		\def\cs#1{\textbackslash #1}% 
+		\def\cs#1{\textbackslash #1}%
 		\let\normalfont\@empty
 		\let\scshape\@empty
 		\def\and{and }%
@@ -597,7 +590,7 @@
 		pdfkeywords={\@keywords},
 		pdfcreator={LaTeX with lipics-v2019.cls and hyperref.sty},
 		%TODO Find way to move information to correct fields in pdf metadata
-		pdfsubject={LIPIcs, Vol.\@SeriesVolume, \@EventShortTitle; Copyright (C) \ifx\authoranonymous\relax Anonymous author(s) \else \@copyrightholder; \fi licensed under Creative Commons License CC-BY}
+    pdfsubject={\ifx\hideLipics\relax{LIPIcs, Vol.\@SeriesVolume, \@EventShortTitle; }\fi Copyright (C) \ifx\authoranonymous\relax Anonymous author(s) \else \@copyrightholder; \fi licensed under Creative Commons License CC-BY}
 		%pdflicenseurl={https://creativecommons.org/licenses/by/3.0/},
 		%pdfcopyright={Copyright (C), \@copyrightholder; licensed under Creative Commons License CC-BY},
 	}
@@ -609,7 +602,7 @@
   {\captionsetup{compatibility=false}}%cf. http://groups.google.de/group/comp.text.tex/browse_thread/thread/db9310eb540fbbd8/42e30f3b7b3aa17a?lnk=raot
   {}
 \DeclareCaptionLabelFormat{boxed}{%
-  \kern0.05em{\color[rgb]{0.99,0.78,0.07}\rule{0.73em}{0.73em}}%
+    \kern0.05em{\color{lipicsBulletGray}\rule{0.73em}{0.73em}}%
   \hspace*{0.67em}\bothIfFirst{#1}{~}#2}
 \captionsetup{labelformat=boxed}
 \captionsetup[table]{position=top}
@@ -662,7 +655,7 @@
 			\ifodd\value{currentauthor}
 				\begin{minipage}[t]{\textwidth}
 				\begin{minipage}[t]{0.49\textwidth}
-			\else	
+			\else
 				\hfill \begin{minipage}[t]{0.49\textwidth}
 			\fi
 		\else
@@ -698,13 +691,13 @@
 	\ifx\authorcolumns\relax
 		\ifnum\c@author>6
 			\end{minipage}
-			\ifnum\c@author=\value{currentauthor} 
+			\ifnum\c@author=\value{currentauthor}
 				\end{minipage}
 			\else
 				\ifodd\value{currentauthor}
-				\else	
+				\else
 					\end{minipage}%
-					\medskip 
+					\medskip
 				\fi
 			\fi
 		\fi
@@ -812,20 +805,51 @@
  \textcolor{lipicsGray}{\fontsize{9}{12}\sffamily\bfseries
                       Acknowledgements\enskip}}
 \RequirePackage{amsthm}
+\RequirePackage{tikz}
+
+\newcommand{\lipicsTriangleUp}{\!\!\!\tikz[baseline=(char.base)]{%
+    \draw[thin] (0,.45em) -- (.2em,.45em) -- (.2em,.75em) -- (.5em, .75em) -- (.5em,.95em)
+    -- (0,.95em) -- cycle;
+    \fill (0,.45em) -- (.2em,.45em) -- (.2em,.75em) -- (.5em, .75em) -- (.5em,.95em)
+    -- (0,.95em) -- cycle;
+    \node(char) at (.1em,0){\phantom{a}};}\!\!\!}
+\newcommand{\lipicsClaimTriangleUp}{\!\!\!\tikz[baseline=(char.base)]{%
+    \draw[thin] (0,.45em) -- (.2em,.45em) -- (.2em,.75em) -- (.5em, .75em) -- (.5em,.95em)
+    -- (0,.95em) -- cycle;
+    \node(char) at (.1em,0){\phantom{|a}};}\!\!\!}
+\newcommand{\lipicsTriangleDown}{\tikz[baseline=(char.base)]{%
+        \draw[thin] (0,.3em) -- (-.2em, .3em) -- (-.2em,.0em) -- (-.5em, .0em) --
+        (-.5em,-.2em) -- (0,-.2em) -- cycle;
+    \fill (0,.3em) -- (-.2em, .3em) -- (-.2em,.0em) -- (-.5em, .0em) --
+        (-.5em,-.2em) -- (0,-.2em) -- cycle;
+    \node(char) at (0,.35ex){\phantom{|a}};}\!\!\!\!}
+\newcommand{\lipicsClaimTriangleDown}{\tikz[baseline=(char.base)]{%
+        \draw[thin] (0,.3em) -- (-.2em, .3em) -- (-.2em,.0em) -- (-.5em, .0em) --
+        (-.5em,-.2em) -- (0,-.2em) -- cycle;
+    \node(char) at (0,.35ex){\phantom{|a}};}\!\!\!\!}
+\newcommand{\lipicsTriangleRight}{\tikz[baseline=(char.base)]{%
+        \draw[thick] (0,.3em) rectangle (.5em,.1em);
+    \fill (0,.3em) rectangle (.5em,.1em);
+    \node(char) at (.1em,.35ex){\phantom{a}};}}
+\newcommand{\lipicsClaimTriangleRight}{\tikz[baseline=(char.base)]{%
+        \draw[thick] (0,.3em) rectangle (.4em,.1em);
+    \node(char) at (.1em,.35ex){\phantom{a}};}}
+
+
 \ifx\usethmrestate\relax
 	\RequirePackage{thm-restate}
 \fi
 \thm@headfont{%
-  \textcolor{lipicsGray}{$\blacktriangleright$}\nobreakspace\sffamily\bfseries}
+  \textcolor{lipicsBulletGray}{$\lipicsTriangleUp$}\nobreakspace\quad\sffamily\bfseries}
 \def\th@remark{%
   \thm@headfont{%
-    \textcolor{lipicsGray}{$\blacktriangleright$}\nobreakspace\sffamily}%
+    \textcolor{lipicsBulletGray}{$\lipicsTriangleUp$}\nobreakspace\quad\sffamily}%
   \normalfont % body font
   \thm@preskip\topsep \divide\thm@preskip\tw@
   \thm@postskip\thm@preskip
 }
-\def\@endtheorem{\endtrivlist}%\@endpefalse
-\renewcommand\qedsymbol{\textcolor{lipicsGray}{\ensuremath{\blacktriangleleft}}}
+\def\@endtheorem{\endtrivlist}
+\renewcommand\qedsymbol{\textcolor{lipicsBulletGray}{\ensuremath{\lipicsTriangleDown}}}
 \renewenvironment{proof}[1][\proofname]{\par
   \pushQED{\qed}%
   \normalfont \topsep6\p@\@plus6\p@\relax
@@ -844,22 +868,27 @@
         \color{lipicsGray}\sffamily
     #1\@addpunct{.}]\ignorespaces
 }{%
-  \renewcommand\qedsymbol{\textcolor{lipicsGray}{\ensuremath{\vartriangleleft}}}
+  \renewcommand\qedsymbol{\textcolor{lipicsBulletGray}{\ensuremath{\lipicsClaimTriangleDown}}}
   \popQED\endtrivlist%\@endpefalse
-  \renewcommand\qedsymbol{\textcolor{lipicsGray}{\ensuremath{\blacktriangleleft}}}
+  \renewcommand\qedsymbol{\textcolor{lipicsBulletGray}{\ensuremath{\lipicsTriangleDown}}}
 }
 % inspired by qed of amsthm class
 \DeclareRobustCommand{\lipicsEnd}{%
 	\leavevmode\unskip\penalty9999 \hbox{}\nobreak\hfill
-	\quad\hbox{$\lrcorner$}%
+    \quad\hbox{\textcolor{lipicsBulletGray}{$\lipicsTriangleDown$}}%
 }
+\DeclareRobustCommand{\lipicsClaimEnd}{%
+	\leavevmode\unskip\penalty9999 \hbox{}\nobreak\hfill
+    \quad\hbox{\textcolor{lipicsBulletGray}{$\lipicsClaimTriangleDown$}}%
+}
+
 \AtBeginDocument{
 	\@ifpackageloaded{algorithm2e}{
 		\renewcommand{\algorithmcfname}{\sffamily\bfseries{}Algorithm}
 		\SetAlgoCaptionSeparator{~}
 		\SetAlCapHSkip{0pt}
 		\renewcommand{\algocf@captiontext}[2]{%
-		    \kern0.05em{\color{lipicsYellow}\rule{0.73em}{0.73em}}%
+		    \kern0.05em{\color{lipicsBulletGray}\rule{0.73em}{0.73em}}%
 		\hspace*{0.67em}\small #1\algocf@capseparator\nobreakspace#2}
 		\renewcommand{\algocf@makecaption}[2]{%
 		    \parbox[t]{\textwidth}{\algocf@captiontext{#1}{#2}}%
@@ -886,23 +915,59 @@
 	\ifx\useautoref\relax
 		\@ifundefined{algorithmautorefname}{\newcommand{\algorithmautorefname}{Algorithm}}{\renewcommand{\algorithmautorefname}{Algorithm}}%
 	\fi
+    \ifx\userefcheck\relax\else
+		\@ifpackageloaded{refcheck}{\ClassWarning{Use document option 'refcheck'
+        instead}{Use document option 'refcheck' instead directly loading package 'refcheck'}}{}
+    \fi
 }
 
 \ifx\usecleveref\relax
+    \RequirePackage[noend,noline,ruled,linesnumbered]{algorithm2e}
 	\RequirePackage[capitalise, noabbrev]{cleveref}
-	\crefname{algocf}{Algorithm}{Algorithms}
-	\Crefname{algocf}{Algorithm}{Algorithms}
+    \crefname{algocf}{Algorithm}{Algorithms}
+    \Crefname{algocf}{Algorithm}{Algorithms}
+    \crefname{algocfline}{Line}{Lines}
+    \Crefname{algocfline}{Line}{Lines}
+    \crefname{mtheorem}{Main Theorem}{Main Theorems}
+    \Crefname{mtheorem}{Main Theorem}{Main Theorems}
+    \crefname{obs}{Observation}{Observations}
+    \Crefname{obs}{Observation}{Observations}
+    \crefname{fact}{Fact}{Facts}
+    \Crefname{fact}{Fact}{Facts}
+    \crefname{problem}{Problem}{Problems}
+    \Crefname{problem}{Problem}{Problems}
+    \crefname{conjecture}{Conjecture}{Conjectures}
+    \Crefname{conjecture}{Conjecture}{Conjectures}
+    \crefname{claim}{Claim}{Claims}
+    \Crefname{claim}{Claim}{Claims}
 \fi
 \ifx\useautoref\relax
-	\RequirePackage{aliascnt}
+    \RequirePackage{aliascnt}
 \fi
+
+\ifx\userefcheck\relax
+    \RequirePackage{refcheck}
+    \overfullrule 1em
+    \ifx\usecleveref\relax
+        \newcommand{\refcheckize}[1]{%
+            \expandafter\let\csname @@\string#1\endcsname#1%
+            \expandafter\DeclareRobustCommand\csname relax\string#1\endcsname[1]{%
+            \csname @@\string#1\endcsname{##1}\wrtusdrf{##1}}%
+            \expandafter\let\expandafter#1\csname relax\string#1\endcsname
+        }
+        \refcheckize{\cref}
+        \refcheckize{\Cref}
+    \fi
+\fi
+
 \newtheoremstyle{claimstyle}{\topsep}{\topsep}{}{0pt}{\sffamily}{. }{5pt plus 1pt minus 1pt}%
-  {$\vartriangleright$ \thmname{#1}\thmnumber{ #2}\thmnote{ (#3)}}
+{$\lipicsClaimTriangleUp$\quad\thmname{#1}\thmnumber{ #2}\thmnote{ (#3)}}
 \theoremstyle{plain}
+\newtheorem{mtheorem}{Main Theorem}
 \newtheorem{theorem}{Theorem}
 \ifx\numberwithinsect\relax
-  \@addtoreset{theorem}{section}
-  \expandafter\def\expandafter\thetheorem\expandafter{%
+    \@addtoreset{theorem}{section}
+    \expandafter\def\expandafter\thetheorem\expandafter{%
     \expandafter\thesection\expandafter\@thmcountersep\thetheorem}
 \fi
 
@@ -913,7 +978,7 @@
 		\def\subsectionautorefname{Subsection}%
 		\def\subsubsectionautorefname{Subsubsection}%
 		\def\paragraphautorefname{Paragraph}%
-		\def\subparagraphautorefname{Subparagraph}% 
+		\def\subparagraphautorefname{Subparagraph}%
 	}
 	\addto\extrasUKenglish{%
 		\def\chapterautorefname{Chapter}%
@@ -921,7 +986,7 @@
 		\def\subsectionautorefname{Subsection}%
 		\def\subsubsectionautorefname{Subsubsection}%
 		\def\paragraphautorefname{Paragraph}%
-		\def\subparagraphautorefname{Subparagraph}% 
+		\def\subparagraphautorefname{Subparagraph}%
 	}
 	\addto\extrasUSenglish{%
 		\def\chapterautorefname{Chapter}%
@@ -929,7 +994,7 @@
 		\def\subsectionautorefname{Subsection}%
 		\def\subsubsectionautorefname{Subsubsection}%
 		\def\paragraphautorefname{Paragraph}%
-		\def\subparagraphautorefname{Subparagraph}% 
+		\def\subparagraphautorefname{Subparagraph}%
 	}
 	\ifx\usethmrestate\relax
 		\newtheorem{lemma}[theorem]{Lemma}
@@ -937,76 +1002,84 @@
 		\newtheorem{proposition}[theorem]{Proposition}
 		\newtheorem{exercise}[theorem]{Exercise}
 		\newtheorem{definition}[theorem]{Definition}
-		\theoremstyle{definition}
-		\newtheorem{example}[theorem]{Example}
-		\theoremstyle{remark}
-		\newtheorem{note}[theorem]{Note}
-		\newtheorem*{note*}{Note}
-		\newtheorem{remark}[theorem]{Remark}
-		\newtheorem*{remark*}{Remark}
-		\theoremstyle{claimstyle}
-		\newtheorem{claim}[theorem]{Claim}
-		\newtheorem*{claim*}{Claim}
-	\else
-		\newaliascnt{lemma}{theorem}
-		\newtheorem{lemma}[lemma]{Lemma}
-		\aliascntresetthe{lemma}
-		\newcommand{\lemmaautorefname}{Lemma}
-		\newaliascnt{corollary}{theorem}
-		\newtheorem{corollary}[corollary]{Corollary}
-		\aliascntresetthe{corollary}
-		\newcommand{\corollaryautorefname}{Corollary}
-		\newaliascnt{proposition}{theorem}
-		\newtheorem{proposition}[proposition]{Proposition}
-		\aliascntresetthe{proposition}
-		\newcommand{\propositionautorefname}{Proposition}
-		\newaliascnt{exercise}{theorem}
-		\newtheorem{exercise}[exercise]{Exercise}
-		\aliascntresetthe{exercise}
-		\newcommand{\exerciseautorefname}{Exercise}
-		\newaliascnt{definition}{theorem}
-		\newtheorem{definition}[definition]{Definition}
-		\aliascntresetthe{definition}
-		\newcommand{\definitionautorefname}{Definition}
-		\theoremstyle{definition}
-		\newaliascnt{example}{theorem}
-		\newtheorem{example}[example]{Example}
-		\aliascntresetthe{example}
-		\newcommand{\exampleautorefname}{Example}
-		\theoremstyle{remark}
-		\newaliascnt{note}{theorem}
-		\newtheorem{note}[note]{Note}
-		\aliascntresetthe{note}
-		\newcommand{\noteautorefname}{Note}
-		\newtheorem*{note*}{Note}
-		\newaliascnt{remark}{theorem}
-		\newtheorem{remark}[remark]{Remark}
-		\aliascntresetthe{remark}
-		\newcommand{\remarkautorefname}{Remark}
-		\newtheorem*{remark*}{Remark}
-		\theoremstyle{claimstyle}
-		\newaliascnt{claim}{theorem}
-		\newtheorem{claim}[claim]{Claim}
-		\aliascntresetthe{claim}
-		\newcommand{\claimautorefname}{Claim}
-		\newtheorem*{claim*}{Claim}
-	\fi
-\else
-	\newtheorem{lemma}[theorem]{Lemma}
-	\newtheorem{corollary}[theorem]{Corollary}
-	\newtheorem{proposition}[theorem]{Proposition}
-	\newtheorem{exercise}[theorem]{Exercise}
-	\newtheorem{definition}[theorem]{Definition}
-	\theoremstyle{definition}
-	\newtheorem{example}[theorem]{Example}
-	\theoremstyle{remark}
-	\newtheorem{note}[theorem]{Note}
-	\newtheorem*{note*}{Note}
-	\newtheorem{remark}[theorem]{Remark}
-	\newtheorem*{remark*}{Remark}
-	\theoremstyle{claimstyle}
-	\newtheorem{claim}[theorem]{Claim}
-	\newtheorem*{claim*}{Claim}
+        \newtheorem{fact}[theorem]{Fact}
+        \newtheorem{obs}[theorem]{Observation}
+        \newtheorem{conjecture}[theorem]{Conjecture}
+        \newtheorem{problem}[theorem]{Problem}
+        \theoremstyle{definition}
+        \newtheorem{example}[theorem]{Example}
+        \theoremstyle{remark}
+        \newtheorem{note}[theorem]{Note}
+        \newtheorem*{note*}{Note}
+        \newtheorem{remark}[theorem]{Remark}
+        \newtheorem*{remark*}{Remark}
+        \theoremstyle{claimstyle}
+        \newtheorem{claim}[theorem]{Claim}
+        \newtheorem*{claim*}{Claim}
+        \else
+        \newaliascnt{lemma}{theorem}
+        \newtheorem{lemma}[lemma]{Lemma}
+        \aliascntresetthe{lemma}
+        \newcommand{\lemmaautorefname}{Lemma}
+        \newaliascnt{corollary}{theorem}
+        \newtheorem{corollary}[corollary]{Corollary}
+        \aliascntresetthe{corollary}
+        \newcommand{\corollaryautorefname}{Corollary}
+        \newaliascnt{proposition}{theorem}
+        \newtheorem{proposition}[proposition]{Proposition}
+        \aliascntresetthe{proposition}
+        \newcommand{\propositionautorefname}{Proposition}
+        \newaliascnt{exercise}{theorem}
+        \newtheorem{exercise}[exercise]{Exercise}
+        \aliascntresetthe{exercise}
+        \newcommand{\exerciseautorefname}{Exercise}
+        \newaliascnt{definition}{theorem}
+        \newtheorem{definition}[definition]{Definition}
+        \aliascntresetthe{definition}
+        \newcommand{\definitionautorefname}{Definition}
+        \theoremstyle{definition}
+        \newaliascnt{example}{theorem}
+        \newtheorem{example}[example]{Example}
+        \aliascntresetthe{example}
+        \newcommand{\exampleautorefname}{Example}
+        \theoremstyle{remark}
+        \newaliascnt{note}{theorem}
+        \newtheorem{note}[note]{Note}
+        \aliascntresetthe{note}
+        \newcommand{\noteautorefname}{Note}
+        \newtheorem*{note*}{Note}
+        \newaliascnt{remark}{theorem}
+        \newtheorem{remark}[remark]{Remark}
+        \aliascntresetthe{remark}
+        \newcommand{\remarkautorefname}{Remark}
+        \newtheorem*{remark*}{Remark}
+        \theoremstyle{claimstyle}
+        \newaliascnt{claim}{theorem}
+        \newtheorem{claim}[claim]{Claim}
+        \aliascntresetthe{claim}
+        \newcommand{\claimautorefname}{Claim}
+        \newtheorem*{claim*}{Claim}
+    \fi
+    \else
+    \newtheorem{lemma}[theorem]{Lemma}
+    \newtheorem{corollary}[theorem]{Corollary}
+    \newtheorem{proposition}[theorem]{Proposition}
+    \newtheorem{exercise}[theorem]{Exercise}
+    \newtheorem{definition}[theorem]{Definition}
+    \newtheorem{fact}[theorem]{Fact}
+    \newtheorem{obs}[theorem]{Observation}
+    \newtheorem{conjecture}[theorem]{Conjecture}
+    \newtheorem{problem}[theorem]{Problem}
+    \theoremstyle{definition}
+    \newtheorem{example}[theorem]{Example}
+    \theoremstyle{remark}
+    \newtheorem{note}[theorem]{Note}
+    \newtheorem*{note*}{Note}
+    \newtheorem{remark}[theorem]{Remark}
+    \newtheorem*{remark*}{Remark}
+    \theoremstyle{claimstyle}
+    \newtheorem{claim}[theorem]{Claim}
+    \newtheorem*{claim*}{Claim}
 \fi
 \theoremstyle{plain}
 \endinput
