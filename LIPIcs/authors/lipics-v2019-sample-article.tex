@@ -1,14 +1,15 @@
 
-\documentclass[a4paper,UKenglish,cleveref, autoref, thm-restate,authorcolumns]{lipics-v2019}
-%This is a template for producing LIPIcs articles.
+\documentclass[a4paper,UKenglish,cleveref,autoref,thm-restate,authorcolumns,refcheck]{no-lipics-v2019}
+%This is a template for producing no-LIPIcs articles.
 %See lipics-manual.pdf for further information.
-%for A4 paper format use option "a4paper", for US-letter use option "letterpaper"
-%for british hyphenation rules use option "UKenglish", for american hyphenation rules use option "USenglish"
+%for A4 paper format use option "a4paper", US-letter is used if this option is not present.
+%for British hyphenation rules use option "UKenglish", for American hyphenation rules use option "USenglish"
 %for section-numbered lemmas etc., use "numberwithinsect"
 %for enabling cleveref support, use "cleveref"
 %for enabling autoref support, use "autoref"
-%for anonymousing the authors (e.g. for double-blind review), add "anonymous"
+%for anonymising the authors (e.g. for double-blind review), add "anonymous"
 %for enabling thm-restate support, use "thm-restate"
+%for enabling refcheck, use "refcheck"
 
 %\graphicspath{{./graphics/}}%helpful if your graphic files are in another directory
 
@@ -24,11 +25,9 @@
 
 \authorrunning{J.\,Q. Public and J.\,R. Public} %TODO mandatory. First: Use abbreviated first/middle names. Second (only in severe cases): Use first author plus 'et al.'
 
-\Copyright{John Q. Public and Joan R. Public} %TODO mandatory, please use full first names. LIPIcs license is "CC-BY";  http://creativecommons.org/licenses/by/3.0/
+%\ccsdesc[100]{\textcolor{red}{Replace ccsdesc macro with valid one}} %optional: Please choose ACM 2012 classifications from https://dl.acm.org/ccs/ccs_flat.cfm
 
-\ccsdesc[100]{\textcolor{red}{Replace ccsdesc macro with valid one}} %TODO mandatory: Please choose ACM 2012 classifications from https://dl.acm.org/ccs/ccs_flat.cfm
-
-\keywords{Dummy keyword} %TODO mandatory; please add comma-separated list of keywords
+\keywords{} %optional; please add comma-separated list of keywords
 
 \category{} %optional, e.g. invited paper
 
@@ -62,11 +61,17 @@
 \begin{document}
 
 \maketitle
-
 %TODO mandatory: add short abstract of the document
 \begin{abstract}
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent convallis orci arcu, eu mollis dolor. Aliquam eleifend suscipit lacinia. Maecenas quam mi, porta ut lacinia sed, convallis ac dui. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse potenti.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent convallis orci arcu, eu mollis dolor. Aliquam eleifend suscipit lacinia. Maecenas quam mi, porta ut lacinia sed, convallis ac dui. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse potenti.
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent convallis orci arcu, eu mollis dolor. Aliquam eleifend suscipit lacinia. Maecenas quam mi, porta ut lacinia sed, convallis ac dui. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse potenti.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent convallis orci arcu, eu mollis dolor. Aliquam eleifend suscipit lacinia. Maecenas quam mi, porta ut lacinia sed, convallis ac dui. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse potenti.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent convallis orci arcu, eu mollis dolor. Aliquam eleifend suscipit lacinia. Maecenas quam mi, porta ut lacinia sed, convallis ac dui. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse potenti.
 \end{abstract}
+
+\clearpage
 
 \section{Typesetting instructions -- Summary}
 \label{sec:typesetting-summary}
@@ -146,11 +151,14 @@ content...
 
 \begin{corollary}[Curabitur pulvinar, \cite{DBLP:books/mk/GrayR93}]
 \label{lemma:curabitur}
-Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod
+mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing
+elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat
+volutpat.\lipicsEnd
 \end{corollary}
 
 \begin{proposition}\label{prop1}
-This is a proposition
+This is a proposition\lipicsEnd
 \end{proposition}
 
 \autoref{prop1} and \cref{prop1} \ldots
@@ -177,7 +185,7 @@ Proin ac fermentum augue. Nullam bibendum enim sollicitudin tellus egestas lacin
 \end{itemize}
 
 \begin{remark}
-content...
+content...\lipicsEnd
 \end{remark}
 
 \section{Pellentesque quis tortor}
@@ -185,7 +193,11 @@ content...
 Nec urna malesuada sollicitudin. Nulla facilisi. Vivamus aliquam tempus ligula eget ornare. Praesent eget magna ut turpis mattis cursus. Aliquam vel condimentum orci. Nunc congue, libero in gravida convallis \cite{DBLP:conf/focs/HopcroftPV75}, orci nibh sodales quam, id egestas felis mi nec nisi. Suspendisse tincidunt, est ac vestibulum posuere, justo odio bibendum urna, rutrum bibendum dolor sem nec tellus.
 
 \begin{lemma} [Quisque blandit tempus nunc]
-Sed interdum nisl pretium non. Mauris sodales consequat risus vel consectetur. Aliquam erat volutpat. Nunc sed sapien ligula. Proin faucibus sapien luctus nisl feugiat convallis faucibus elit cursus. Nunc vestibulum nunc ac massa pretium pharetra. Nulla facilisis turpis id augue venenatis blandit. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+Sed interdum nisl pretium non. Mauris sodales consequat risus vel consectetur. Aliquam
+erat volutpat. Nunc sed sapien ligula. Proin faucibus sapien luctus nisl feugiat convallis
+faucibus elit cursus. Nunc vestibulum nunc ac massa pretium pharetra. Nulla facilisis
+turpis id augue venenatis blandit. Cum sociis natoque penatibus et magnis dis parturient
+montes, nascetur ridiculus mus.\lipicsEnd
 \end{lemma}
 
 Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
@@ -317,5 +329,17 @@ Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui
 \begin{claimproof}
 Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
 \end{claimproof}
+
+\section{Special Symbols}
+
+\lipicsEnd
+
+\lipicsClaimEnd
+
+\lipicsTriangleUp\quad
+\lipicsClaimTriangleUp\quad
+\lipicsTriangleDown\quad
+\lipicsClaimTriangleDown\quad
+\lipicsTriangleRight
 
 \end{document}
