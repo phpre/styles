@@ -1,5 +1,5 @@
 %%
-%% This is file `lipics-v2019.cls'.
+%% This is file `no-lipics-v2019.cls'.
 %%
 %% -----------------------------------------------------------------
 %% Author:     Dagstuhl Publishing & le-tex publishing services
@@ -23,6 +23,18 @@
 %%
 %% -----------------------------------------------------------------
 %%
+
+%% Modifications
+%% - \hideLipics switched on per default (use \showLipics to show lipics stuff)
+%% - Fix page geometry for letter
+%% - Change lipicsYellow to gray
+%% - Change proof begin/end symbols (~> tikz is now loaded per default)
+%% - Fix problems with algorithm2e package (~> algorithm2e is now loaded)
+%% - Make \keywords and \ccsdesc optienal
+%% - Start page numbering with 0
+%% - Add additional proof environments
+%% - Add refcheck option
+
 \ProvidesClass{no-lipics-v2019}
     [2020/04/01 v1.0 No-LIPIcs article]
 \NeedsTeXFormat{LaTeX2e}[2015/01/01]
