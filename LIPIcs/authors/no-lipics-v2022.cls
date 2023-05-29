@@ -1,5 +1,5 @@
 %%
-%% This is file `lipics-v2019.cls'.
+%% This is file `lipics-v2022.cls'.
 %%
 %% -----------------------------------------------------------------
 %% Author:     Dagstuhl Publishing & le-tex publishing services
