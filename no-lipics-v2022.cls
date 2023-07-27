@@ -621,11 +621,6 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 \hb@xt@1em{\@makefnmark\hss}#1}
 
 \usepackage{microtype}
-\usepackage[utf8]{inputenc}
-\IfFileExists{lmodern.sty}{\RequirePackage{lmodern}}{}
-\RequirePackage{mathpazo}
-
-\RequirePackage[T1]{fontenc}
 \RequirePackage{textcomp}
 \RequirePackage[mathscr]{eucal}
 \RequirePackage{amssymb}
@@ -658,6 +653,15 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 \else
     \RequirePackage[tbtags]{amsmath}
 \fi
+
+\RequirePackage{amsthm}
+\RequirePackage{tikz}
+
+\RequirePackage{newpxtext}
+\RequirePackage[fracspacing]{newpxmath}[2019/10/02]
+\RequirePackage[OT1]{fontenc}
+\IfFileExists{lmodern.sty}{\RequirePackage{lmodern}}{}
+
 \AtBeginDocument{
     \@ifpackageloaded{enumitem}{\ClassWarning{Package 'enuitem' incompatible}{Don't use package 'enumitem'; Package enumerate preloaded!}}{}
     \@ifpackageloaded{paralist}{\ClassWarning{Package 'paralist' incompatible}{Don't use package 'paralist'; Package enumerate preloaded!}}{}
@@ -714,7 +718,7 @@ frame=single,framerule=0pt,xleftmargin=\fboxsep,xrightmargin=\fboxsep}
     \patchBothAmsMathEnvironmentsForLineno{alignat}%
     \patchBothAmsMathEnvironmentsForLineno{gather}%
 \patchBothAmsMathEnvironmentsForLineno{multline}}
-\RequirePackage{lastpage}
+%\RequirePackage{lastpage}
 \RequirePackage[hypertexnames=false]{hyperref}
 \AtBeginDocument{
     \pdfstringdefDisableCommands{%
@@ -755,6 +759,8 @@ listof=false]{caption}%"listof" instead of "list" for backward compatibility
 \caption@AtBeginDocument{\@ifpackageloaded{subfig}{\ClassError{lipics}{%
 Do not load the subfig package}{The more recent subcaption package is already loaded}}{}}
 \RequirePackage{subcaption}
+
+
 \def\titlerunning#1{\gdef\@titlerunning{{\let\footnote\@gobble\markboth{#1}{#1}}}}
 \def\authorrunning#1{%
 \gdef\@authorrunning{\markright{\ifx\authoranonymous\relax{Anonymous author(s)} \else\if!#1!\textcolor{red}{Author: Please fill in the \string\authorrunning\space macro}\else#1\fi\fi}}}
@@ -1000,8 +1006,7 @@ Funding\enskip}}
 \def\acknowledgementsHeading{%
     \textcolor{lipicsGray}{\fontsize{8}{10}\sffamily\bfseries
 Acknowledgements\enskip}}
-\RequirePackage{amsthm}
-\RequirePackage{tikz}
+
 
 
 \AtBeginDocument{
