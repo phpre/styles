@@ -658,9 +658,9 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 \RequirePackage{tikz}
 
 \RequirePackage{newpxtext}
-\RequirePackage[fracspacing]{newpxmath}[2019/10/02]
 \RequirePackage[OT1]{fontenc}
 \IfFileExists{lmodern.sty}{\RequirePackage{lmodern}}{}
+\RequirePackage[fracspacing]{newpxmath}[2019/10/02]
 
 \AtBeginDocument{
     \@ifpackageloaded{enumitem}{\ClassWarning{Package 'enuitem' incompatible}{Don't use package 'enumitem'; Package enumerate preloaded!}}{}
