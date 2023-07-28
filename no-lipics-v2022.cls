@@ -245,6 +245,11 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 \DeclareOption{thm-restate}{\let\usethmrestate\relax}
 \DeclareOption{authorcolumns}{\let\authorcolumns\relax}
 \DeclareOption{refcheck}{\let\userefcheck\relax}
+\let\compactauthor\relax
+\DeclareOption{oldauthorstyle}
+{\let\compactauthor\@empty}
+\DeclareOption{compactauthor}{\let\compactauthor\relax}
+\DeclareOption{pdfa}{\let\pdfa\relax}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
 \ProcessOptions
 \LoadClass[twoside,notitlepage]{article}
@@ -461,7 +466,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
         \string\contitem
         \string\title{\@title \if!\@subtitle!\else\subtitleseperator \@subtitle\fi}%
         \string\author{\@authorsfortoc}%
-        \string\page{\@ArticleNo:\thepage--\@ArticleNo:\number\numexpr\getpagerefnumber{LastPage}}}%
+        \string\page{\@ArticleNo:\thepage--\@ArticleNo:\number\numexpr\getpagerefnumber{TotPages}}}%
     \closeout\tocfile
     \egroup
 \par}
@@ -576,7 +581,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
         \vskip\topmattervskip\baselineskip\noindent
     \acknowledgementsHeading\ifx\authoranonymous\relax{Anonymous acknowledgements} \else\@acknowledgements\fi
     \fi
-\fi}
+}
 
 \renewenvironment{thebibliography}[1]
 {\if@noskipsec \leavevmode \fi
@@ -657,13 +662,36 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 \RequirePackage{amsthm}
 \RequirePackage{tikz}
 
+\ifx\pdfa\relax%
+\IfFileExists{glyphtounicode.tex}{
+    \input glyphtounicode
+    \pdfgentounicode=1
+}{}%
+\fi
+\IfFileExists{fontawesome5.sty}{%
+    \RequirePackage{fontawesome5}%
+    \IfFileExists{orcid.pdf}{%
+        \def\orcidsymbol{\includegraphics[height=9\p@]{orcid}}
+    }{
+        \def\orcidsymbol{\textcolor{lipicsGray}{\fontsize{9}{12}\sffamily\bfseries \faOrcid}}%
+    }
+    \def\mailsymbol{\textcolor{lipicsGray}{\fontsize{9}{12}\sffamily\bfseries \faIcon[regular]{envelope}}}%
+    \def\homesymbol{\textcolor{lipicsGray}{\fontsize{9}{12}\sffamily\bfseries \faHome}}%
+}{%
+    \ClassWarning{Package fontawesome5 not installed}{Please install package fontawesome5}
+    \def\orcidsymbol{\textcolor{lipicsGray}{\fontsize{9}{12}\sffamily\bfseries ORCID}}
+    \def\mailsymbol{\textcolor{lipicsGray}{\fontsize{9}{12}\sffamily\bfseries @}}%
+    \def\homesymbol{\textcolor{lipicsGray}{\fontsize{9}{12}\sffamily\bfseries H}}%
+}%
+
 \RequirePackage{newpxtext}
 \RequirePackage[OT1]{fontenc}
 \IfFileExists{lmodern.sty}{\RequirePackage{lmodern}}{}
 \RequirePackage[fracspacing]{newpxmath}[2019/10/02]
+\RequirePackage[mathscr]{eucal}
 
 \AtBeginDocument{
-    \@ifpackageloaded{enumitem}{\ClassWarning{Package 'enuitem' incompatible}{Don't use package 'enumitem'; Package enumerate preloaded!}}{}
+    \@ifpackageloaded{enumitem}{\ClassWarning{Package 'enumitem' incompatible}{Don't use package 'enumitem'; Package enumerate preloaded!}}{}
     \@ifpackageloaded{paralist}{\ClassWarning{Package 'paralist' incompatible}{Don't use package 'paralist'; Package enumerate preloaded!}}{}
 }
 
@@ -718,32 +746,103 @@ frame=single,framerule=0pt,xleftmargin=\fboxsep,xrightmargin=\fboxsep}
     \patchBothAmsMathEnvironmentsForLineno{alignat}%
     \patchBothAmsMathEnvironmentsForLineno{gather}%
 \patchBothAmsMathEnvironmentsForLineno{multline}}
-%\RequirePackage{lastpage}
-\RequirePackage[hypertexnames=false]{hyperref}
+
+\ifx\pdfa\relax%
+  \RequirePackage[pdfa,unicode]{hyperref}%
+\else%
+  \RequirePackage[unicode]{hyperref}%
+\fi%
+\let\usehyperxmp\@empty%
+\ifx\pdfa\relax%
+  \IfFileExists{hyperxmp.sty}{%
+    \RequirePackage{hyperxmp}%
+    \@ifpackagelater{hyperxmp}{2019/04/05}{%
+      \let\usehyperxmp\relax%
+    }{%
+      \ClassWarning{Package hyperxmp outdated}{You are using an outdated version of the package hyperxmp. Please update!}%
+    }}{}%
+\fi%
+
+\IfFileExists{totpages.sty}{
+    \RequirePackage{totpages}
+}{
+    \ClassWarning{Package totpages not installed}{Please install package totpages}
+    \newcounter{TotPages}
+    \setcounter{TotPages}{99}
+}
+\let\C\relax%
+\let\G\relax%
+\let\F\relax%
+\let\U\relax%
+\pdfstringdefDisableCommands{%
+    \let\thanks\@gobble%
+    \let\footnote\@gobble%
+    \def\footnotemark{}%
+    \def\cs#1{\textbackslash #1}%
+    \let\normalfont\@empty%
+    \let\scshape\@empty%
+    \def\and{and }%
+    \def\,{ }%
+    \def\textrightarrow{ -> }%
+    \let\mathsf\@empty%
+}%
+\hypersetup{
+    breaklinks=true,
+    pdfencoding=unicode,
+    bookmarksnumbered,
+    pdfborder={0 0 0},
+    pdfauthor={ }
+}%
+
 \AtBeginDocument{
-    \pdfstringdefDisableCommands{%
-        \let\thanks\@gobble
-        \let\footnote\@gobble
-        \def\footnotemark{}
-        \def\cs#1{\textbackslash #1}%
-        \let\normalfont\@empty
-        \let\scshape\@empty
-        \def\and{and }%
-        \def\,{ }
-    }
-    \hypersetup{
-        breaklinks=true,
-        pdfborder={0 0 0},
-        pdftitle={\@title},
+    \ifx\usehyperxmp\relax
+        \hypersetup{
+        pdftitle={\@title \if!\@subtitle!\else\subtitleseperator \@subtitle\fi},
         pdfauthor={\ifx\authoranonymous\relax Anonymous author(s) \else \@authorsforpdf \fi},
         pdfkeywords={\@keywords},
-        pdfcreator={LaTeX with no-lipics-v2019.cls and hyperref.sty},
-        %TODO Find way to move information to correct fields in pdf metadata
-        pdfsubject={\ifx\hideLipics\relax{LIPIcs, Vol.\@SeriesVolume, \@EventShortTitle; }\fi Copyright (C) \ifx\authoranonymous\relax Anonymous author(s) \else \@copyrightholder; \fi licensed under Creative Commons License CC-BY}
-        %pdflicenseurl={https://creativecommons.org/licenses/by/3.0/},
-        %pdfcopyright={Copyright (C), \@copyrightholder; licensed under Creative Commons License CC-BY},
+        pdfproducer={LaTeX with nolipics-v2022.cls},
+        pdfcopyright={Copyright (C) \ifx\authoranonymous\relax Anonymous author(s) \else \@copyrightholder; \fi licensed under Creative Commons License CC-BY 4.0},
+        pdflang={en},
+        pdfmetalang={en},
+        pdflicenseurl={https://creativecommons.org/licenses/by/4.0/},
+        pdfpubtype={LIPIcs},
+        pdfapart=3,
+        pdfaconformance=B
     }
+    \else%
+        \hypersetup{
+            pdftitle={\@title \if!\@subtitle!\else\subtitleseperator \@subtitle\fi},
+            pdfauthor={\ifx\authoranonymous\relax Anonymous author(s) \else \@authorsforpdf \fi},
+            pdfkeywords={\@keywords},
+            pdfcreator={LaTeX with no-lipics-v2022.cls},
+        }%
+    \fi%
 }
+
+\ifx\usehyperxmp\relax
+    \pdfobjcompresslevel=0
+    \pdfinclusioncopyfonts=1
+
+    \IfFileExists{colorprofiles.tex}{
+        \RequirePackage{colorprofiles}%
+        \IfFileExists{sRGB.icc}{
+            \immediate\pdfobj stream attr{/N 3} file{sRGB.icc}
+            \pdfcatalog{%
+/OutputIntents [
+<<
+/Type /OutputIntent
+/S /GTS_PDFA1
+/DestOutputProfile \the\pdflastobj\space 0 R
+/OutputConditionIdentifier (sRGB)
+/Info (sRGB)
+>>
+]
+            }}{}
+    }{%
+        \ClassWarning{Package colorprofiles not installed}{Please install package colorprofiles}
+    }
+\fi
+
 \RequirePackage[labelsep=space,singlelinecheck=false,%
 font={up,small},labelfont={sf,bf},%
 listof=false]{caption}%"listof" instead of "list" for backward compatibility
@@ -801,6 +900,8 @@ Do not load the subfig package}{The more recent subcaption package is already lo
 \def\author#1#2#3#4#5{%
     \ifx\@author\orig@author\let\@author\@empty\fi
     \g@addto@macro\@author{%
+        \noexpandarg\StrBehind{#2}{\and \url}[\homepageTemp]\IfSubStr{#2}{\and \url}{\StrBefore{#2}{\and \url}[\affiliation]}{\def\affiliation{#2}}%
+        \expandarg\exploregroups\StrRemoveBraces{\homepageTemp}[\homepage]%
         \stepcounter{currentauthor}
         \ifx\authoranonymous\relax%
             \ifnum\value{currentauthor}=1
@@ -858,8 +959,10 @@ Do not load the subfig package}{The more recent subcaption package is already lo
             \else
                 \ifx\authoranonymous\relax
                 \else
-                    #1%
-                    \if!#4!\else{\space\href{#4}{\includegraphics[height=9\p@]{orcid}}}%
+                    #1\,%
+                    \if!#4!\else{\href{#4}{\raisebox{-1pt}{\orcidsymbol}}}\fi%
+                    \ifx\compactauthor\relax\if!#3!\else{\;\href{mailto:#3}{\mailsymbol}}\fi%
+                    \ifx\homepage\@empty\else{\;\href{\homepage}{\homesymbol}}\fi\fi%
                 \fi
                 \if!#5!\else
                     \ifx\@funding\@empty
@@ -876,13 +979,11 @@ Do not load the subfig package}{The more recent subcaption package is already lo
             \if!#2!%
                 \textcolor{red}{Author: Please enter affiliation as second parameter of
                 the author macro}%
-            \else\ifx\authoranonymous\relax
-            \else
-                {\\* #2}%
-            \fi\fi
-            \if!#3!\else{%
+            \else\ifx\authoranonymous\relax%
+            \else\ifx\compactauthor\relax{\\* \affiliation}\else{\\* #2}\fi\fi\fi
+            \ifx\compactauthor\relax\else\if!#3!\else{%
                 \ifx\authoranonymous\relax\else\\*\href{mailto:#3}{\texttt{#3}}\fi
-            }\fi
+            }\fi\fi
         }\ifx\authoranonymous\relax\else\par\fi
         \ifx\authorcolumns\relax
             \ifx\authoranonymous\relax\else%
@@ -922,7 +1023,7 @@ Do not load the subfig package}{The more recent subcaption package is already lo
         \setbox\@tempboxa\hbox{\includegraphics[height=14\p@,clip]{cc-by}}%
         \@rightskip\@flushglue \rightskip\@rightskip
         \hangindent\dimexpr\wd\@tempboxa+0.5em\relax
-        \href{https://creativecommons.org/licenses/by/3.0/}%
+        \href{https://creativecommons.org/licenses/by/4.0/}%
         {\smash{\lower\baselineskip\hbox{\unhcopy\@tempboxa}}}\enskip
         \textcopyright\ %
         \ifx!#1!%
@@ -948,7 +1049,6 @@ Keywords and phrases\enskip}}
 \excludecomment{CCSXML}
 % inspired by https://tex.stackexchange.com/questions/12810/how-do-i-split-a-string
 \global\newcommand\ccsdesc[2][100]{\@ccsdesc#1~#2~~\relax}
-\usepackage{xstring}
 \let\orig@ccsdesc\@ccsdesc
 \let\@ccsdesc\@empty
 \let\@ccsdescString\@empty
@@ -988,14 +1088,101 @@ Digital Object Identifier\enskip}}
 Category\enskip}}
 \def\relatedversion#1{\def\@relatedversion{#1}}
 \let\@relatedversion\@empty
+\define@key{relatedversiondetails}{linktext}{\def\relatedversiondetails@linktext{#1}}
+\define@key{relatedversiondetails}{cite}{\def\relatedversiondetails@cite{#1}}
+\newcommand*\addtorelatedversionmacro[2]{%
+    \ifx\@relatedversion\@empty%
+        \g@addto@macro\@relatedversion{#1}%
+    \else%
+        \g@addto@macro\@relatedversion{\\#1}%
+    \fi%
+}%
+\newcommand{\relatedversiondetails}[3][]{%
+    \begingroup%
+    \let\relatedversiondetails@linktext\@empty
+    \let\relatedversiondetails@cite\@empty
+    \setkeys{relatedversiondetails}{#1}%
+    \ifx\relatedversiondetails@linktext\@empty%
+        \protected@edef\tmp{\textit{#2}:\space{\url{#3}}}%
+    \else%
+        \protected@edef\tmp{\textit{#2}:\space{\href{#3}{\texttt{\relatedversiondetails@linktext}}}}%
+    \fi%
+    \ifx\relatedversiondetails@cite\@empty%
+\else%
+    \protected@edef\tmp{\tmp\nobreakspace\cite{\relatedversiondetails@cite}}%
+\fi%
+\expandafter\addtorelatedversionmacro\expandafter{\tmp}{#1}%
+\endgroup%
+}%
 \def\relatedversionHeading{%
     \textcolor{lipicsGray}{\fontsize{8}{10}\sffamily\bfseries
 Related Version\enskip}}
 \def\supplement#1{\def\@supplement{#1}}
 \let\@supplement\@empty
+\define@key{supplementdetails}{linktext}{\def\supplementdetails@linktext{#1}}
+\define@key{supplementdetails}{cite}{\def\supplementdetails@cite{#1}}
+\define@key{supplementdetails}{subcategory}{\def\supplementdetails@subcategory{#1}}
+\define@key{supplementdetails}{swhlinktext}{\def\supplementdetails@swhlinktext{#1}}
+\let\supplementdetails@swhlinktext\@empty
+\define@key{supplementdetails}{swhid}{
+    \ifx\supplementdetails@swhlinktext\@empty%
+        \StrBefore{#1}{;}[\supplementdetails@swhlinktext]%
+    \fi%
+    \def\supplementdetails@swhid{#1}%
+}
+
+\define@key{supplementdetails}{swhdelimiter}{\def\supplementdetails@swhdelimiter{#1}}
+\def\supplementdetails@swhdelimiter{\\ \hspace*{1.2em}}
+\newcommand*\addtosupplementmacro[2]{%
+    \ifx\@supplement\@empty%
+        \g@addto@macro\@supplement{#1}%
+    \else%
+        \g@addto@macro\@supplement{\\#1}%
+    \fi%
+}%
+\newcommand{\supplementdetails}[3][]{%
+    \begingroup%
+    \let\supplementdetails@linktext\@empty
+    \let\supplementdetails@cite\@empty
+    \let\supplementdetails@subcategory\@empty
+    \let\supplementdetails@swhid\@empty
+    \setkeys{supplementdetails}{#1}%
+    \ifx\supplementdetails@subcategory\@empty%
+        \protected@edef\tmp{\textit{#2}}
+    \else
+        \protected@edef\tmp{\textit{#2\,\,(\supplementdetails@subcategory)}}%
+    \fi
+    \ifx\supplementdetails@linktext\@empty%
+        \protected@edef\tmp{\tmp:\space{\url{#3}}}%
+    \else%
+        \protected@edef\tmp{\tmp:\space{\href{#3}{\texttt{\supplementdetails@linktext}}}}%
+    \fi%
+    \ifx\supplementdetails@cite\@empty%
+\else%
+    \protected@edef\tmp{\tmp\nobreakspace\cite{\supplementdetails@cite}}%
+\fi
+\ifx\supplementdetails@swhid\@empty%
+\else%
+    \ifx\supplementdetails@swhlinktext\@empty%
+        \protected@edef\tmp{\tmp \supplementdetails@swhdelimiter{} archived at %
+        \href{https://archive.softwareheritage.org/\supplementdetails@swhid}{\nolinkurl{\supplementdetails@swhid}}}%
+    \else%
+        \protected@edef\tmp{\tmp \supplementdetails@swhdelimiter{} archived at %
+        \href{https://archive.softwareheritage.org/\supplementdetails@swhid}{\nolinkurl{\supplementdetails@swhlinktext}}}%
+    \fi%
+    \fi%
+    \expandafter\addtosupplementmacro\expandafter{\tmp}{#1}%
+    \endgroup%
+}%
+
 \def\supplementHeading{%
     \textcolor{lipicsGray}{\fontsize{8}{10}\sffamily\bfseries
-Supplement Material\enskip}}
+Supplementary Material\enskip}}
+\newcommand\flag[2][0.9cm]{%
+    \leavevmode\marginpar{%
+        \raisebox{\dimexpr-\totalheight+\ht\strutbox\relax}%
+        [\dimexpr\ht\strutbox+3mm][\dp\strutbox]{\expandafter\includegraphics[width=#1]{#2}}%
+}}
 \def\funding#1{\def\@funding{#1}}
 \let\@funding\@empty
 \def\fundingHeading{%
@@ -1092,6 +1279,10 @@ fill=white]{\@itemsym{#1}}
 }{%
   \popQED\endtrivlist%\@endpefalse
 }
+
+\newcommand{\claimqedhere}{\renewcommand\qedsymbol{\textcolor{lipicsGray}{\ensuremath{\vartriangleleft}}}%
+\qedhere%
+\renewcommand\qedsymbol{\textcolor{lipicsGray}{\ensuremath{\blacktriangleleft}}}}
 \newenvironment{claimproof}[1][\proofname]{
   \pushQED{\qed}%
   \normalfont \topsep6\p@\@plus6\p@\relax
