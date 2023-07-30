@@ -114,18 +114,18 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
     \ifnum \c@secnumdepth >\m@ne
         \refstepcounter{part}%
         \addcontentsline{toc}{part}{%
-            \protect\numberline{\sffamily\bfseries\partname{} \thepart:}\;
-        \sffamily  #1}%
+            \protect\numberline{\bfseries\partname{} \thepart:}\;
+          #1}%
     \else
-        \addcontentsline{toc}{part}{\sffamily #1}%
+        \addcontentsline{toc}{part}{ #1}%
     \fi
     {\parindent \z@ \raggedright
         \interlinepenalty \@M
         \normalfont
         \ifnum \c@secnumdepth >\m@ne
-            \Large\sffamily\bfseries \partname\nobreakspace\thepart:
+            \Large\bfseries \partname\nobreakspace\thepart:
         \fi
-        \Large\sffamily\bfseries #2%
+        \Large\bfseries #2%
     \markboth{}{}\par}%
     \nobreak
     \vskip 3ex
@@ -154,12 +154,12 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
         \addcontentsline{toc}{#1}{%
             \ifnum #2>\c@secnumdepth \else
                 \ifnum #2>1
-                    \protect\numberline{\sffamily\csname the#1\endcsname}%
+                    \protect\numberline{\csname the#1\endcsname}%
                 \else
-                    \protect\numberline{\sffamily\bfseries\csname the#1\endcsname}%
+                    \protect\numberline{\bfseries\csname the#1\endcsname}%
                 \fi
             \fi
-            \sffamily #7%
+             #7%
         }%
         \else
         \def\@svsechd{%
@@ -169,12 +169,12 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
             \addcontentsline{toc}{#1}{%
                 \ifnum #2>\c@secnumdepth \else
                     \ifnum #2>1
-                        \protect\numberline{\sffamily\csname the#1\endcsname}%
+                        \protect\numberline{\csname the#1\endcsname}%
                     \else
-                        \protect\numberline{\sffamily\bfseries\csname the#1\endcsname}%
+                        \protect\numberline{\bfseries\csname the#1\endcsname}%
                     \fi
                 \fi
-                \sffamily #7%
+                 #7%
             }%
         }%
     \fi
@@ -182,7 +182,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 }
 
 \def\@seccntformat#1{\csname the#1\endcsname}
-\def\@biblabel#1{\textcolor{lipicsGray}{\sffamily\bfseries#1}}
+\def\@biblabel#1{\textcolor{lipicsGray}{\bfseries#1}}
 \def\copyrightline{%
     \ifx\@hideLIPIcs\@undefined
         \ifx\@EventLogo\@empty
@@ -275,7 +275,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 \fi}
 
 \let\mtl@section\l@section
-\renewcommand*\l@section[2]{\mtl@section{{#1}}{\sffamily #2\hspace{-.04em}}}
+\renewcommand*\l@section[2]{\mtl@section{{#1}}{ #2\hspace{-.04em}}}
 \renewcommand*\l@part[2]{%
     \ifnum \c@tocdepth >-2\relax
         \addpenalty\@secpenalty
@@ -301,7 +301,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 
 \let\old@dottedcontentsline\@dottedtocline
 \def\@dottedtocline#1#2#3#4#5{%
-\old@dottedcontentsline{#1}{#2}{#3}{#4}{{{\sffamily#5}}}}
+\old@dottedcontentsline{#1}{#2}{#3}{#4}{{{#5}}}}
 
 \renewcommand\normalsize{%
     \@setfontsize\normalsize\@xpt{13}%
@@ -375,9 +375,9 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
     \partopsep \p@ \@plus\z@ \@minus\p@
     \itemsep   \z@ \@plus\p@}
 \def\ps@headings{%
-    \def\@evenhead{\large\sffamily\bfseries
+    \def\@evenhead{\large\bfseries
     \llap{\hbox to0.5\oddsidemargin{  \ifx\@hideLIPIcs\@undefined\ifx\@ArticleNo\@empty\textcolor{red}{XX}\else\@ArticleNo\fi:\fi\thepage\hss}}\leftmark\hfil}%
-    \def\@oddhead{\large\sffamily\bfseries\rightmark\hfil
+    \def\@oddhead{\large\bfseries\rightmark\hfil
     \rlap{\hbox to0.5\oddsidemargin{\hss  \ifx\@hideLIPIcs\@undefined\ifx\@ArticleNo\@empty\textcolor{red}{XX}\else\@ArticleNo\fi:\fi\thepage}}}%
     \def\@evenfoot{\ifx\@hideLIPIcs\@undefined\hfil%
             \rlap{%
@@ -388,7 +388,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
                         \advance\@tempdima1in%
                         \advance\@tempdima\hoffset%
                         \hb@xt@\@tempdima{%
-                            \textcolor{lipicsGray}{\normalsize\sffamily%
+                            \textcolor{lipicsGray}{\normalsize%
                                 \bfseries\quad%
                                 \expandafter\textsolittle%
                             \expandafter{\@EventShortTitle}}%
@@ -444,7 +444,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
     %%\let \footnote \thanks
     \parindent\z@ \raggedright
     \if!\@title!\def\@title{\textcolor{red}{Author: Please fill in a title}}\fi
-    {\centering\LARGE\sffamily\bfseries\mathversion{bold}\@title \if!\@subtitle!\else{\\\Large\sffamily\bfseries\mathversion{bold}\@subtitle}\fi \par}%
+    {\centering\LARGE\bfseries\mathversion{bold}\@title \if!\@subtitle!\else{\\\Large\bfseries\mathversion{bold}\@subtitle}\fi \par}%
     \vskip 1em
     \ifx\@author\orig@author
         \textcolor{red}{Author: Please provide author information}%
@@ -477,23 +477,23 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 \renewcommand\section{\@startsection {section}{1}{\z@}%
     {-3.5ex \@plus -1ex \@minus -.2ex}%
     {2.3ex \@plus.2ex}%
-    {\sffamily\Large\bfseries\raggedright}}
+    {\Large\bfseries\raggedright}}
 \renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
     {-3.25ex\@plus -1ex \@minus -.2ex}%
     {1.5ex \@plus .2ex}%
-    {\sffamily\Large\bfseries\raggedright}}
+    {\Large\bfseries\raggedright}}
 \renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
     {-3.25ex\@plus -1ex \@minus -.2ex}%
     {1.5ex \@plus .2ex}%
-    {\sffamily\Large\bfseries\raggedright}}
+    {\Large\bfseries\raggedright}}
 \renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
     {-3.25ex \@plus-1ex \@minus-.2ex}%
     {1.5ex \@plus .2ex}%
-    {\sffamily\large\bfseries\raggedright}}
+    {\large\bfseries\raggedright}}
 \renewcommand\subparagraph{\@startsection{subparagraph}{5}{\z@}%
     {.5ex \@plus1ex \@minus .2ex}%
     {-1em}%
-    {\sffamily\normalsize\bfseries}}
+    {\normalsize\bfseries}}
 \setlength\leftmargini  \parindent
 \setlength\leftmarginii {1.2em}
 \setlength\leftmarginiii{1.2em}
@@ -501,13 +501,13 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 \setlength\leftmarginv  {1.2em}
 \setlength\leftmarginvi {1.2em}
 \renewcommand\labelenumi{%
-    \textcolor{lipicsGray}{\sffamily\bfseries\upshape\mathversion{bold}\theenumi.}}
+    \textcolor{lipicsGray}{\bfseries\upshape\mathversion{bold}\theenumi.}}
 \renewcommand\labelenumii{%
-    \textcolor{lipicsGray}{\sffamily\bfseries\upshape\mathversion{bold}\theenumii.}}
+    \textcolor{lipicsGray}{\bfseries\upshape\mathversion{bold}\theenumii.}}
 \renewcommand\labelenumiii{%
-    \textcolor{lipicsGray}{\sffamily\bfseries\upshape\mathversion{bold}\theenumiii.}}
+    \textcolor{lipicsGray}{\bfseries\upshape\mathversion{bold}\theenumiii.}}
 \renewcommand\labelenumiv{%
-    \textcolor{lipicsGray}{\sffamily\bfseries\upshape\mathversion{bold}\theenumiv.}}
+    \textcolor{lipicsGray}{\bfseries\upshape\mathversion{bold}\theenumiv.}}
 \renewcommand\labelitemi{%
     \textcolor{lipicsBulletGray}{%
         \ifnum\@listdepth=\@ne
@@ -518,9 +518,9 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 \renewcommand\labelitemii{%
     \textcolor{lipicsBulletGray}{$\lipicsClaimTriangleRight$}}
 \renewcommand\labelitemiii{%
-    \textcolor{lipicsBulletGray}{\sffamily\bfseries\textasteriskcentered}}
+    \textcolor{lipicsBulletGray}{\bfseries\textasteriskcentered}}
 \renewcommand\labelitemiv{%
-    \textcolor{lipicsBulletGray}{\sffamily\bfseries\textperiodcentered}}
+    \textcolor{lipicsBulletGray}{\bfseries\textperiodcentered}}
 
 \renewenvironment{description}
 {\list{}{\advance\partopsep\topsep\topsep\z@\@plus\p@
@@ -528,14 +528,14 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 \let\makelabel\descriptionlabel}}
 {\ifnum\@listdepth=\@ne\global\@nobotseplisttrue\fi\endlist}
 \renewcommand*\descriptionlabel[1]{%
-\hspace\labelsep\textcolor{lipicsGray}{\sffamily\bfseries\mathversion{bold}#1}}
+\hspace\labelsep\textcolor{lipicsGray}{\bfseries\mathversion{bold}#1}}
 \def\topmattervskip{0.7}
 \renewenvironment{abstract}{%
     \vskip\topmattervskip\bigskipamount
     \noindent
     \rlap{\color{lipicsLineGray}\vrule\@width\textwidth\@height1\p@}%
     {\null\hfill\fboxsep1.5mm\colorbox[rgb]{1,1,1}{\raisebox{-0.4ex}{%
-    \large\selectfont\sffamily\bfseries\abstractname}}\hfill\null}%
+    \large\selectfont\bfseries\abstractname}}\hfill\null}%
     \vskip3\p@
     \fontsize{9}{12}\selectfont
 \noindent\ignorespaces}
@@ -597,7 +597,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
     \noindent
     \rlap{\color{lipicsLineGray}\vrule\@width\textwidth\@height1\p@}%
     \hspace*{7mm}\fboxsep1.5mm\colorbox[rgb]{1,1,1}{\raisebox{-0.4ex}{%
-    \normalsize\sffamily\bfseries\refname}}%
+    \normalsize\bfseries\refname}}%
     \@xsect{1ex \@plus.2ex}%
     \list{\@biblabel{\@arabic\c@enumiv}}%
     {\leftmargin8.5mm
@@ -646,7 +646,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
     }
     \definecolor{darkgray}{rgb}{0.31,0.31,0.33}
     \definecolor[named]{lipicsGray}{rgb}{0.31,0.31,0.33}
-    \definecolor[named]{lipicsBulletGray}{rgb}{0.60,0.60,0.61}
+    \definecolor[named]{lipicsBulletGray}{rgb}{0.45,0.45,0.46}
     \definecolor[named]{lipicsLineGray}{rgb}{0.51,0.50,0.52}
     \definecolor[named]{lipicsLightGray}{rgb}{0.85,0.85,0.86}
     \definecolor[named]{lipicsYellow}{rgb}{0.85,0.85,0.86}
@@ -673,15 +673,15 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
     \IfFileExists{orcid.pdf}{%
         \def\orcidsymbol{\includegraphics[height=9\p@]{orcid}}
     }{
-        \def\orcidsymbol{\textcolor{lipicsGray}{\fontsize{9}{12}\sffamily\bfseries \faOrcid}}%
+        \def\orcidsymbol{\textcolor{lipicsGray}{\fontsize{9}{12}\bfseries \faOrcid}}%
     }
-    \def\mailsymbol{\textcolor{lipicsGray}{\fontsize{9}{12}\sffamily\bfseries \faIcon[regular]{envelope}}}%
-    \def\homesymbol{\textcolor{lipicsGray}{\fontsize{9}{12}\sffamily\bfseries \faHome}}%
+    \def\mailsymbol{\textcolor{lipicsGray}{\fontsize{9}{12}\bfseries \faIcon[regular]{envelope}}}%
+    \def\homesymbol{\textcolor{lipicsGray}{\fontsize{9}{12}\bfseries \faHome}}%
 }{%
     \ClassWarning{Package fontawesome5 not installed}{Please install package fontawesome5}
-    \def\orcidsymbol{\textcolor{lipicsGray}{\fontsize{9}{12}\sffamily\bfseries ORCID}}
-    \def\mailsymbol{\textcolor{lipicsGray}{\fontsize{9}{12}\sffamily\bfseries @}}%
-    \def\homesymbol{\textcolor{lipicsGray}{\fontsize{9}{12}\sffamily\bfseries H}}%
+    \def\orcidsymbol{\textcolor{lipicsGray}{\fontsize{9}{12}\bfseries ORCID}}
+    \def\mailsymbol{\textcolor{lipicsGray}{\fontsize{9}{12}\bfseries @}}%
+    \def\homesymbol{\textcolor{lipicsGray}{\fontsize{9}{12}\bfseries H}}%
 }%
 
 \RequirePackage{newpxtext}
@@ -696,7 +696,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 }
 
 \RequirePackage{enumerate}
-\def\@enum@{\list{\textcolor{lipicsGray}{\sffamily\bfseries\upshape\mathversion{bold}\csname label\@enumctr\endcsname}}%
+\def\@enum@{\list{\textcolor{lipicsGray}{\bfseries\upshape\mathversion{bold}\csname label\@enumctr\endcsname}}%
     {\advance\partopsep\topsep
         \topsep\z@\@plus\p@
 \usecounter{\@enumctr}\def\makelabel##1{\hss\llap{##1}}}}
@@ -727,7 +727,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 frame=single,framerule=0pt,xleftmargin=\fboxsep,xrightmargin=\fboxsep}
 \RequirePackage[left,mathlines]{lineno}
 \linenumbers
-\renewcommand\linenumberfont{\normalfont\tiny\sffamily}
+\renewcommand\linenumberfont{\normalfont\tiny}
 %%%% patch to cope with amsmath
 %%%% http://phaseportrait.blogspot.de/2007/08/lineno-and-amsmath-compatibility.html
 \newcommand*\patchAmsMathEnvironmentForLineno[1]{%
@@ -844,7 +844,7 @@ frame=single,framerule=0pt,xleftmargin=\fboxsep,xrightmargin=\fboxsep}
 \fi
 
 \RequirePackage[labelsep=space,singlelinecheck=false,%
-font={up,small},labelfont={sf,bf},%
+font={up,small},labelfont={bf},%
 listof=false]{caption}%"listof" instead of "list" for backward compatibility
 \@ifpackagelater{hyperref}{2009/12/09}
 {\captionsetup{compatibility=false}}%cf. http://groups.google.de/group/comp.text.tex/browse_thread/thread/db9310eb540fbbd8/42e30f3b7b3aa17a?lnk=raot
@@ -1042,7 +1042,7 @@ Do not load the subfig package}{The more recent subcaption package is already lo
 \def\keywords#1{\def\@keywords{#1}}
 \let\@keywords\@empty
 \def\keywordsHeading{%
-    \textcolor{lipicsGray}{\fontsize{9}{12}\sffamily\bfseries
+    \textcolor{lipicsGray}{\fontsize{9}{12}\bfseries
 Keywords and phrases\enskip}}
 
 \RequirePackage{comment}
@@ -1076,15 +1076,15 @@ Keywords and phrases\enskip}}
 {Since 2019, \string\subjclass\space is obsolete in lipics.}}
 \let\@subjclass\@empty
 \def\subjclassHeading{%
-    \textcolor{lipicsGray}{\fontsize{8}{10}\sffamily\bfseries
+    \textcolor{lipicsGray}{\fontsize{8}{10}\bfseries
 2012 ACM Subject Classification\enskip}}
 \def\doiHeading{%
-    \textcolor{lipicsGray}{\fontsize{8}{10}\sffamily\bfseries
+    \textcolor{lipicsGray}{\fontsize{8}{10}\bfseries
 Digital Object Identifier\enskip}}
 \def\category#1{\def\@category{#1}}
 \let\@category\@empty
 \def\categoryHeading{%
-    \textcolor{lipicsGray}{\fontsize{8}{10}\sffamily\bfseries
+    \textcolor{lipicsGray}{\fontsize{8}{10}\bfseries
 Category\enskip}}
 \def\relatedversion#1{\def\@relatedversion{#1}}
 \let\@relatedversion\@empty
@@ -1115,7 +1115,7 @@ Category\enskip}}
 \endgroup%
 }%
 \def\relatedversionHeading{%
-    \textcolor{lipicsGray}{\fontsize{8}{10}\sffamily\bfseries
+    \textcolor{lipicsGray}{\fontsize{8}{10}\bfseries
 Related Version\enskip}}
 \def\supplement#1{\def\@supplement{#1}}
 \let\@supplement\@empty
@@ -1176,7 +1176,7 @@ Related Version\enskip}}
 }%
 
 \def\supplementHeading{%
-    \textcolor{lipicsGray}{\fontsize{8}{10}\sffamily\bfseries
+    \textcolor{lipicsGray}{\fontsize{8}{10}\bfseries
 Supplementary Material\enskip}}
 \newcommand\flag[2][0.9cm]{%
     \leavevmode\marginpar{%
@@ -1186,12 +1186,12 @@ Supplementary Material\enskip}}
 \def\funding#1{\def\@funding{#1}}
 \let\@funding\@empty
 \def\fundingHeading{%
-    \textcolor{lipicsGray}{\fontsize{8}{10}\sffamily\bfseries
+    \textcolor{lipicsGray}{\fontsize{8}{10}\bfseries
 Funding\enskip}}
 \def\acknowledgements#1{\def\@acknowledgements{#1}}
 \let\@acknowledgements\@empty
 \def\acknowledgementsHeading{%
-    \textcolor{lipicsGray}{\fontsize{8}{10}\sffamily\bfseries
+    \textcolor{lipicsGray}{\fontsize{8}{10}\bfseries
 Acknowledgements\enskip}}
 
 
@@ -1259,10 +1259,10 @@ fill=white]{\@itemsym{#1}}
     \RequirePackage{thm-restate}
 \fi
 \thm@headfont{%
-  \textcolor{lipicsBulletGray}{$\lipicsTriangleUp$}\nobreakspace\quad\sffamily\bfseries}
+  \textcolor{lipicsBulletGray}{$\lipicsTriangleUp$}\nobreakspace\quad\bfseries}
 \def\th@remark{%
   \thm@headfont{%
-    \textcolor{lipicsBulletGray}{$\lipicsTriangleUp$}\nobreakspace\quad\sffamily}%
+    \textcolor{lipicsBulletGray}{$\lipicsTriangleUp$}\nobreakspace\quad}%
   \normalfont % body font
   \thm@preskip\topsep \divide\thm@preskip\tw@
   \thm@postskip\thm@preskip
@@ -1274,7 +1274,7 @@ fill=white]{\@itemsym{#1}}
   \normalfont \topsep6\p@\@plus6\p@\relax
   \trivlist
   \item[\hskip\labelsep
-        \color{lipicsGray}\sffamily\bfseries
+        \color{lipicsGray}\bfseries
     #1\@addpunct{.}]\ignorespaces
 }{%
   \popQED\endtrivlist%\@endpefalse
@@ -1288,7 +1288,7 @@ fill=white]{\@itemsym{#1}}
   \normalfont \topsep6\p@\@plus6\p@\relax
   \trivlist
   \item[\hskip\labelsep
-        \color{lipicsGray}\sffamily
+        \color{lipicsGray}
     #1\@addpunct{.}]\ignorespaces
 }{%
   \renewcommand\qedsymbol{\textcolor{lipicsBulletGray}{\ensuremath{\lipicsClaimTriangleDown}}}
@@ -1307,7 +1307,7 @@ fill=white]{\@itemsym{#1}}
 
 \AtBeginDocument{
     \@ifpackageloaded{algorithm2e}{
-        \renewcommand{\algorithmcfname}{\sffamily\bfseries{}Algorithm}
+        \renewcommand{\algorithmcfname}{\bfseries{}Algorithm}
         \SetAlgoCaptionSeparator{~}
         \SetAlCapHSkip{0pt}
         \renewcommand{\algocf@captiontext}[2]{%
@@ -1385,11 +1385,11 @@ fill=white]{\@itemsym{#1}}
     \fi
 \fi
 
-\newtheoremstyle{plainstyle}{\topsep}{\topsep}{\itshape}{0pt}{\sffamily}{. }{5pt plus 1pt minus 1pt}%
+\newtheoremstyle{plainstyle}{\topsep}{\topsep}{\itshape}{0pt}{}{. }{5pt plus 1pt minus 1pt}%
 {\null\hspace{.06em}$\lipicsTriangleUp$\hskip.61em{\bfseries\thmname{#1}\thmnumber{ #2}}\thmnote{ (#3)}}
-\newtheoremstyle{remstyle}{\topsep}{\topsep}{}{0pt}{\sffamily}{. }{5pt plus 1pt minus 1pt}%
+\newtheoremstyle{remstyle}{\topsep}{\topsep}{}{0pt}{}{. }{5pt plus 1pt minus 1pt}%
 {\null\hspace{.06em}$\lipicsTriangleUp$\hskip.61em{\bfseries\thmname{#1}\thmnumber{ #2}}\thmnote{ (#3)}}
-\newtheoremstyle{claimstyle}{\topsep}{\topsep}{}{0pt}{\sffamily}{. }{5pt plus 1pt minus 1pt}%
+\newtheoremstyle{claimstyle}{\topsep}{\topsep}{}{0pt}{}{. }{5pt plus 1pt minus 1pt}%
 {\null\hspace{.06em}$\lipicsClaimTriangleUp$\hskip.61em\thmname{#1}\thmnumber{ #2}\thmnote{ (#3)}}
 \theoremstyle{plainstyle}
 \newtheorem{mtheorem}{Main Theorem}
