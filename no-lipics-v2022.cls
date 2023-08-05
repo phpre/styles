@@ -626,6 +626,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 \hb@xt@1em{\@makefnmark\hss}#1}
 
 \usepackage{microtype}
+\RequirePackage{xstring}
 \RequirePackage{textcomp}
 \RequirePackage[mathscr]{eucal}
 \RequirePackage{amssymb}
