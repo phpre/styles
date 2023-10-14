@@ -1,11 +1,10 @@
-\documentclass[a4paper,USenglish,cleveref,autoref,thm-restate,authorcolumns,refcheck]{no-lipics-v2022}
+\documentclass[a4paper,USenglish,cleveref,thm-restate,authorcolumns,refcheck]{no-lipics-v2022}
 %This is a template for producing no-LIPIcs articles.
 %See lipics-manual.pdf for further information.
 %for A4 paper format use option "a4paper", US-letter is used if this option is not present.
 %for British hyphenation rules use option "UKenglish", for American hyphenation rules use option "USenglish"
 %for section-numbered lemmas etc., use "numberwithinsect"
 %for enabling cleveref support, use "cleveref"
-%for enabling autoref support, use "autoref"
 %for anonymising the authors (e.g. for double-blind review), add "anonymous"
 %for enabling thm-restate support, use "thm-restate"
 %for enabling refcheck, use "refcheck"
@@ -155,10 +154,6 @@ end;
     \caption{Useless peudo code}
 \end{algorithm}
 
-\begin{problem}
-
-\end{problem}
-
 \subsection{Proin ac fermentum augue}
 
 Proin ac fermentum augue. Nullam bibendum enim sollicitudin tellus egestas lacinia euismod orci mollis. Nulla facilisi. Vivamus volutpat venenatis sapien, vitae feugiat arcu fringilla ac. Mauris sapien tortor, sagittis eget auctor at, vulputate pharetra magna. Sed congue, dui nec vulputate convallis, sem nunc adipiscing dui, vel venenatis mauris sem in dui. Praesent a pretium quam. Mauris non mauris sit amet eros rutrum aliquam id ut sapien. Nulla aliquet fringilla sagittis. Pellentesque eu metus posuere nunc tincidunt dignissim in tempor dolor. Nulla cursus aliquet enim. Cras sapien risus, accumsan eu cursus ut, commodo vel velit. Praesent aliquet consectetur ligula, vitae iaculis ligula interdum vel. Integer faucibus faucibus felis.
@@ -170,7 +165,7 @@ Proin ac fermentum augue. Nullam bibendum enim sollicitudin tellus egestas lacin
 \end{itemize}
 
 \begin{remark}
-content...\lipicsEnd
+content...
 \end{remark}
 
 \section{Pellentesque quis tortor}
@@ -290,29 +285,13 @@ Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui
 Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
 \end{example}
 
-\begin{note}\label{testenv-note}
-Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
-\end{note}
-
-\begin{note*}
-Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
-\end{note*}
-
 \begin{remark}\label{testenv-remark}
 Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
 \end{remark}
 
-\begin{remark*}
-Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
-\end{remark*}
-
 \begin{claim}\label{testenv-claim}
 Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
 \end{claim}
-
-\begin{claim*}\label{testenv-claim2}
-Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
-\end{claim*}
 
 \begin{proof}
 Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
@@ -322,6 +301,19 @@ Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui
 Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
 \end{claimproof}
 
+
+\begin{restatable*}{theorem}{rst}
+    Restatable theorems get an end symbol whenever used in their starred variant.
+    Name and labels direct to the last un-starred occurrence.
+\end{restatable*}
+
+\rst*
+
+\rst
+\rst*
+
+\rst
+\rst*
 
 
 \section{Special Symbols}

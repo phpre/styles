@@ -24,7 +24,7 @@
 %% -----------------------------------------------------------------
 %%
 \ProvidesClass{no-lipics-v2022}
-    [2023/07/28 v1.3 No-LIPIcs article]
+    [2023/07/28 v1.4 No-LIPIcs article]
 \NeedsTeXFormat{LaTeX2e}[2015/01/01]
 \ClassWarningNoLine{no-lipics}{This is a modified version of LIPIcs.\MessageBreak%
 DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
@@ -232,17 +232,13 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 \DeclareOption{onecolumn}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
 \DeclareOption{twocolumn}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
 \DeclareOption{openbib}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
+\DeclareOption{autoref}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
 \DeclareOption{a4paper}{\PassOptionsToClass{\CurrentOption}{article}
     \advance\hoffset-2.95mm
     \advance\voffset8.8mm
 \let\usedinpaper\relax}
-\DeclareOption{fleqn}{\PassOptionsToClass{\CurrentOption}{article}
-\let\usefleqn\relax}
 \DeclareOption{numberwithinsect}{\let\numberwithinsect\relax}
-\DeclareOption{cleveref}{\let\usecleveref\relax}
-\DeclareOption{autoref}{\let\useautoref\relax}
 \DeclareOption{anonymous}{\let\authoranonymous\relax}
-\DeclareOption{thm-restate}{\let\usethmrestate\relax}
 \DeclareOption{authorcolumns}{\let\authorcolumns\relax}
 \DeclareOption{refcheck}{\let\userefcheck\relax}
 \let\compactauthor\relax
@@ -626,7 +622,6 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 \hb@xt@1em{\@makefnmark\hss}#1}
 
 \usepackage{microtype}
-\RequirePackage{xstring}
 \RequirePackage{textcomp}
 \RequirePackage[mathscr]{eucal}
 \RequirePackage{amssymb}
@@ -653,14 +648,23 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
     \definecolor[named]{lipicsYellow}{rgb}{0.85,0.85,0.86}
 }
 
-\RequirePackage{babel}
-\ifx\usefleqn\relax
-    \RequirePackage[tbtags,fleqn]{amsmath}
-\else
-    \RequirePackage[tbtags]{amsmath}
+\RequirePackage{iftex}
+\ifluatex
+    \RequirePackage{fontspec}
 \fi
 
+\RequirePackage[USenglish]{babel}
+\RequirePackage{newpxtext}
+\RequirePackage[fracspacing]{newpxmath}[2019/10/02]
+\RequirePackage[nomath]{lmodern}
+
+\RequirePackage[OT1]{fontenc}
+\RequirePackage[mathscr]{eucal}
+
+\let\openbox\undefined
+
 \RequirePackage{amsthm}
+\RequirePackage{thmtools}
 \RequirePackage{tikz}
 
 \ifx\pdfa\relax%
@@ -685,11 +689,6 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
     \def\homesymbol{\textcolor{lipicsGray}{\fontsize{9}{12}\bfseries H}}%
 }%
 
-\RequirePackage{newpxtext}
-\RequirePackage[OT1]{fontenc}
-\IfFileExists{lmodern.sty}{\RequirePackage{lmodern}}{}
-\RequirePackage[fracspacing]{newpxmath}[2019/10/02]
-\RequirePackage[mathscr]{eucal}
 
 \AtBeginDocument{
     \@ifpackageloaded{enumitem}{\ClassWarning{Package 'enumitem' incompatible}{Don't use package 'enumitem'; Package enumerate preloaded!}}{}
@@ -709,6 +708,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 \let\endbracketenumerate\endenumerate
 \RequirePackage{graphicx}
 \RequirePackage{array}
+\RequirePackage{xstring}
 \let\@classzold\@classz
 \def\@classz{%
     \expandafter\ifx\d@llarbegin\begingroup
@@ -749,9 +749,9 @@ frame=single,framerule=0pt,xleftmargin=\fboxsep,xrightmargin=\fboxsep}
 \patchBothAmsMathEnvironmentsForLineno{multline}}
 
 \ifx\pdfa\relax%
-  \RequirePackage[pdfa,unicode]{hyperref}%
+  \RequirePackage[pdfa,unicode,pagebackref]{hyperref}%
 \else%
-  \RequirePackage[unicode]{hyperref}%
+  \RequirePackage[unicode,pagebackref]{hyperref}%
 \fi%
 \let\usehyperxmp\@empty%
 \ifx\pdfa\relax%
@@ -1235,7 +1235,7 @@ Acknowledgements\enskip}}
 }
 
 
-\newcommand{\@theoremstartsym}[1]{\raisebox{1.6ex}{%
+\newcommand{\@theoremstartsym}[1]{\raisebox{1.5ex}{%
 \tikz[baseline=(t-text.base)]{\pic (t) at (0,0) {hookleft={#1}}; }}}
 \newcommand{\@theoremendsym}[1]{\raisebox{.3ex}{%
 \tikz[baseline=(t-text.base)]{\pic (t) at (0,0) {hookright={#1}}; }}}
@@ -1259,6 +1259,7 @@ fill=white]{\@itemsym{#1}}
 \ifx\usethmrestate\relax
     \RequirePackage{thm-restate}
 \fi
+
 \thm@headfont{%
   \textcolor{lipicsBulletGray}{$\lipicsTriangleUp$}\nobreakspace\quad\bfseries}
 \def\th@remark{%
@@ -1269,6 +1270,7 @@ fill=white]{\@itemsym{#1}}
   \thm@postskip\thm@preskip
 }
 \def\@endtheorem{\endtrivlist}
+
 \renewcommand\qedsymbol{\textcolor{lipicsBulletGray}{\ensuremath{\lipicsTriangleDown}}}
 \renewenvironment{proof}[1][\proofname]{\par
   \pushQED{\qed}%
@@ -1276,12 +1278,12 @@ fill=white]{\@itemsym{#1}}
   \trivlist
   \item[\hskip\labelsep
         \color{lipicsGray}\bfseries
-    #1\@addpunct{.}]\ignorespaces
+    #1\@addpunct{\bfseries.}]\ignorespaces
 }{%
   \popQED\endtrivlist%\@endpefalse
 }
 
-\newcommand{\claimqedhere}{\renewcommand\qedsymbol{\textcolor{lipicsGray}{\ensuremath{\vartriangleleft}}}%
+\newcommand{\claimqedhere}{\renewcommand\qedsymbol{\textcolor{lipicsGray}{\ensuremath{\lipicsClaimTriangleDown}}}%
 \qedhere%
 \renewcommand\qedsymbol{\textcolor{lipicsGray}{\ensuremath{\blacktriangleleft}}}}
 \newenvironment{claimproof}[1][\proofname]{
@@ -1296,6 +1298,7 @@ fill=white]{\@itemsym{#1}}
   \popQED\endtrivlist%\@endpefalse
   \renewcommand\qedsymbol{\textcolor{lipicsBulletGray}{\ensuremath{\lipicsTriangleDown}}}
 }
+
 % inspired by qed of amsthm class
 \DeclareRobustCommand{\lipicsEnd}{%
     \leavevmode\unskip\penalty9999 \hbox{}\nobreak\hfill
@@ -1330,195 +1333,371 @@ fill=white]{\@itemsym{#1}}
         \let\@fs@iftopcapt\iftrue}
             \renewcommand\fst@algorithm{\fs@ruled@notop}
         }{}
-    \ifx\usecleveref\relax\else
-        \@ifpackageloaded{cleveref}{\ClassWarning{Use document option 'cleveref' instead}{Use document option 'cleveref' instead directly loading package 'cleveref'}}{}
-    \fi
-    \ifx\usethmrestate\relax\else
-        \@ifpackageloaded{thm-restate}{\ClassWarning{Use document option 'thm-restate' instead}{Use document option 'thm-restate' instead directly loading package 'thm-restate'}}{}
-    \fi
-    \ifx\useautoref\relax
-        \@ifundefined{algorithmautorefname}{\newcommand{\algorithmautorefname}{Algorithm}}{\renewcommand{\algorithmautorefname}{Algorithm}}%
-    \fi
     \ifx\userefcheck\relax\else
         \@ifpackageloaded{refcheck}{\ClassWarning{Use document option 'refcheck'
         instead}{Use document option 'refcheck' instead directly loading package 'refcheck'}}{}
     \fi
 }
 
-\ifx\usecleveref\relax
-    \RequirePackage[noend,noline,ruled,linesnumbered]{algorithm2e}
-    \RequirePackage[capitalise, noabbrev]{cleveref}
-    \crefname{algocf}{Algorithm}{Algorithms}
-    \Crefname{algocf}{Algorithm}{Algorithms}
-    \crefname{algocfline}{Line}{Lines}
-    \Crefname{algocfline}{Line}{Lines}
-    \crefname{mtheorem}{Main Theorem}{Main Theorems}
-    \Crefname{mtheorem}{Main Theorem}{Main Theorems}
-    \crefname{thought}{Thought}{Thoughts}
-    \Crefname{thought}{Thought}{Thoughts}
-    \crefname{obs}{Observation}{Observations}
-    \Crefname{obs}{Observation}{Observations}
-    \crefname{fact}{Fact}{Facts}
-    \Crefname{fact}{Fact}{Facts}
-    \crefname{problem}{Problem}{Problems}
-    \Crefname{problem}{Problem}{Problems}
-    \crefname{conjecture}{Conjecture}{Conjectures}
-    \Crefname{conjecture}{Conjecture}{Conjectures}
-    \crefname{claim}{Claim}{Claims}
-    \Crefname{claim}{Claim}{Claims}
-\fi
-\ifx\useautoref\relax
-    \RequirePackage{aliascnt}
-\fi
+\RequirePackage[noend,noline,ruled,linesnumbered]{algorithm2e}
+\RequirePackage[capitalise, noabbrev]{cleveref}
+\crefname{algocf}{Algorithm}{Algorithms}
+\Crefname{algocf}{Algorithm}{Algorithms}
+\crefname{algocfline}{Line}{Lines}
+\Crefname{algocfline}{Line}{Lines}
 
 \ifx\userefcheck\relax
     \RequirePackage{refcheck}
     \overfullrule 1em
-    \ifx\usecleveref\relax
-        \newcommand{\refcheckize}[1]{%
-            \expandafter\let\csname @@\string#1\endcsname#1%
-            \expandafter\DeclareRobustCommand\csname relax\string#1\endcsname[1]{%
-            \csname @@\string#1\endcsname{##1}\wrtusdrf{##1}}%
-            \expandafter\let\expandafter#1\csname relax\string#1\endcsname
-        }
-        \refcheckize{\cref}
-        \refcheckize{\Cref}
-    \fi
+    \newcommand{\refcheckize}[1]{%
+        \expandafter\let\csname @@\string#1\endcsname#1%
+        \expandafter\DeclareRobustCommand\csname relax\string#1\endcsname[1]{%
+        \csname @@\string#1\endcsname{##1}\wrtusdrf{##1}}%
+        \expandafter\let\expandafter#1\csname relax\string#1\endcsname
+    }
+    \refcheckize{\cref}
+    \refcheckize{\Cref}
 \fi
 
-\newtheoremstyle{plainstyle}{\topsep}{\topsep}{\itshape}{0pt}{}{. }{5pt plus 1pt minus 1pt}%
-{\null\hspace{.06em}$\lipicsTriangleUp$\hskip.61em{\bfseries\thmname{#1}\thmnumber{ #2}}\thmnote{ (#3)}}
-\newtheoremstyle{remstyle}{\topsep}{\topsep}{}{0pt}{}{. }{5pt plus 1pt minus 1pt}%
-{\null\hspace{.06em}$\lipicsTriangleUp$\hskip.61em{\bfseries\thmname{#1}\thmnumber{ #2}}\thmnote{ (#3)}}
-\newtheoremstyle{claimstyle}{\topsep}{\topsep}{}{0pt}{}{. }{5pt plus 1pt minus 1pt}%
-{\null\hspace{.06em}$\lipicsClaimTriangleUp$\hskip.61em\thmname{#1}\thmnumber{ #2}\thmnote{ (#3)}}
-\theoremstyle{plainstyle}
-\newtheorem{mtheorem}{Main Theorem}
-\newtheorem{theorem}{Theorem}
+\declaretheoremstyle[
+    spaceabove=\topsep, spacebelow=\topsep,
+    headfont=\normalfont\bfseries,
+    headpunct=\normalfont\bfseries.,
+    notefont=\mdseries, notebraces={(}{)},
+    bodyfont=\normalfont,
+    postheadspace=5pt plus 1pt minus 1pt,
+    headformat=\null\lipicsTriangleUp\hskip.61em{\bfseries\NAME~\NUMBER}\NOTE,
+    qed={\lipicsTriangleDown},
+]{remstyle}
+
+\declaretheoremstyle[
+    spaceabove=\topsep, spacebelow=\topsep,
+    headfont=\normalfont\bfseries,
+    headpunct=\normalfont\bfseries.,
+    notefont=\mdseries, notebraces={(}{)},
+    bodyfont=\itshape,
+    postheadspace=5pt plus 1pt minus 1pt,
+    headformat=\null\lipicsTriangleUp\hskip.61em{\bfseries\NAME~\NUMBER}\NOTE,
+]{plainstyle}
+\declaretheoremstyle[
+    spaceabove=\topsep, spacebelow=\topsep,
+    headfont=\normalfont\bfseries,
+    headpunct=\normalfont\bfseries.,
+    notefont=\mdseries, notebraces={(}{)},
+    bodyfont=\itshape,
+    postheadspace=5pt plus 1pt minus 1pt,
+    headformat=\null\lipicsTriangleUp\hskip.61em{\bfseries\NAME~\NUMBER}\NOTE,
+    qed={\lipicsTriangleDown},
+]{plainqstyle}
+
+\declaretheoremstyle[
+    spaceabove=\topsep, spacebelow=\topsep,
+    headfont=\normalfont,
+    headpunct=\normalfont.,
+    notefont=\mdseries, notebraces={(}{)},
+    bodyfont=\itshape,
+    postheadspace=5pt plus 1pt minus 1pt,
+    headformat=\null\lipicsClaimTriangleUp\hskip.61em{\NAME~\NUMBER}\NOTE,
+]{claimstyle}
+\declaretheoremstyle[
+    spaceabove=\topsep, spacebelow=\topsep,
+    headfont=\normalfont,
+    headpunct=\normalfont.,
+    notefont=\mdseries, notebraces={(}{)},
+    bodyfont=\itshape,
+    postheadspace=5pt plus 1pt minus 1pt,
+    headformat=\null\lipicsClaimTriangleUp\hskip.61em{\NAME~\NUMBER}\NOTE,
+    qed={\lipicsClaimTriangleDown},
+]{claimqstyle}
+
+\declaretheorem[
+    name=Main Theorem,
+    style=plainstyle,
+    refname={Main~Theorem,Main~Theorems},
+    Refname={Main~Theorem,Main~Theorems}
+]{mtheorem}
+\declaretheorem[
+    name=Main Theorem,
+    style=plainqstyle,
+    sibling=mtheorem,
+    refname={Main~Theorem,Main~Theorems},
+    Refname={Main~Theorem,Main~Theorems}
+]{mtheoremq}
+
+
 \ifx\numberwithinsect\relax
-    \@addtoreset{theorem}{section}
-    \expandafter\def\expandafter\thetheorem\expandafter{%
-    \expandafter\thesection\expandafter\@thmcountersep\thetheorem}
+    \declaretheorem[
+        style=plainstyle,
+        parent=section,
+        refname={Theorem,Theorems},
+        Refname={Theorem,Theorems}
+    ]{theorem}
+\else
+    \declaretheorem[
+        style=plainstyle,
+        refname={Theorem,Theorems},
+        Refname={Theorem,Theorems}
+    ]{theorem}
 \fi
 
-\ifx\useautoref\relax
-    \addto\extrasenglish{%
-        \def\chapterautorefname{Chapter}%
-        \def\sectionautorefname{Section}%
-        \def\subsectionautorefname{Subsection}%
-        \def\subsubsectionautorefname{Subsubsection}%
-        \def\paragraphautorefname{Paragraph}%
-        \def\subparagraphautorefname{Subparagraph}%
-    }
-    \addto\extrasUKenglish{%
-        \def\chapterautorefname{Chapter}%
-        \def\sectionautorefname{Section}%
-        \def\subsectionautorefname{Subsection}%
-        \def\subsubsectionautorefname{Subsubsection}%
-        \def\paragraphautorefname{Paragraph}%
-        \def\subparagraphautorefname{Subparagraph}%
-    }
-    \addto\extrasUSenglish{%
-        \def\chapterautorefname{Chapter}%
-        \def\sectionautorefname{Section}%
-        \def\subsectionautorefname{Subsection}%
-        \def\subsubsectionautorefname{Subsubsection}%
-        \def\paragraphautorefname{Paragraph}%
-        \def\subparagraphautorefname{Subparagraph}%
-    }
-    \ifx\usethmrestate\relax
-        \newtheorem{lemma}[theorem]{Lemma}
-        \newtheorem{corollary}[theorem]{Corollary}
-        \newtheorem{proposition}[theorem]{Proposition}
-        \newtheorem{exercise}[theorem]{Exercise}
-        \newtheorem{definition}[theorem]{Definition}
-        \newtheorem{fact}[theorem]{Fact}
-        \newtheorem{obs}[theorem]{Observation}
-        \newtheorem{conjecture}[theorem]{Conjecture}
-        \newtheorem{problem}[theorem]{Problem}
-        \newtheorem{thought}[theorem]{Thought}
-        \newtheorem{note}[theorem]{Note}
-        \newtheorem*{note*}{Note}
-        \theoremstyle{remstyle}
-        \newtheorem{example}[theorem]{Example}
-        \newtheorem{remark}[theorem]{Remark}
-        \newtheorem*{remark*}{Remark}
-        \theoremstyle{claimstyle}
-        \newtheorem{claim}[theorem]{Claim}
-        \newtheorem*{claim*}{Claim}
-    \else
-        \newaliascnt{lemma}{theorem}
-        \newtheorem{lemma}[lemma]{Lemma}
-        \aliascntresetthe{lemma}
-        \newcommand{\lemmaautorefname}{Lemma}
-        \newaliascnt{corollary}{theorem}
-        \newtheorem{corollary}[corollary]{Corollary}
-        \aliascntresetthe{corollary}
-        \newcommand{\corollaryautorefname}{Corollary}
-        \newaliascnt{proposition}{theorem}
-        \newtheorem{proposition}[proposition]{Proposition}
-        \aliascntresetthe{proposition}
-        \newcommand{\propositionautorefname}{Proposition}
-        \newaliascnt{exercise}{theorem}
-        \newtheorem{exercise}[exercise]{Exercise}
-        \aliascntresetthe{exercise}
-        \newcommand{\exerciseautorefname}{Exercise}
-        \newaliascnt{definition}{theorem}
-        \newtheorem{definition}[definition]{Definition}
-        \aliascntresetthe{definition}
-        \newcommand{\definitionautorefname}{Definition}
-        \newaliascnt{thought}{theorem}
-        \newtheorem{thought}[thought]{Thought}
-        \aliascntresetthe{thought}
-        \newcommand{\noteautorefname}{Thought}
-        \newaliascnt{note}{theorem}
-        \newtheorem{note}[note]{Note}
-        \aliascntresetthe{note}
-        \newcommand{\noteautorefname}{Note}
-        \newtheorem*{note*}{Note}
-        \theoremstyle{remstyle}
-        \newaliascnt{example}{theorem}
-        \newtheorem{example}[example]{Example}
-        \aliascntresetthe{example}
-        \newcommand{\exampleautorefname}{Example}
-        \newaliascnt{remark}{theorem}
-        \newtheorem{remark}[remark]{Remark}
-        \aliascntresetthe{remark}
-        \newcommand{\remarkautorefname}{Remark}
-        \newtheorem*{remark*}{Remark}
-        \theoremstyle{claimstyle}
-        \newaliascnt{claim}{theorem}
-        \newtheorem{claim}[claim]{Claim}
-        \aliascntresetthe{claim}
-        \newcommand{\claimautorefname}{Claim}
-        \newtheorem*{claim*}{Claim}
-    \fi
-\else
-    \newtheorem{lemma}[theorem]{Lemma}
-    \newtheorem{corollary}[theorem]{Corollary}
-    \newtheorem{proposition}[theorem]{Proposition}
-    \newtheorem{exercise}[theorem]{Exercise}
-    \newtheorem{definition}[theorem]{Definition}
-    \newtheorem{fact}[theorem]{Fact}
-    \newtheorem{obs}[theorem]{Observation}
-    \newtheorem{conjecture}[theorem]{Conjecture}
-    \newtheorem{problem}[theorem]{Problem}
-    \newtheorem{thought}[theorem]{Thought}
-    \newtheorem{note}[theorem]{Note}
-    \newtheorem*{note*}{Note}
-    \theoremstyle{remstyle}
-    \newtheorem{example}[theorem]{Example}
-    \newtheorem{remark}[theorem]{Remark}
-    \newtheorem*{remark*}{Remark}
-    \theoremstyle{claimstyle}
-    \newtheorem{claim}[theorem]{Claim}
-    \newtheorem*{claim*}{Claim}
-\fi
+\declaretheorem[
+    name=Theorem,
+    style=plainqstyle,
+    sibling=theorem,
+    refname={Theorem,Theorems},
+    Refname={Theorem,Theorems}
+]{theoremq}
+
+\declaretheorem[
+    style=plainstyle,
+    sibling=theorem,
+    refname={Lemma,Lemmas},
+    Refname={Lemma,Lemmas}
+]{lemma}
+\declaretheorem[
+    name=Lemma,
+    style=plainqstyle,
+    sibling=theorem,
+    refname={Lemma,Lemmas},
+    Refname={Lemma,Lemmas}
+]{lemmaq}
+
+\declaretheorem[
+    style=plainstyle,
+    sibling=theorem,
+    refname={Corollary,Corollaries},
+    Refname={Corollary,Corollaries}
+]{corollary}
+\declaretheorem[
+    name=Corollary,
+    style=plainqstyle,
+    sibling=theorem,
+    refname={Corollary,Corollaries},
+    Refname={Corollary,Corollaries}
+]{corollaryq}
+
+\declaretheorem[
+    style=plainstyle,
+    sibling=theorem,
+    refname={Proposition,Propositions},
+    Refname={Proposition,Propositions}
+]{proposition}
+\declaretheorem[
+    name=Proposition,
+    style=plainqstyle,
+    sibling=theorem,
+    refname={Proposition,Propositions},
+    Refname={Proposition,Propositions}
+]{propositionq}
+
+\declaretheorem[
+    style=plainqstyle,
+    sibling=theorem,
+    refname={Exercise,Exercises},
+    Refname={Exercise,Exercises}
+]{exercise}
+\declaretheorem[
+    name=Exercise,
+    style=plainqstyle,
+    sibling=theorem,
+    refname={Exercise,Exercises},
+    Refname={Exercise,Exercises}
+]{exerciseq}
+
+\declaretheorem[
+    style=plainqstyle,
+    sibling=theorem,
+    refname={Definition,Definitions},
+    Refname={Definition,Definitions}
+]{definition}
+\declaretheorem[
+    name=Definition,
+    style=plainqstyle,
+    sibling=theorem,
+    refname={Definition,Definitions},
+    Refname={Definition,Definitions}
+]{definitionq}
+
+\declaretheorem[
+    style=plainqstyle,
+    sibling=theorem,
+    refname={Fact,Facts},
+    Refname={Fact,Facts}
+]{fact}
+\declaretheorem[
+    name=Fact,
+    style=plainqstyle,
+    sibling=theorem,
+    refname={Fact,Facts},
+    Refname={Fact,Facts}
+]{factq}
+
+\declaretheorem[
+    style=plainqstyle,
+    sibling=theorem,
+    refname={Conjecture,Conjectures},
+    Refname={Conjecture,Conjectures}
+]{conjecture}
+\declaretheorem[
+    name=Conjecture,
+    style=plainqstyle,
+    sibling=theorem,
+    refname={Conjecture,Conjectures},
+    Refname={Conjecture,Conjectures}
+]{conjectureq}
+
+\declaretheorem[
+    style=remstyle,
+    sibling=theorem,
+    refname={Example,Examples},
+    Refname={Example,Examples}
+]{example}
+\declaretheorem[
+    name=Example,
+    style=remstyle,
+    sibling=theorem,
+    refname={Example,Examples},
+    Refname={Example,Examples}
+]{exampleq}
+
+\declaretheorem[
+    style=remstyle,
+    sibling=theorem,
+    refname={Remark,Remarks},
+    Refname={Remark,Remarks}
+]{remark}
+\declaretheorem[
+    name=Remark,
+    style=remstyle,
+    sibling=theorem,
+    refname={Remark,Remarks},
+    Refname={Remark,Remarks}
+]{remarkq}
+
+\declaretheorem[
+    style=remstyle,
+    sibling=theorem,
+    refname={Thought,Thoughts},
+    Refname={Thought,Thoughts}
+]{thought}
+\declaretheorem[
+    name=Thought,
+    style=remstyle,
+    sibling=theorem,
+    refname={Thought,Thoughts},
+    Refname={Thought,Thoughts}
+]{thoughtq}
+
+\declaretheorem[
+    style=claimstyle,
+    sibling=theorem,
+    refname={Claim,Claims},
+    Refname={Claim,Claims}
+]{claim}
+\declaretheorem[
+    name=Claim,
+    style=claimqstyle,
+    sibling=theorem,
+    refname={Claim,Claims},
+    Refname={Claim,Claims}
+]{claimq}
+
 
 \theoremstyle{plainstyle}
 \widowpenalty=5000
 \clubpenalty=5000
 
+% modify thm-restate: endsymbol whenever printing not the numbered variant
+% from thm-restate.sty:
+\renewenvironment{thmt@restatable}[3][]{%
+    \thmt@toks{}% will hold body
+    \stepcounter{thmt@dummyctr}% used for data storage label.
+    \long\def\thmrst@store##1{%
+        \@xa\gdef\csname #3\endcsname{%
+            \@ifstar{%
+                \thmt@thisistheonefalse\csname thmt@stored@#3\endcsname
+            }{%
+                \thmt@thisistheonetrue\csname thmt@stored@#3\endcsname
+            }%
+        }%
+        \@xa\long\@xa\gdef\csname thmt@stored@#3\@xa\endcsname\@xa{%
+            \begingroup
+            \ifthmt@thisistheone
+                % these are the valid numbers, store them for the other
+                % occasions.
+                \thmt@rst@storecounters{#3}%
+            \else
+                % this one should use other numbers...
+                % first, fake the theorem number.
+                \@xa\protected@edef\csname the#2q\endcsname{%
+                \thmt@trivialref{thmt@@#3}{??}}%
+                % if the number wasn't there, have a "re-run to get labels right"
+                % warning.
+                \ifcsname r@thmt@@#3\endcsname\else
+                    \G@refundefinedtrue
+                \fi
+                % prevent stepcountering the theorem number,
+                % but still, have some number for hyperref, just in case.
+                \@xa\let\csname c@#2q\endcsname=\c@thmt@dummyctr
+                \@xa\let\csname theH#2q\endcsname=\theHthmt@dummyctr
+                % disable labeling.
+                \let\label=\thmt@gobble@label
+                \let\ltx@label=\@gobble% amsmath needs this
+                % We shall need to restore the counters at the end
+                % of the environment, so we get
+                % (4.2) [(3.1 from restate)] (4.3)
+                \def\thmt@restorecounters{}%
+                \@for\thmt@ctr:=\thmt@innercounters\do{%
+                    \protected@edef\thmt@restorecounters{%
+                        \thmt@restorecounters
+                        \protect\setcounter{\thmt@ctr}{\arabic{\thmt@ctr}}%
+                    }%
+                }%
+                % pull the new semi-static definition of \theequation et al.
+                % from the aux file.
+                \thmt@trivialref{thmt@@#3@data}{}%
+            \fi
+            \ifthmt@thisistheone
+                % call the proper begin-env code, possibly with optional argument
+                % (omit if stored via key-val)
+                \ifthmt@restatethis
+                    \thmt@restatethisfalse
+                \else
+                    \csname #2\@xa\endcsname\ifx\@nx#1\@nx\else[{#1}]\fi
+                \fi
+                \ifthmt@thisistheone
+                    % store a label so we can pick up the number later.
+                    \label{thmt@@#3}%
+                \fi
+                % this will be the collected body.
+                ##1%
+                \csname end#2\endcsname
+            \else
+                % call the proper begin-env code, possibly with optional argument
+                % (omit if stored via key-val)
+                \ifthmt@restatethis
+                    \thmt@restatethisfalse
+                \else
+                    \csname #2q\@xa\endcsname\ifx\@nx#1\@nx\else[{#1}]\fi
+                \fi
+                % this will be the collected body.
+                ##1%
+                \csname end#2q\endcsname
+            \fi
+            % if we faked the counter values, restore originals now.
+            \ifthmt@thisistheone\else\thmt@restorecounters\fi
+            \endgroup
+        }% thmt@stored@#3
+        % in either case, now call the just-created macro,
+        \csname #3\@xa\endcsname\ifthmt@thisistheone\else*\fi
+        % and artificially close the current environment.
+        \@xa\end\@xa{\@currenvir}
+    }% thm@rst@store
+    \thmt@collect@body\thmrst@store
+}{%
+    %% now empty, just used as a marker.
+}
+
 \endinput
 %%
-%% End of file `lipics-v2019.cls'.
+%% End of file `no-lipics-v2022.cls'.
