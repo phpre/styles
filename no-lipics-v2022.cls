@@ -24,8 +24,8 @@
 %% -----------------------------------------------------------------
 %%
 \ProvidesClass{no-lipics-v2022}
-    [2023/07/28 v1.4 No-LIPIcs article]
-\NeedsTeXFormat{LaTeX2e}[2015/01/01]
+    [2023/11/15 v1.5 No-LIPIcs article]
+\NeedsTeXFormat{LaTeX2e}[2022/11/01]
 \ClassWarningNoLine{no-lipics}{This is a modified version of LIPIcs.\MessageBreak%
 DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 \emergencystretch1em
@@ -72,8 +72,41 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
         }%
     \fi%
 }
-
 \def\endenumerate{\ifnum\@listdepth=\@ne\global\@nobotseplisttrue\fi\endlist}
+
+\def\claimmodeon{\renewcommand\labelitemi{\textcolor{lipicsBulletGray}{$\lipicsClaimTriangleRight$}}}
+\def\claimmodeoff{%
+\renewcommand\labelitemi{%
+    \textcolor{lipicsBulletGray}{%
+        \ifnum\@listdepth=\@ne
+            $\lipicsTriangleRight$%
+        \else
+            $\lipicsClaimTriangleRight$%
+\fi}}}
+\def\citemize{%
+    \claimmodeon
+    \ifnum \@itemdepth >\thr@@\@toodeep\else
+        \advance\@itemdepth\@ne
+        \edef\@itemitem{labelitem\romannumeral\the\@itemdepth}%
+        \expandafter
+        \list
+        \csname\@itemitem\endcsname
+        {\advance\partopsep\topsep
+            \topsep\z@\@plus\p@
+            \ifnum\@listdepth=\@ne
+                \labelsep0.83em
+            \else
+                \ifnum\@listdepth=\tw@
+                    \labelsep0.75em
+                \else
+                    \labelsep0.5em
+                \fi
+            \fi
+            \def\makelabel##1{\hss\llap{##1}}%
+        }%
+    \fi%
+}
+\def\endcitemize{\claimmodeoff\ifnum\@listdepth=\@ne\global\@nobotseplisttrue\fi\endlist}
 \def\itemize{%
     \ifnum \@itemdepth >\thr@@\@toodeep\else
         \advance\@itemdepth\@ne
@@ -300,16 +333,16 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 \old@dottedcontentsline{#1}{#2}{#3}{#4}{{{#5}}}}
 
 \renewcommand\normalsize{%
-    \@setfontsize\normalsize\@xpt{13}%
-    \abovedisplayskip 10\p@ \@plus2\p@ \@minus5\p@
+    \@setfontsize\normalsize\@xpt{13.5}%
+    \abovedisplayskip 6.5\p@ \@plus3\p@ \@minus3\p@
     \abovedisplayshortskip \z@ \@plus3\p@
-    \belowdisplayshortskip 6\p@ \@plus3\p@ \@minus3\p@
+    \belowdisplayshortskip 6.5\p@ \@plus3\p@ \@minus3\p@
     \belowdisplayskip \abovedisplayskip
 \let\@listi\@listI}
 \normalsize
 \renewcommand\small{%
     \@setfontsize\small\@ixpt{11.5}%
-    \abovedisplayskip 8.5\p@ \@plus3\p@ \@minus4\p@
+    \abovedisplayskip 4\p@ \@plus2\p@ \@minus2\p@
     \abovedisplayshortskip \z@ \@plus2\p@
     \belowdisplayshortskip 4\p@ \@plus2\p@ \@minus2\p@
     \def\@listi{\leftmargin\leftmargini
@@ -320,9 +353,9 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 }
 \renewcommand\footnotesize{%
     \@setfontsize\footnotesize{8.5}{9.5}%
-    \abovedisplayskip 6\p@ \@plus2\p@ \@minus4\p@
+    \abovedisplayskip 4\p@ \@plus2\p@ \@minus2\p@
     \abovedisplayshortskip \z@ \@plus\p@
-    \belowdisplayshortskip 3\p@ \@plus\p@ \@minus2\p@
+    \belowdisplayshortskip 4\p@ \@plus\p@ \@minus2\p@
     \def\@listi{\leftmargin\leftmargini
         \topsep 3\p@ \@plus\p@ \@minus\p@
         \parsep 2\p@ \@plus\p@ \@minus\p@
@@ -353,7 +386,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 
 \def\@listi{\leftmargin\leftmargini
     \parsep\z@ \@plus\p@
-    \topsep 8\p@ \@plus2\p@ \@minus4\p@
+    \topsep 8\p@ \@plus6\p@ \@minus4\p@
     \itemsep \parsep}
 \let\@listI\@listi
 \@listi
@@ -497,13 +530,13 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 \setlength\leftmarginv  {1.2em}
 \setlength\leftmarginvi {1.2em}
 \renewcommand\labelenumi{%
-    \textcolor{lipicsGray}{\bfseries\upshape\mathversion{bold}\theenumi.}}
+    \textcolor{lipicsGray}{\bfseries\upshape\mathversion{bold}(\theenumi)}}
 \renewcommand\labelenumii{%
-    \textcolor{lipicsGray}{\bfseries\upshape\mathversion{bold}\theenumii.}}
+    \textcolor{lipicsGray}{\bfseries\upshape\mathversion{bold}(\theenumii)}}
 \renewcommand\labelenumiii{%
-    \textcolor{lipicsGray}{\bfseries\upshape\mathversion{bold}\theenumiii.}}
+    \textcolor{lipicsGray}{\bfseries\upshape\mathversion{bold}(\theenumiii)}}
 \renewcommand\labelenumiv{%
-    \textcolor{lipicsGray}{\bfseries\upshape\mathversion{bold}\theenumiv.}}
+    \textcolor{lipicsGray}{\bfseries\upshape\mathversion{bold}(\theenumiv)}}
 \renewcommand\labelitemi{%
     \textcolor{lipicsBulletGray}{%
         \ifnum\@listdepth=\@ne
@@ -517,6 +550,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
     \textcolor{lipicsBulletGray}{\bfseries\textasteriskcentered}}
 \renewcommand\labelitemiv{%
     \textcolor{lipicsBulletGray}{\bfseries\textperiodcentered}}
+
 
 \renewenvironment{description}
 {\list{}{\advance\partopsep\topsep\topsep\z@\@plus\p@
@@ -580,26 +614,17 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 }
 
 \renewenvironment{thebibliography}[1]
-{\if@noskipsec \leavevmode \fi
+{%
+    \clearpage
+    \section*{\bibname}
+    \addcontentsline{toc}{section}{\bibname}
     \par
-    \@tempskipa-3.5ex \@plus -1ex \@minus -.2ex\relax
-    \@afterindenttrue
-    \@tempskipa -\@tempskipa \@afterindentfalse
-    \if@nobreak
-        \everypar{}%
-    \else
-        \addpenalty\@secpenalty\addvspace\@tempskipa
-    \fi
     \noindent
-    \rlap{\color{lipicsLineGray}\vrule\@width\textwidth\@height1\p@}%
-    \hspace*{7mm}\fboxsep1.5mm\colorbox[rgb]{1,1,1}{\raisebox{-0.4ex}{%
-    \normalsize\bfseries\refname}}%
-    \@xsect{1ex \@plus.2ex}%
     \list{\@biblabel{\@arabic\c@enumiv}}%
-    {\leftmargin8.5mm
-        \labelsep\leftmargin
-        \settowidth\labelwidth{\@biblabel{#1}}%
-        \advance\labelsep-\labelwidth
+    {\settowidth\labelwidth{\@biblabel{#1}}%
+        \leftmargin\labelwidth
+        \advance\leftmargin\labelsep
+        \@openbib@code
         \usecounter{enumiv}%
         \let\p@enumiv\@empty
     \renewcommand\theenumiv{\@arabic\c@enumiv}}%
@@ -651,20 +676,33 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 \RequirePackage{iftex}
 \ifluatex
     \RequirePackage{fontspec}
+    \RequirePackage[USenglish]{babel}
+    \RequirePackage{newpxtext}
+    \RequirePackage[fracspacing]{newpxmath}[2019/10/02]
+    \RequirePackage[nomath]{lmodern}
+
+    \RequirePackage[mathscr]{eucal}
+\else
+    \RequirePackage[USenglish]{babel}
+
+    \RequirePackage{newpxtext}
+    \RequirePackage[OT1]{fontenc}
+    \RequirePackage[mathscr]{eucal}
+    \RequirePackage[fracspacing]{newpxmath}[2019/10/02]
+    \renewcommand{\sfdefault}{lmss}
+    \renewcommand{\ttdefault}{lmtt}
+    \SetMathAlphabet{\mathsf}{normal}{OT1}{lmss}{m}{n}
+    \SetMathAlphabet{\mathtt}{normal}{OT1}{lmtt}{m}{n}
+    \SetMathAlphabet{\mathsf}{bold}  {OT1}{lmss}{bx}{n}
+    \SetMathAlphabet{\mathtt}{bold}  {OT1}{lmtt}{m}{n}
 \fi
 
-\RequirePackage[USenglish]{babel}
-\RequirePackage{newpxtext}
-\RequirePackage[fracspacing]{newpxmath}[2019/10/02]
-\RequirePackage[nomath]{lmodern}
-
-\RequirePackage[OT1]{fontenc}
-\RequirePackage[mathscr]{eucal}
 
 \let\openbox\undefined
 
 \RequirePackage{amsthm}
 \RequirePackage{thmtools}
+\RequirePackage{thm-restate}
 \RequirePackage{tikz}
 
 \ifx\pdfa\relax%
@@ -675,11 +713,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 \fi
 \IfFileExists{fontawesome5.sty}{%
     \RequirePackage{fontawesome5}%
-    \IfFileExists{orcid.pdf}{%
-        \def\orcidsymbol{\includegraphics[height=9\p@]{orcid}}
-    }{
-        \def\orcidsymbol{\textcolor{lipicsGray}{\fontsize{9}{12}\bfseries \faOrcid}}%
-    }
+    \def\orcidsymbol{\raisebox{.2ex}{\textcolor{lipicsGray}{\fontsize{9}{12}\bfseries\faOrcid}}}%
     \def\mailsymbol{\textcolor{lipicsGray}{\fontsize{9}{12}\bfseries \faIcon[regular]{envelope}}}%
     \def\homesymbol{\textcolor{lipicsGray}{\fontsize{9}{12}\bfseries \faHome}}%
 }{%
@@ -787,8 +821,13 @@ frame=single,framerule=0pt,xleftmargin=\fboxsep,xrightmargin=\fboxsep}
     \def\textrightarrow{ -> }%
     \let\mathsf\@empty%
 }%
+\definecolor[named]{urlblue}{cmyk}{1,0.58,0,0.21}
 \hypersetup{
     breaklinks=true,
+    colorlinks=true,
+    citecolor=purple!70!blue!60!black,
+    linkcolor=purple!70!blue!90!black,
+    urlcolor=urlblue,
     pdfencoding=unicode,
     bookmarksnumbered,
     pdfborder={0 0 0},
@@ -801,7 +840,6 @@ frame=single,framerule=0pt,xleftmargin=\fboxsep,xrightmargin=\fboxsep}
         pdftitle={\@title \if!\@subtitle!\else\subtitleseperator \@subtitle\fi},
         pdfauthor={\ifx\authoranonymous\relax Anonymous author(s) \else \@authorsforpdf \fi},
         pdfkeywords={\@keywords},
-        pdfproducer={LaTeX with nolipics-v2022.cls},
         pdfcopyright={Copyright (C) \ifx\authoranonymous\relax Anonymous author(s) \else \@copyrightholder; \fi licensed under Creative Commons License CC-BY 4.0},
         pdflang={en},
         pdfmetalang={en},
@@ -815,7 +853,6 @@ frame=single,framerule=0pt,xleftmargin=\fboxsep,xrightmargin=\fboxsep}
             pdftitle={\@title \if!\@subtitle!\else\subtitleseperator \@subtitle\fi},
             pdfauthor={\ifx\authoranonymous\relax Anonymous author(s) \else \@authorsforpdf \fi},
             pdfkeywords={\@keywords},
-            pdfcreator={LaTeX with no-lipics-v2022.cls},
         }%
     \fi%
 }
@@ -1256,10 +1293,6 @@ fill=white]{\@theoremendsym{#1}}
 \DeclareRobustCommand{\lipicsClaimTriangleRight}[1][thin,draw=\@dis@clr,
 fill=white]{\@itemsym{#1}}
 
-\ifx\usethmrestate\relax
-    \RequirePackage{thm-restate}
-\fi
-
 \thm@headfont{%
   \textcolor{lipicsBulletGray}{$\lipicsTriangleUp$}\nobreakspace\quad\bfseries}
 \def\th@remark{%
@@ -1531,6 +1564,20 @@ fill=white]{\@itemsym{#1}}
     refname={Fact,Facts},
     Refname={Fact,Facts}
 ]{factq}
+
+\declaretheorem[
+    style=plainqstyle,
+    sibling=theorem,
+    refname={Hypothesis,Hypotheses},
+    Refname={Hypothesis,Hypotheses}
+]{hypothesis}
+\declaretheorem[
+    name=Hypothesis,
+    style=plainqstyle,
+    sibling=theorem,
+    refname={Hypothesis,Hypotheses},
+    Refname={Hypothesis,Hypotheses}
+]{hypothesisq}
 
 \declaretheorem[
     style=plainqstyle,
