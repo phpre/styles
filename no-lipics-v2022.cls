@@ -24,7 +24,7 @@
 %% -----------------------------------------------------------------
 %%
 \ProvidesClass{no-lipics-v2022}
-    [2023/11/15 v1.5 No-LIPIcs article]
+    [2024/04/15 v1.7 No-LIPIcs article]
 \NeedsTeXFormat{LaTeX2e}[2022/11/01]
 \ClassWarningNoLine{no-lipics}{This is a modified version of LIPIcs.\MessageBreak%
 DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
@@ -106,7 +106,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
         }%
     \fi%
 }
-\def\endcitemize{\claimmodeoff\ifnum\@listdepth=\@ne\global\@nobotseplisttrue\fi\endlist}
+\def\endcitemize{\claimmodeoff\endlist}
 \def\itemize{%
     \ifnum \@itemdepth >\thr@@\@toodeep\else
         \advance\@itemdepth\@ne
@@ -129,8 +129,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
         }%
     \fi%
 }
-
-\def\enditemize{\ifnum\@listdepth=\@ne\global\@nobotseplisttrue\fi\endlist}
+\def\enditemize{\endlist}
 \def\@title{\textcolor{red}{Author: Please provide a title}}
 \let\@subtitle\@empty
 \def\subtitle#1{\gdef\@subtitle{#1}}
@@ -272,6 +271,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 \let\usedinpaper\relax}
 \DeclareOption{numberwithinsect}{\let\numberwithinsect\relax}
 \DeclareOption{anonymous}{\let\authoranonymous\relax}
+\DeclareOption{lmodern}{\let\uselmodern\relax}
 \DeclareOption{authorcolumns}{\let\authorcolumns\relax}
 \DeclareOption{refcheck}{\let\userefcheck\relax}
 \let\compactauthor\relax
@@ -604,11 +604,12 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
     \ifx\@funding\@empty\else
         \vskip\topmattervskip\baselineskip\noindent
     \vskip0.7\bigskipamount
-    \fontsize{8}{9}\selectfont%
+    \fontsize{7}{8}\selectfont%
     \fundingHeading\ifx\authoranonymous\relax{Anonymous funding}\else\@funding\fi
     \fi
     \ifx\@acknowledgements\@empty\else
         \vskip\topmattervskip\baselineskip\noindent
+    \fontsize{7}{8}\selectfont%
     \acknowledgementsHeading\ifx\authoranonymous\relax{Anonymous acknowledgements} \else\@acknowledgements\fi
     \fi
 }
@@ -673,30 +674,33 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
     \definecolor[named]{lipicsYellow}{rgb}{0.85,0.85,0.86}
 }
 
-\RequirePackage{iftex}
-\ifluatex
-    \RequirePackage{fontspec}
-    \RequirePackage[USenglish]{babel}
-    \RequirePackage{newpxtext}
-    \RequirePackage[fracspacing]{newpxmath}[2019/10/02]
-    \RequirePackage[nomath]{lmodern}
-
-    \RequirePackage[mathscr]{eucal}
+\ifx\uselmodern\relax
+    \RequirePackage{lmodern}
 \else
-    \RequirePackage[USenglish]{babel}
+\RequirePackage{iftex}
+    \ifluatex
+        \RequirePackage{fontspec}
+        \RequirePackage[USenglish]{babel}
+        \RequirePackage{newpxtext}
+        \RequirePackage[fracspacing]{newpxmath}[2019/10/02]
+        \RequirePackage[nomath]{lmodern}
 
-    \RequirePackage{newpxtext}
-    \RequirePackage[OT1]{fontenc}
-    \RequirePackage[mathscr]{eucal}
-    \RequirePackage[fracspacing]{newpxmath}[2019/10/02]
-    \renewcommand{\sfdefault}{lmss}
-    \renewcommand{\ttdefault}{lmtt}
-    \SetMathAlphabet{\mathsf}{normal}{OT1}{lmss}{m}{n}
-    \SetMathAlphabet{\mathtt}{normal}{OT1}{lmtt}{m}{n}
-    \SetMathAlphabet{\mathsf}{bold}  {OT1}{lmss}{bx}{n}
-    \SetMathAlphabet{\mathtt}{bold}  {OT1}{lmtt}{m}{n}
+        \RequirePackage[mathscr]{eucal}
+    \else
+        \RequirePackage[USenglish]{babel}
+
+        \RequirePackage{newpxtext}
+        \RequirePackage[OT1]{fontenc}
+        \RequirePackage[mathscr]{eucal}
+        \RequirePackage[fracspacing]{newpxmath}[2019/10/02]
+        \renewcommand{\sfdefault}{lmss}
+        \renewcommand{\ttdefault}{lmtt}
+        \SetMathAlphabet{\mathsf}{normal}{OT1}{lmss}{m}{n}
+        \SetMathAlphabet{\mathtt}{normal}{OT1}{lmtt}{m}{n}
+        \SetMathAlphabet{\mathsf}{bold}  {OT1}{lmss}{bx}{n}
+        \SetMathAlphabet{\mathtt}{bold}  {OT1}{lmtt}{m}{n}
+    \fi
 \fi
-
 
 \let\openbox\undefined
 
@@ -1456,7 +1460,13 @@ fill=white]{\@itemsym{#1}}
     refname={Main~Theorem,Main~Theorems},
     Refname={Main~Theorem,Main~Theorems}
 ]{mtheoremq}
-
+\declaretheorem[
+    name=Main Theorem,
+    style=plainqstyle,
+    sibling=mtheorem,
+    refname={Main~Theorem,Main~Theorems},
+    Refname={Main~Theorem,Main~Theorems}
+]{mtheoremqq}
 
 \ifx\numberwithinsect\relax
     \declaretheorem[
@@ -1480,6 +1490,13 @@ fill=white]{\@itemsym{#1}}
     refname={Theorem,Theorems},
     Refname={Theorem,Theorems}
 ]{theoremq}
+\declaretheorem[
+    name=Theorem,
+    style=plainqstyle,
+    sibling=theorem,
+    refname={Theorem,Theorems},
+    Refname={Theorem,Theorems}
+]{theoremqq}
 
 \declaretheorem[
     style=plainstyle,
@@ -1494,6 +1511,13 @@ fill=white]{\@itemsym{#1}}
     refname={Lemma,Lemmas},
     Refname={Lemma,Lemmas}
 ]{lemmaq}
+\declaretheorem[
+    name=Lemma,
+    style=plainqstyle,
+    sibling=theorem,
+    refname={Lemma,Lemmas},
+    Refname={Lemma,Lemmas}
+]{lemmaqq}
 
 \declaretheorem[
     style=plainstyle,
@@ -1522,6 +1546,13 @@ fill=white]{\@itemsym{#1}}
     refname={Proposition,Propositions},
     Refname={Proposition,Propositions}
 ]{propositionq}
+\declaretheorem[
+    name=Proposition,
+    style=plainqstyle,
+    sibling=theorem,
+    refname={Proposition,Propositions},
+    Refname={Proposition,Propositions}
+]{propositionqq}
 
 \declaretheorem[
     style=plainqstyle,
@@ -1536,6 +1567,13 @@ fill=white]{\@itemsym{#1}}
     refname={Exercise,Exercises},
     Refname={Exercise,Exercises}
 ]{exerciseq}
+\declaretheorem[
+    name=Exercise,
+    style=plainqstyle,
+    sibling=theorem,
+    refname={Exercise,Exercises},
+    Refname={Exercise,Exercises}
+]{exerciseqq}
 
 \declaretheorem[
     style=plainqstyle,
@@ -1550,6 +1588,13 @@ fill=white]{\@itemsym{#1}}
     refname={Definition,Definitions},
     Refname={Definition,Definitions}
 ]{definitionq}
+\declaretheorem[
+    name=Definition,
+    style=plainqstyle,
+    sibling=theorem,
+    refname={Definition,Definitions},
+    Refname={Definition,Definitions}
+]{definitionqq}
 
 \declaretheorem[
     style=plainqstyle,
@@ -1564,6 +1609,13 @@ fill=white]{\@itemsym{#1}}
     refname={Fact,Facts},
     Refname={Fact,Facts}
 ]{factq}
+\declaretheorem[
+    name=Fact,
+    style=plainqstyle,
+    sibling=theorem,
+    refname={Fact,Facts},
+    Refname={Fact,Facts}
+]{factqq}
 
 \declaretheorem[
     style=plainqstyle,
@@ -1578,6 +1630,13 @@ fill=white]{\@itemsym{#1}}
     refname={Hypothesis,Hypotheses},
     Refname={Hypothesis,Hypotheses}
 ]{hypothesisq}
+\declaretheorem[
+    name=Hypothesis,
+    style=plainqstyle,
+    sibling=theorem,
+    refname={Hypothesis,Hypotheses},
+    Refname={Hypothesis,Hypotheses}
+]{hypothesisqq}
 
 \declaretheorem[
     style=plainqstyle,
@@ -1592,6 +1651,13 @@ fill=white]{\@itemsym{#1}}
     refname={Conjecture,Conjectures},
     Refname={Conjecture,Conjectures}
 ]{conjectureq}
+\declaretheorem[
+    name=Conjecture,
+    style=plainqstyle,
+    sibling=theorem,
+    refname={Conjecture,Conjectures},
+    Refname={Conjecture,Conjectures}
+]{conjectureqq}
 
 \declaretheorem[
     style=remstyle,
@@ -1606,6 +1672,13 @@ fill=white]{\@itemsym{#1}}
     refname={Example,Examples},
     Refname={Example,Examples}
 ]{exampleq}
+\declaretheorem[
+    name=Example,
+    style=remstyle,
+    sibling=theorem,
+    refname={Example,Examples},
+    Refname={Example,Examples}
+]{exampleqq}
 
 \declaretheorem[
     style=remstyle,
@@ -1620,6 +1693,13 @@ fill=white]{\@itemsym{#1}}
     refname={Remark,Remarks},
     Refname={Remark,Remarks}
 ]{remarkq}
+\declaretheorem[
+    name=Remark,
+    style=remstyle,
+    sibling=theorem,
+    refname={Remark,Remarks},
+    Refname={Remark,Remarks}
+]{remarkqq}
 
 \declaretheorem[
     style=remstyle,
@@ -1634,6 +1714,13 @@ fill=white]{\@itemsym{#1}}
     refname={Thought,Thoughts},
     Refname={Thought,Thoughts}
 ]{thoughtq}
+\declaretheorem[
+    name=Thought,
+    style=remstyle,
+    sibling=theorem,
+    refname={Thought,Thoughts},
+    Refname={Thought,Thoughts}
+]{thoughtqq}
 
 \declaretheorem[
     style=claimstyle,
@@ -1648,6 +1735,13 @@ fill=white]{\@itemsym{#1}}
     refname={Claim,Claims},
     Refname={Claim,Claims}
 ]{claimq}
+\declaretheorem[
+    name=Claim,
+    style=claimqstyle,
+    sibling=theorem,
+    refname={Claim,Claims},
+    Refname={Claim,Claims}
+]{claimqq}
 
 
 \theoremstyle{plainstyle}
