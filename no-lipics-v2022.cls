@@ -24,10 +24,10 @@
 %% -----------------------------------------------------------------
 %%
 \ProvidesClass{no-lipics-v2022}
-    [2024/04/15 v1.7 No-LIPIcs article]
+    [2024/10/09 v1.9.1 No-LIPIcs article]
 \NeedsTeXFormat{LaTeX2e}[2022/11/01]
 \ClassWarningNoLine{no-lipics}{This is a modified version of LIPIcs.\MessageBreak%
-DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
+DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
 \emergencystretch1em
 \advance\hoffset-1in
 \advance\voffset-1in
@@ -272,6 +272,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 \DeclareOption{numberwithinsect}{\let\numberwithinsect\relax}
 \DeclareOption{anonymous}{\let\authoranonymous\relax}
 \DeclareOption{lmodern}{\let\uselmodern\relax}
+\DeclareOption{footnotebackref}{\let\fnotebackref\relax}
 \DeclareOption{authorcolumns}{\let\authorcolumns\relax}
 \DeclareOption{refcheck}{\let\userefcheck\relax}
 \let\compactauthor\relax
@@ -569,48 +570,52 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
     \vskip3\p@
     \fontsize{9}{12}\selectfont
 \noindent\ignorespaces}
-{\vskip\topmattervskip\baselineskip\noindent
+{
     \ifx\@ccsdescString\@empty\else
-        \subjclassHeading\@ccsdescString
-        \vskip0.7\baselineskip
+        \vskip\topmattervskip\baselineskip\noindent
+        \fontsize{7}{8}\selectfont%
+        \subjclassHeading\@ccsdescString\par\noindent
     \fi
     \ifx\@keywords\@empty
         \ifx\@hideLIPIcs\@undefined
-            \noindent\keywordsHeading
+            \vskip\topmattervskip\baselineskip\noindent
+            \fontsize{7}{8}\selectfont%
+            \keywordsHeading
             \textcolor{red}{Author: Please fill in \string\keywords\space macro}%
         \fi
-        \else
-        \noindent\keywordsHeading
-        \@keywords
+    \else
+        \vskip\topmattervskip\baselineskip\noindent
+        \fontsize{7}{8}\selectfont%
+        \keywordsHeading\@keywords\par\noindent
         \fi
-        \ifx\@hideLIPIcs\@undefined
-    \ifx\@DOIPrefix\@empty\else
-        \vskip0.7\baselineskip\noindent
-        \doiHeading\href{https://doi.org/\@DOIPrefix.\@EventAcronym.\@EventYear.\@ArticleNo}{\@DOIPrefix.\@EventAcronym.\@EventYear.\@ArticleNo}%
-    \fi
-    \fi
     \ifx\@category\@empty\else
-        \vskip0.7\baselineskip\noindent
-        \categoryHeading\@category
+        \vskip\topmattervskip\baselineskip\noindent
+        \fontsize{7}{8}\selectfont%
+        \categoryHeading\@category\par\noindent
     \fi
     \ifx\@relatedversion\@empty\else
         \vskip\topmattervskip\baselineskip\noindent
-    \relatedversionHeading\ifx\authoranonymous\relax{Anonymous related version(s)}\else\@relatedversion\fi
+        \fontsize{7}{8}\selectfont%
+        \relatedversionHeading\ifx\authoranonymous\relax{Anonymous related
+        version(s)}\else\@relatedversion\par\noindent\fi
     \fi
     \ifx\@supplement\@empty\else
         \vskip\topmattervskip\baselineskip\noindent
-    \supplementHeading\ifx\authoranonymous\relax{Anonymous supplementary material}\else\@supplement\fi
+        \fontsize{7}{8}\selectfont%
+        \supplementHeading\ifx\authoranonymous\relax{Anonymous supplementary
+        material}\else\@supplement\par\noindent\fi
     \fi
     \ifx\@funding\@empty\else
         \vskip\topmattervskip\baselineskip\noindent
-    \vskip0.7\bigskipamount
-    \fontsize{7}{8}\selectfont%
-    \fundingHeading\ifx\authoranonymous\relax{Anonymous funding}\else\@funding\fi
+        \fontsize{7}{8}\selectfont%
+        \fundingHeading\ifx\authoranonymous\relax{Anonymous
+        funding}\else\@funding\par\noindent\fi
     \fi
     \ifx\@acknowledgements\@empty\else
         \vskip\topmattervskip\baselineskip\noindent
-    \fontsize{7}{8}\selectfont%
-    \acknowledgementsHeading\ifx\authoranonymous\relax{Anonymous acknowledgements} \else\@acknowledgements\fi
+        \fontsize{7}{8}\selectfont%
+        \acknowledgementsHeading\ifx\authoranonymous\relax{Anonymous acknowledgements}
+        \else\@acknowledgements\par\noindent\fi
     \fi
 }
 
@@ -629,7 +634,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
         \usecounter{enumiv}%
         \let\p@enumiv\@empty
     \renewcommand\theenumiv{\@arabic\c@enumiv}}%
-    \fontsize{9}{12}\selectfont
+    \fontsize{8.5}{11}\selectfont
     \sloppy
     \clubpenalty4000
     \@clubpenalty \clubpenalty
@@ -676,8 +681,10 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
 
 \ifx\uselmodern\relax
     \RequirePackage{lmodern}
+    \RequirePackage[USenglish]{babel}
+    \RequirePackage{amsmath}
 \else
-\RequirePackage{iftex}
+    \RequirePackage{iftex}
     \ifluatex
         \RequirePackage{fontspec}
         \RequirePackage[USenglish]{babel}
@@ -686,7 +693,48 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS}{}
         \RequirePackage[nomath]{lmodern}
 
         \RequirePackage[mathscr]{eucal}
+
+        % adapted from
+        % https://tex.stackexchange.com/questions/396134/how-to-perform-an-action-when-an-overfull-or-underfull-box-is-encountered/493311#493311
+
+        \directlua{
+            GLYPH = node.id("glyph")
+            GLUE  = node.id("glue")
+            %
+            function hpackshow (indicator,num,nd,f,l)
+            print('HPACK: ' .. indicator .. ' ' .. num)
+            if (indicator == 'overfull') then
+            local pt = num / 65536.0
+            str = string.format("| overfull \@percentchar #.2fpt",pt)
+            nds = {}
+            nds[0]=node.new(GLYPH,1)
+                for i = 1,string.len(str) do
+                  nds[i] = node.new(GLYPH,1)
+                  nds[i].font = font.current()
+                  nds[i-1].next = nds[i]
+                end
+
+                j = 1
+                for s in string.utfvalues(str) do
+                  local char = unicode.utf8.char(s)
+                  nds[j].char = s
+                  if unicode.utf8.match(char,"\@percentchar s") then
+                    nds[j] = node.new(GLUE)
+                    nds[j].width = space
+                    nds[j].shrink = shrink
+                    nds[j].stretch = stretch
+                  end
+                  j = j+1
+                end
+            return nds[0]
+            end
+            end
+            %
+            luatexbase.add_to_callback('hpack_quality',hpackshow,'my hpack logger')
+        }
     \else
+        \ClassWarningNoLine{no-lipics}{Overfull hbox messages available only with LuaLatex}{}
+
         \RequirePackage[USenglish]{babel}
 
         \RequirePackage{newpxtext}
@@ -786,11 +834,51 @@ frame=single,framerule=0pt,xleftmargin=\fboxsep,xrightmargin=\fboxsep}
     \patchBothAmsMathEnvironmentsForLineno{gather}%
 \patchBothAmsMathEnvironmentsForLineno{multline}}
 
+
 \ifx\pdfa\relax%
   \RequirePackage[pdfa,unicode,pagebackref]{hyperref}%
 \else%
   \RequirePackage[unicode,pagebackref]{hyperref}%
 \fi%
+
+\ifx\fnotebackref\relax
+    % from footnotebackref.sty
+
+    % A new counter to create an unambiguous label-tag for all hyperfootnotes
+    \newcounter{nolipicsBackrefHyper}
+
+    % Store the original LaTeX footnote macros to separate macros
+    \NewCommandCopy{\BHFN@OldFootnote}{\footnote}
+    \NewCommandCopy{\BHFN@OldMakefntext}{\@makefntext}
+
+    % Redefine the original footnote macro to
+    % branch between the footnote with/without optional argument
+    \renewcommand*\footnote{%
+        \refstepcounter{nolipicsBackrefHyper}%
+        \edef\BackrefFootnoteTag{bhfn:\thenolipicsBackrefHyper}%
+        \label{\BackrefFootnoteTag}%
+        \@ifnextchar[\Backref@OptHyperFootnote\Backref@HyperFootnote}
+
+    % Define an new footnote without optional argument
+    \newcommand\Backref@HyperFootnote[1]{%
+        \BHFN@OldFootnote{#1}}
+
+    % Define an new footnote with optional argument
+    \newcommand\Backref@OptHyperFootnote[2][\empty]{%
+        \BHFN@OldFootnote[#1]{#2}}
+
+    % If the footnote number should be the reference
+    % than redefine the \@makefntext and \@makefnmark
+    % The \@makefnmark macro is redefined in the space of
+    % the \@makefntext macro
+    % So the footnote numbers in the main text are not influenced
+    \renewcommand\@makefntext[1]{%
+        \renewcommand\@makefnmark{%
+            \mbox{\textsuperscript{\normalfont%
+        \hyperref[\BackrefFootnoteTag]{\@thefnmark}}}\,}%
+    \BHFN@OldMakefntext{#1}}%
+\fi
+
 \let\usehyperxmp\@empty%
 \ifx\pdfa\relax%
   \IfFileExists{hyperxmp.sty}{%
@@ -1009,10 +1097,10 @@ Do not load the subfig package}{The more recent subcaption package is already lo
                 \if!#5!\else
                     \ifx\@funding\@empty
                         \expandafter\g@addto@macro\expandafter\@funding{\textit{\expandafter{\let\footnote\@gobble
-                        #1}}\fontsize{8}{5}\selectfont:\space{#5}}
+                        #1}}:\space{#5}}
                     \else
-                        \expandafter\g@addto@macro\expandafter\@funding{\\\textit{\expandafter{\let\footnote\@gobble
-                        #1}}\fontsize{8}{5}\selectfont:\space{#5}}
+                        \expandafter\g@addto@macro\expandafter\@funding{;\space\textit{\expandafter{\let\footnote\@gobble
+                        #1}}:\space{#5}}
                     \fi
                 \fi
             \fi
@@ -1084,7 +1172,7 @@ Do not load the subfig package}{The more recent subcaption package is already lo
 \def\keywords#1{\def\@keywords{#1}}
 \let\@keywords\@empty
 \def\keywordsHeading{%
-    \textcolor{lipicsGray}{\fontsize{9}{12}\bfseries
+    \textcolor{lipicsGray}{\fontsize{7}{8}\bfseries
 Keywords and phrases\enskip}}
 
 \RequirePackage{comment}
@@ -1118,15 +1206,15 @@ Keywords and phrases\enskip}}
 {Since 2019, \string\subjclass\space is obsolete in lipics.}}
 \let\@subjclass\@empty
 \def\subjclassHeading{%
-    \textcolor{lipicsGray}{\fontsize{8}{10}\bfseries
+    \textcolor{lipicsGray}{\fontsize{7}{8}\bfseries
 2012 ACM Subject Classification\enskip}}
 \def\doiHeading{%
-    \textcolor{lipicsGray}{\fontsize{8}{10}\bfseries
+    \textcolor{lipicsGray}{\fontsize{7}{8}\bfseries
 Digital Object Identifier\enskip}}
 \def\category#1{\def\@category{#1}}
 \let\@category\@empty
 \def\categoryHeading{%
-    \textcolor{lipicsGray}{\fontsize{8}{10}\bfseries
+    \textcolor{lipicsGray}{\fontsize{7}{8}\bfseries
 Category\enskip}}
 \def\relatedversion#1{\def\@relatedversion{#1}}
 \let\@relatedversion\@empty
@@ -1157,7 +1245,7 @@ Category\enskip}}
 \endgroup%
 }%
 \def\relatedversionHeading{%
-    \textcolor{lipicsGray}{\fontsize{8}{10}\bfseries
+    \textcolor{lipicsGray}{\fontsize{7}{8}\bfseries
 Related Version\enskip}}
 \def\supplement#1{\def\@supplement{#1}}
 \let\@supplement\@empty
@@ -1218,7 +1306,7 @@ Related Version\enskip}}
 }%
 
 \def\supplementHeading{%
-    \textcolor{lipicsGray}{\fontsize{8}{10}\bfseries
+    \textcolor{lipicsGray}{\fontsize{7}{8}\bfseries
 Supplementary Material\enskip}}
 \newcommand\flag[2][0.9cm]{%
     \leavevmode\marginpar{%
@@ -1228,12 +1316,12 @@ Supplementary Material\enskip}}
 \def\funding#1{\def\@funding{#1}}
 \let\@funding\@empty
 \def\fundingHeading{%
-    \textcolor{lipicsGray}{\fontsize{8}{10}\bfseries
+    \textcolor{lipicsGray}{\fontsize{7}{8}\bfseries
 Funding\enskip}}
 \def\acknowledgements#1{\def\@acknowledgements{#1}}
 \let\@acknowledgements\@empty
 \def\acknowledgementsHeading{%
-    \textcolor{lipicsGray}{\fontsize{8}{10}\bfseries
+    \textcolor{lipicsGray}{\fontsize{7}{8}\bfseries
 Acknowledgements\enskip}}
 
 
@@ -1394,6 +1482,8 @@ fill=white]{\@itemsym{#1}}
     }
     \refcheckize{\cref}
     \refcheckize{\Cref}
+
+    \RequirePackage{labelschanged}
 \fi
 
 \declaretheoremstyle[
@@ -1532,6 +1622,14 @@ fill=white]{\@itemsym{#1}}
     refname={Corollary,Corollaries},
     Refname={Corollary,Corollaries}
 ]{corollaryq}
+\declaretheorem[
+    name=Corollary,
+    style=plainqstyle,
+    sibling=theorem,
+    refname={Corollary,Corollaries},
+    Refname={Corollary,Corollaries}
+]{corollaryqq}
+
 
 \declaretheorem[
     style=plainstyle,
@@ -1771,7 +1869,8 @@ fill=white]{\@itemsym{#1}}
                 % this one should use other numbers...
                 % first, fake the theorem number.
                 \@xa\protected@edef\csname the#2q\endcsname{%
-                \thmt@trivialref{thmt@@#3}{??}}%
+                %\thmt@trivialref{thmt@@#3}{??}}%
+                \ref{thmt@@#3}}%
                 % if the number wasn't there, have a "re-run to get labels right"
                 % warning.
                 \ifcsname r@thmt@@#3\endcsname\else
