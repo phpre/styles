@@ -1,14 +1,18 @@
-\documentclass[a4paper,USenglish,authorcolumns,refcheck]{no-lipics-v2022}
+\documentclass[a4paper,USenglish,authorcolumns,refcheck]{no-lipics}
 %This is a template for producing no-LIPIcs articles.
 %See lipics-manual.pdf for further information.
-%for A4 paper format use option "a4paper", US-letter is used if this option is not present.
+%for A4 paper format use option "a4paper"
+%for letter paper use "letterpaper"
 %for British hyphenation rules use option "UKenglish", for American hyphenation rules use option "USenglish"
 %for section-numbered lemmas etc., use "numberwithinsect"
-%for enabling cleveref support, use "cleveref"
 %for anonymising the authors (e.g. for double-blind review), add "anonymous"
-%for enabling thm-restate support, use "thm-restate"
 %for enabling refcheck, use "refcheck"
 %for enabling left-aligned equations, use "fleqn"
+%use option "stoc" for "1in margin all-around, 11pt font and line numbers (can be turned
+%on/off separately)
+%use option "footnotebackref" to enable bi-directional hyperlinks for footnotes
+%use option "authorcolumns" for a more compact representation of the authors
+%use option "lmodern" to use the default tex font.
 
 %\graphicspath{{./graphics/}}%helpful if your graphic files are in another directory
 
@@ -329,5 +333,12 @@ Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui
 \lipicsTriangleDown\quad
 \lipicsClaimTriangleDown\quad
 \lipicsTriangleRight
+
+\section{Default Colors}
+
+\displaypalette\quad\displayfgpalette
+
+Available via \texttt{color1} to \texttt{color5} and  \texttt{c1} to \texttt{c5}.
+
 
 \end{document}

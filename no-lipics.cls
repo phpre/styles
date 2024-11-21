@@ -1,5 +1,5 @@
 %%
-%% This is file `lipics-v2022.cls'.
+%% This is file `no-lipics.cls'.
 %%
 %% -----------------------------------------------------------------
 %% Author:     Dagstuhl Publishing & le-tex publishing services
@@ -23,16 +23,13 @@
 %%
 %% -----------------------------------------------------------------
 %%
-\ProvidesClass{no-lipics-v2022}
-    [2024/10/09 v1.9.1 No-LIPIcs article]
+\ProvidesClass{no-lipics}
+    [2024/11/18 v1.11.4 No-LIPIcs article]
 \NeedsTeXFormat{LaTeX2e}[2022/11/01]
 \ClassWarningNoLine{no-lipics}{This is a modified version of LIPIcs.\MessageBreak%
 DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
-\emergencystretch1em
-\advance\hoffset-1in
-\advance\voffset-1in
-\advance\hoffset2.95mm
 \newif\if@nobotseplist  \@nobotseplistfalse
+\newif\if@claimmode  \@claimmodefalse
 \def\@endparenv{%
 \addpenalty\@endparpenalty\if@nobotseplist\else\addvspace\@topsepadd\fi\@endpetrue}
 \def\@doendpe{%
@@ -50,90 +47,14 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
         \everypar{}%
         \if@nobotseplist\global\@nobotseplistfalse\fi
 \@endpefalse}}
-\def\enumerate{%
-    \ifnum \@enumdepth >\thr@@\@toodeep\else
-        \advance\@enumdepth\@ne
-        \edef\@enumctr{enum\romannumeral\the\@enumdepth}%
-        \expandafter
-        \list
-        \csname label\@enumctr\endcsname
-        {\advance\partopsep\topsep
-            \topsep\z@\@plus\p@
-            \ifnum\@listdepth=\@ne
-                \labelsep0.72em
-            \else
-                \ifnum\@listdepth=\tw@
-                    \labelsep0.3em
-                \else
-                    \labelsep0.5em
-                \fi
-            \fi
-            \usecounter\@enumctr\def\makelabel##1{\hss\llap{##1}}%
-        }%
-    \fi%
-}
-\def\endenumerate{\ifnum\@listdepth=\@ne\global\@nobotseplisttrue\fi\endlist}
 
-\def\claimmodeon{\renewcommand\labelitemi{\textcolor{lipicsBulletGray}{$\lipicsClaimTriangleRight$}}}
-\def\claimmodeoff{%
-\renewcommand\labelitemi{%
-    \textcolor{lipicsBulletGray}{%
-        \ifnum\@listdepth=\@ne
-            $\lipicsTriangleRight$%
-        \else
-            $\lipicsClaimTriangleRight$%
-\fi}}}
-\def\citemize{%
-    \claimmodeon
-    \ifnum \@itemdepth >\thr@@\@toodeep\else
-        \advance\@itemdepth\@ne
-        \edef\@itemitem{labelitem\romannumeral\the\@itemdepth}%
-        \expandafter
-        \list
-        \csname\@itemitem\endcsname
-        {\advance\partopsep\topsep
-            \topsep\z@\@plus\p@
-            \ifnum\@listdepth=\@ne
-                \labelsep0.83em
-            \else
-                \ifnum\@listdepth=\tw@
-                    \labelsep0.75em
-                \else
-                    \labelsep0.5em
-                \fi
-            \fi
-            \def\makelabel##1{\hss\llap{##1}}%
-        }%
-    \fi%
-}
-\def\endcitemize{\claimmodeoff\endlist}
-\def\itemize{%
-    \ifnum \@itemdepth >\thr@@\@toodeep\else
-        \advance\@itemdepth\@ne
-        \edef\@itemitem{labelitem\romannumeral\the\@itemdepth}%
-        \expandafter
-        \list
-        \csname\@itemitem\endcsname
-        {\advance\partopsep\topsep
-            \topsep\z@\@plus\p@
-            \ifnum\@listdepth=\@ne
-                \labelsep0.83em
-            \else
-                \ifnum\@listdepth=\tw@
-                    \labelsep0.75em
-                \else
-                    \labelsep0.5em
-                \fi
-            \fi
-            \def\makelabel##1{\hss\llap{##1}}%
-        }%
-    \fi%
-}
-\def\enditemize{\endlist}
 \def\@title{\textcolor{red}{Author: Please provide a title}}
 \let\@subtitle\@empty
 \def\subtitle#1{\gdef\@subtitle{#1}}
 \def\subtitleseperator{: }
+
+\def\i@parindent{5mm}
+\setlength\parindent{\i@parindent}
 
 \def\partn{%
    \if@noskipsec \leavevmode \fi
@@ -176,9 +97,9 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
         #6{%
             \@hangfrom{\hskip #3\relax
                 \ifnum #2=1
-                    \colorbox{lipicsLightGray}{\kern0.15em\@svsec\kern0.15em}\quad
+                    \makebox[\i@parindent]{\colorbox{lightgray}{\kern0.15em\@svsec\kern0.15em}}\kern\i@parindent%
                 \else
-                    \@svsec\quad
+                    \makebox[\i@parindent]{\@svsec}\kern\i@parindent
             \fi}%
         \interlinepenalty \@M #8\@@par}%
         \endgroup
@@ -214,39 +135,13 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
 }
 
 \def\@seccntformat#1{\csname the#1\endcsname}
-\def\@biblabel#1{\textcolor{lipicsGray}{\bfseries#1}}
-\def\copyrightline{%
-    \ifx\@hideLIPIcs\@undefined
-        \ifx\@EventLogo\@empty
-    \else
-        \setbox\@tempboxa\hbox{\includegraphics[height=42\p@]{\@EventLogo}}%
-        \rlap{\hspace\textwidth\hspace{-\wd\@tempboxa}\hspace{\z@}%
-        \vtop to\z@{\vskip-0mm\unhbox\@tempboxa\vss}}%
-    \fi
-    \scriptsize
-    \vtop{\hsize\textwidth
-        \nobreakspace\par
-        \@Copyright
-        \ifx\@EventLongTitle\@empty\else\@EventLongTitle.\\\fi
-        \ifx\@EventEditors\@empty\else
-            \@Eds: \@EventEditors
-            ; Article~No.\,\@ArticleNo; pp.\,\@ArticleNo:\thepage--\@ArticleNo:\pageref{LastPage}%
-            \\
-        \fi
-        \setbox\@tempboxa\hbox{\includegraphics[height=14\p@,trim=0 15 0 0]{lipics-logo-bw}}%
-        \hspace*{\wd\@tempboxa}\enskip
-        \href{https://www.dagstuhl.de/lipics/}%
-        {Leibniz International Proceedings in Informatics}\\
-        \smash{\unhbox\@tempboxa}\enskip
-        \href{https://www.dagstuhl.de}%
-    {Schloss Dagstuhl -- Leibniz-Zentrum f{\"u}r Informatik, Dagstuhl Publishing, Germany}}%
-\fi}
+\def\@biblabel#1{\textcolor{darkgray}{\bfseries#1}}
 
 \def\ps@plain{\let\@mkboth\@gobbletwo
     \let\@evenhead\@empty
     \let\@oddhead\@empty
-    \let\@oddfoot\copyrightline
-\let\@oddfoot\copyrightline}
+    \let\@oddfoot\@empty
+\let\@oddfoot\@empty}
 \def\lipics@opterrshort{Option  "\CurrentOption" not supported}
 \def\lipics@opterrlong{The option "\CurrentOption" from article.cls is not supported by lipics.cls.}
 \DeclareOption{a5paper}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
@@ -265,10 +160,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
 \DeclareOption{twocolumn}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
 \DeclareOption{openbib}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
 \DeclareOption{autoref}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
-\DeclareOption{a4paper}{\PassOptionsToClass{\CurrentOption}{article}
-    \advance\hoffset-2.95mm
-    \advance\voffset8.8mm
-\let\usedinpaper\relax}
+\DeclareOption{stoc}{\let\usestocmargin\relax}
 \DeclareOption{numberwithinsect}{\let\numberwithinsect\relax}
 \DeclareOption{anonymous}{\let\authoranonymous\relax}
 \DeclareOption{lmodern}{\let\uselmodern\relax}
@@ -282,6 +174,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
 \DeclareOption{pdfa}{\let\pdfa\relax}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
 \ProcessOptions
+
 \LoadClass[twoside,notitlepage]{article}
 
 \setcounter{tocdepth}{2}
@@ -291,7 +184,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
     \ifnum \c@tocdepth >\z@
         \addpenalty\@secpenalty
         \addvspace{.5em \@plus\p@}%
-        \setlength\@tempdima{1.5em}%
+        \setlength\@tempdima{\parindent}%
         \begingroup
         \parindent \z@ \rightskip \@pnumwidth
         \parfillskip -\@pnumwidth
@@ -333,61 +226,34 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
 \def\@dottedtocline#1#2#3#4#5{%
 \old@dottedcontentsline{#1}{#2}{#3}{#4}{{{#5}}}}
 
-\renewcommand\normalsize{%
-    \@setfontsize\normalsize\@xpt{13.5}%
-    \abovedisplayskip 6.5\p@ \@plus3\p@ \@minus3\p@
-    \abovedisplayshortskip \z@ \@plus3\p@
-    \belowdisplayshortskip 6.5\p@ \@plus3\p@ \@minus3\p@
-    \belowdisplayskip \abovedisplayskip
-\let\@listi\@listI}
-\normalsize
 \renewcommand\small{%
     \@setfontsize\small\@ixpt{11.5}%
-    \abovedisplayskip 4\p@ \@plus2\p@ \@minus2\p@
+    \abovedisplayskip 3.5\p@ \@plus2\p@ \@minus2\p@
     \abovedisplayshortskip \z@ \@plus2\p@
-    \belowdisplayshortskip 4\p@ \@plus2\p@ \@minus2\p@
+    \belowdisplayshortskip 3.5\p@ \@plus2\p@ \@minus2\p@
     \def\@listi{\leftmargin\leftmargini
-        \topsep 4\p@ \@plus2\p@ \@minus2\p@
+        \topsep 3.5\p@ \@plus2\p@ \@minus2\p@
         \parsep 2\p@ \@plus\p@ \@minus\p@
 \itemsep \parsep}%
     \belowdisplayskip \abovedisplayskip
 }
 \renewcommand\footnotesize{%
     \@setfontsize\footnotesize{8.5}{9.5}%
-    \abovedisplayskip 4\p@ \@plus2\p@ \@minus2\p@
+    \abovedisplayskip 3.5\p@ \@plus2\p@ \@minus2\p@
     \abovedisplayshortskip \z@ \@plus\p@
-    \belowdisplayshortskip 4\p@ \@plus\p@ \@minus2\p@
+    \belowdisplayshortskip 3.5\p@ \@plus\p@ \@minus2\p@
     \def\@listi{\leftmargin\leftmargini
         \topsep 3\p@ \@plus\p@ \@minus\p@
         \parsep 2\p@ \@plus\p@ \@minus\p@
 \itemsep \parsep}%
     \belowdisplayskip \abovedisplayskip
 }
-\renewcommand\large{\@setfontsize\large{10.5}{13}}
+\renewcommand\large{\@setfontsize\large{11}{13}}
 \renewcommand\Large{\@setfontsize\Large{12}{14}}
-\setlength\parindent{1.5em}
-\setlength\headsep   {10mm}
-\setlength\footskip{3mm}
-\ifx\usedinpaper\@undefined
-    \setlength\headheight{13mm}
-    \setlength\textheight{215mm}
-    \setlength\textwidth{160mm}
-    \setlength\oddsidemargin{22mm}
-    \setlength\evensidemargin{28mm}
-\else
-    \setlength\textwidth{140mm}
-    \setlength\headheight{3mm}
-    \setlength\textheight{222mm}
-    \setlength\oddsidemargin{32mm}
-    \setlength\evensidemargin{38mm}
-\fi
-\setlength\marginparwidth{25mm}
-\setlength\topmargin{13mm}
-\setlength{\skip\footins}{2\baselineskip \@plus 4\p@ \@minus 2\p@}
 
-\def\@listi{\leftmargin\leftmargini
-    \parsep\z@ \@plus\p@
-    \topsep 8\p@ \@plus6\p@ \@minus4\p@
+\def\@listi{\leftmargin\leftmargini%
+    \parsep\z@ \@plus\p@%
+    \topsep 8\p@ \@plus6\p@ \@minus4\p@%
     \itemsep \parsep}
 \let\@listI\@listi
 \@listi
@@ -404,35 +270,6 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
     \parsep    \z@
     \partopsep \p@ \@plus\z@ \@minus\p@
     \itemsep   \z@ \@plus\p@}
-\def\ps@headings{%
-    \def\@evenhead{\large\bfseries
-    \llap{\hbox to0.5\oddsidemargin{  \ifx\@hideLIPIcs\@undefined\ifx\@ArticleNo\@empty\textcolor{red}{XX}\else\@ArticleNo\fi:\fi\thepage\hss}}\leftmark\hfil}%
-    \def\@oddhead{\large\bfseries\rightmark\hfil
-    \rlap{\hbox to0.5\oddsidemargin{\hss  \ifx\@hideLIPIcs\@undefined\ifx\@ArticleNo\@empty\textcolor{red}{XX}\else\@ArticleNo\fi:\fi\thepage}}}%
-    \def\@evenfoot{\ifx\@hideLIPIcs\@undefined\hfil%
-            \rlap{%
-                \vtop{%
-                    \vskip10mm%
-                    \colorbox{lipicsYellow}%
-                    {\@tempdima\oddsidemargin%
-                        \advance\@tempdima1in%
-                        \advance\@tempdima\hoffset%
-                        \hb@xt@\@tempdima{%
-                            \textcolor{lipicsGray}{\normalsize%
-                                \bfseries\quad%
-                                \expandafter\textsolittle%
-                            \expandafter{\@EventShortTitle}}%
-                            \strut\hss%
-                        }%
-                    }%
-                }%
-            }%
-    \else\@empty\fi}%
-    \let\@oddfoot\@empty
-    \let\@mkboth\markboth
-    \let\sectionmark\@gobble
-\let\subsectionmark\@gobble}
-\pagestyle{headings}
 \renewcommand\maketitle{\par
     \begingroup
     \thispagestyle{plain}
@@ -463,10 +300,9 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
     \global\let\date\relax
     \global\let\and\relax
 }
-\newwrite\tocfile
 \def\@maketitle{%
     \newpage
-    \ifx\@hideLIPIcs\@undefined\else\setcounter{page}{0}\fi
+    \setcounter{page}{0}
     \null\vskip-2\baselineskip
     \vskip-\headsep
     \@titlerunning
@@ -483,74 +319,44 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
             \setcounter{footnote}{0}%
         \fontsize{9.5}{12}\selectfont\@author}%
     \fi
-    \bgroup
-    \immediate\openout\tocfile=\jobname.vtc
-    \protected@write\tocfile{
-        \let\footnote\@gobble
-        \let\thanks\@gobble
-        \def\footnotemark{}
-        \def\and{and }%
-        \def\,{ }
-        \def\\{ }
-    }{%
-        \string\contitem
-        \string\title{\@title \if!\@subtitle!\else\subtitleseperator \@subtitle\fi}%
-        \string\author{\@authorsfortoc}%
-        \string\page{\@ArticleNo:\thepage--\@ArticleNo:\number\numexpr\getpagerefnumber{TotPages}}}%
-    \closeout\tocfile
-    \egroup
 \par}
 \renewcommand\tableofcontents{%
     \section*{\contentsname}%
     \@starttoc{toc}}
 \setcounter{secnumdepth}{4}
 \renewcommand\section{\@startsection {section}{1}{\z@}%
-    {-3.5ex \@plus -1ex \@minus -.2ex}%
-    {2.3ex \@plus.2ex}%
+    {-2.3ex \@plus -1ex \@minus -.2ex}%
+    {1.8ex \@plus.2ex}%
     {\Large\bfseries\raggedright}}
 \renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
-    {-3.25ex\@plus -1ex \@minus -.2ex}%
-    {1.5ex \@plus .2ex}%
+    {-1.8ex\@plus -1ex \@minus -.2ex}%
+    {1.3ex \@plus .2ex}%
     {\Large\bfseries\raggedright}}
 \renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
-    {-3.25ex\@plus -1ex \@minus -.2ex}%
-    {1.5ex \@plus .2ex}%
-    {\Large\bfseries\raggedright}}
+    {-1.8ex\@plus -1ex \@minus -.2ex}%
+    {1.3ex \@plus .2ex}%
+    {\normalsize\bfseries\raggedright}}
 \renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
-    {-3.25ex \@plus-1ex \@minus-.2ex}%
-    {1.5ex \@plus .2ex}%
-    {\large\bfseries\raggedright}}
+    {-1.8ex \@plus-1ex \@minus-.2ex}%
+    {1.3ex \@plus .2ex}%
+    {\normalsize\bfseries\raggedright}}
 \renewcommand\subparagraph{\@startsection{subparagraph}{5}{\z@}%
     {.5ex \@plus1ex \@minus .2ex}%
     {-1em}%
     {\normalsize\bfseries}}
-\setlength\leftmargini  \parindent
-\setlength\leftmarginii {1.2em}
-\setlength\leftmarginiii{1.2em}
-\setlength\leftmarginiv {1.2em}
-\setlength\leftmarginv  {1.2em}
-\setlength\leftmarginvi {1.2em}
-\renewcommand\labelenumi{%
-    \textcolor{lipicsGray}{\bfseries\upshape\mathversion{bold}(\theenumi)}}
-\renewcommand\labelenumii{%
-    \textcolor{lipicsGray}{\bfseries\upshape\mathversion{bold}(\theenumii)}}
-\renewcommand\labelenumiii{%
-    \textcolor{lipicsGray}{\bfseries\upshape\mathversion{bold}(\theenumiii)}}
-\renewcommand\labelenumiv{%
-    \textcolor{lipicsGray}{\bfseries\upshape\mathversion{bold}(\theenumiv)}}
 \renewcommand\labelitemi{%
-    \textcolor{lipicsBulletGray}{%
-        \ifnum\@listdepth=\@ne
-            $\lipicsTriangleRight$%
-        \else
+    \textcolor{bulletgray}{%
+        \ifnum\@listdepth=\@ne%
+            \@lipicsTriangleRight%
+        \else%
             $\lipicsClaimTriangleRight$%
     \fi}}
 \renewcommand\labelitemii{%
-    \textcolor{lipicsBulletGray}{$\lipicsClaimTriangleRight$}}
+    \textcolor{bulletgray}{$\lipicsClaimTriangleRight$}}
 \renewcommand\labelitemiii{%
-    \textcolor{lipicsBulletGray}{\bfseries\textasteriskcentered}}
+    \textcolor{bulletgray}{\bfseries\textasteriskcentered}}
 \renewcommand\labelitemiv{%
-    \textcolor{lipicsBulletGray}{\bfseries\textperiodcentered}}
+    \textcolor{bulletgray}{\bfseries\textperiodcentered}}
 
 
 \renewenvironment{description}
@@ -559,12 +365,12 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
 \let\makelabel\descriptionlabel}}
 {\ifnum\@listdepth=\@ne\global\@nobotseplisttrue\fi\endlist}
 \renewcommand*\descriptionlabel[1]{%
-\hspace\labelsep\textcolor{lipicsGray}{\bfseries\mathversion{bold}#1}}
+\hspace\labelsep\textcolor{darkgray}{\bfseries\mathversion{bold}#1}}
 \def\topmattervskip{0.7}
 \renewenvironment{abstract}{%
     \vskip\topmattervskip\bigskipamount
     \noindent
-    \rlap{\color{lipicsLineGray}\vrule\@width\textwidth\@height1\p@}%
+    \rlap{\color{linegray}\vrule\@width\textwidth\@height1\p@}%
     {\null\hfill\fboxsep1.5mm\colorbox[rgb]{1,1,1}{\raisebox{-0.4ex}{%
     \large\selectfont\bfseries\abstractname}}\hfill\null}%
     \vskip3\p@
@@ -576,14 +382,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
         \fontsize{7}{8}\selectfont%
         \subjclassHeading\@ccsdescString\par\noindent
     \fi
-    \ifx\@keywords\@empty
-        \ifx\@hideLIPIcs\@undefined
-            \vskip\topmattervskip\baselineskip\noindent
-            \fontsize{7}{8}\selectfont%
-            \keywordsHeading
-            \textcolor{red}{Author: Please fill in \string\keywords\space macro}%
-        \fi
-    \else
+    \ifx\@keywords\@empty\else
         \vskip\topmattervskip\baselineskip\noindent
         \fontsize{7}{8}\selectfont%
         \keywordsHeading\@keywords\par\noindent
@@ -593,29 +392,27 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
         \fontsize{7}{8}\selectfont%
         \categoryHeading\@category\par\noindent
     \fi
+    \ifx\authoranonymous\relax\else
     \ifx\@relatedversion\@empty\else
         \vskip\topmattervskip\baselineskip\noindent
         \fontsize{7}{8}\selectfont%
-        \relatedversionHeading\ifx\authoranonymous\relax{Anonymous related
-        version(s)}\else\@relatedversion\par\noindent\fi
+        \relatedversionHeading\@relatedversion\par\noindent
     \fi
     \ifx\@supplement\@empty\else
         \vskip\topmattervskip\baselineskip\noindent
         \fontsize{7}{8}\selectfont%
-        \supplementHeading\ifx\authoranonymous\relax{Anonymous supplementary
-        material}\else\@supplement\par\noindent\fi
+        \supplementHeading\@supplement\par\noindent
     \fi
     \ifx\@funding\@empty\else
         \vskip\topmattervskip\baselineskip\noindent
         \fontsize{7}{8}\selectfont%
-        \fundingHeading\ifx\authoranonymous\relax{Anonymous
-        funding}\else\@funding\par\noindent\fi
+        \fundingHeading\@funding\par\noindent
     \fi
     \ifx\@acknowledgements\@empty\else
         \vskip\topmattervskip\baselineskip\noindent
         \fontsize{7}{8}\selectfont%
-        \acknowledgementsHeading\ifx\authoranonymous\relax{Anonymous acknowledgements}
-        \else\@acknowledgements\par\noindent\fi
+        \acknowledgementsHeading\@acknowledgements\par\noindent
+    \fi
     \fi
 }
 
@@ -634,7 +431,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
         \usecounter{enumiv}%
         \let\p@enumiv\@empty
     \renewcommand\theenumiv{\@arabic\c@enumiv}}%
-    \fontsize{8.5}{11}\selectfont
+    \fontsize{8}{11}\selectfont
     \sloppy
     \clubpenalty4000
     \@clubpenalty \clubpenalty
@@ -645,12 +442,12 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
 \endlist}
 \renewcommand\footnoterule{%
     \kern-8\p@
-    {\color{lipicsBulletGray}\hrule\@width40mm\@height1\p@}%
+    {\vspace{.5ex}\color{bulletgray}\hrule\@width40mm\@height1\p@}%
 \kern6.6\p@}
 \renewcommand\@makefntext[1]{%
-    \parindent\z@\hangindent1em
+    \parindent\z@\hangindent\i@parindent
     \leavevmode
-\hb@xt@1em{\@makefnmark\hss}#1}
+\hb@xt@\i@parindent{\@makefnmark\hss}#1}
 
 \usepackage{microtype}
 \RequirePackage{textcomp}
@@ -666,19 +463,6 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
 \sodef\textsolittle{}{.12em}{.5em\@plus.08em\@minus.06em}%
 {.4em\@plus.275em\@minus.183em}
 
-\AtBeginDocument{
-    \@ifpackageloaded{xcolor}{
-        }{
-        \RequirePackage[cymk]{xcolor}
-    }
-    \definecolor{darkgray}{rgb}{0.31,0.31,0.33}
-    \definecolor[named]{lipicsGray}{rgb}{0.31,0.31,0.33}
-    \definecolor[named]{lipicsBulletGray}{rgb}{0.45,0.45,0.46}
-    \definecolor[named]{lipicsLineGray}{rgb}{0.51,0.50,0.52}
-    \definecolor[named]{lipicsLightGray}{rgb}{0.85,0.85,0.86}
-    \definecolor[named]{lipicsYellow}{rgb}{0.85,0.85,0.86}
-}
-
 \ifx\uselmodern\relax
     \RequirePackage{lmodern}
     \RequirePackage[USenglish]{babel}
@@ -693,6 +477,29 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
         \RequirePackage[nomath]{lmodern}
 
         \RequirePackage[mathscr]{eucal}
+
+        % from impnattypo, adapted
+        \RequirePackage{luatexbase,luacode}
+        \begin{luacode}
+            local glyph_id = node.id "glyph"
+            local glue_id  = node.id "glue"
+            local hlist_id = node.id "hlist"
+
+            last_line_twice_parindent = function (head)
+                while head do
+                    local _w,_h,_d = node.dimensions(head)
+                    if head.id == glue_id and head.subtype ~= 15 and (4.5 * _w < tex.dimen.textwidth) then
+                        local p = node.new("penalty")
+                        p.penalty = 10000
+                        node.insert_after(head,head.prev,p)
+                    end
+                    head = head.next
+                end
+                return true
+            end
+
+            luatexbase.add_to_callback("pre_linebreak_filter",last_line_twice_parindent,"lastparline")
+        \end{luacode}
 
         % adapted from
         % https://tex.stackexchange.com/questions/396134/how-to-perform-an-action-when-an-overfull-or-underfull-box-is-encountered/493311#493311
@@ -750,12 +557,109 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
     \fi
 \fi
 
+\brokenpenalty=10000
+\doublehyphendemerits=1000000000
+
+\AtBeginDocument{%
+    \let\mathshift=$
+    \DeclareRobustCommand\({% from fixltx2e
+        \ifdim\lastskip>\z@ \unskip~\fi%
+        \ifmmode \@badmath \else \mathshift\fi
+    }%
+}
+
 \let\openbox\undefined
+
+\setlength{\skip\footins}{1\baselineskip \@plus 4\p@ \@minus 2\p@}
+\ifx\usestocmargin\@undefined
+    % trick to suppress typearea warning.
+    % while lines are indeed ~20% too long, for scientific papers this is barely
+    % acceptable.
+    \renewcommand\normalsize{%
+        \@setfontsize\normalsize{13}{14}%
+        \abovedisplayskip 5\p@ \@plus3\p@ \@minus3\p@
+        \abovedisplayshortskip \z@ \@plus3\p@
+        \belowdisplayshortskip 5\p@ \@plus3\p@ \@minus3\p@
+        \belowdisplayskip \abovedisplayskip
+    \let\@listi\@listI}
+    \PassOptionsToPackage{headinclude,BCOR=13.125mm,DIV=15}{typearea}
+    \RequirePackage{typearea}
+
+    \renewcommand\normalsize{%
+        \@setfontsize\normalsize{10}{13.5}%
+        \abovedisplayskip 5\p@ \@plus3\p@ \@minus3\p@
+        \abovedisplayshortskip \z@ \@plus3\p@
+        \belowdisplayshortskip 5\p@ \@plus3\p@ \@minus3\p@
+        \belowdisplayskip \abovedisplayskip
+    \let\@listi\@listI}
+
+\else
+    \RequirePackage[margin=1in]{geometry}
+    \renewcommand\normalsize{%
+        \@setfontsize\normalsize\@xipt{13}%
+        \abovedisplayskip 6.5\p@ \@plus3\p@ \@minus3\p@
+        \abovedisplayshortskip \z@ \@plus3\p@
+        \belowdisplayshortskip 6.5\p@ \@plus3\p@ \@minus3\p@
+        \belowdisplayskip \abovedisplayskip
+    \let\@listi\@listI}
+\fi
+\normalsize
+
+\ifx\usestocmargin\@undefined
+\def\ps@headings{%
+    \def\@evenhead{\large\bfseries
+    \makebox[0pt][r]{\thepage\hspace*{\i@parindent}}\leftmark\hfil}%
+    \def\@oddhead{\large\bfseries\ifx\authoranonymous\relax\leftmark\else\rightmark\fi\hfil
+    \makebox[0pt][l]{\hspace*{\i@parindent}\thepage}}%
+    \let\@evenfoot\@empty%
+    \let\@oddfoot\@empty
+    \let\@mkboth\markboth
+    \let\sectionmark\@gobble
+\let\subsectionmark\@gobble}
+\else
+\def\ps@headings{%
+    \def\@oddhead{\large\bfseries\leftmark\hfil
+    \makebox[0pt][l]{\hspace*{\i@parindent}\thepage}}%
+    \def\@evenhead{\large\bfseries
+    \makebox[0pt][r]{\thepage\hspace*{\i@parindent}}\leftmark\hfil}%
+    \let\@evenfoot\@empty%
+    \let\@oddfoot\@empty
+    \let\@mkboth\markboth
+    \let\sectionmark\@gobble
+\let\subsectionmark\@gobble}
+\fi
+\pagestyle{headings}
 
 \RequirePackage{amsthm}
 \RequirePackage{thmtools}
 \RequirePackage{thm-restate}
 \RequirePackage{tikz}
+
+% IBM Design Library color-blind optimized palette
+\definecolor{color1}{HTML}{648FFF} % blue
+\definecolor{color2}{HTML}{785EF0} % purple
+\definecolor{color3}{HTML}{DC267F} % magenta
+\definecolor{color4}{HTML}{FE6100} % orange
+\definecolor{color5}{HTML}{FFB000} % yellow
+\definecolor{linegray}{rgb}{0.6,0.59,0.61}
+\definecolor{lightgray}{rgb}{0.8,0.8,0.8}
+\colorlet{color6}{linegray}
+\colorlet{color7}{lightgray}
+
+\colorlet{c1}{color1!60!black}
+\colorlet{c2}{color2!60!black}
+\colorlet{c3}{color3!60!black}
+\colorlet{c4}{color4!60!black}
+\colorlet{c5}{color5!60!black}
+\definecolor{darkgray}{rgb}{0.31,0.31,0.33}
+\definecolor{bulletgray}{rgb}{0.45,0.45,0.46}
+\colorlet{c6}{darkgray}
+\colorlet{c7}{bulletgray}
+
+\def\displaypalette{{\color{color1}\rule{2em}{2em}}{\color{color2}\rule{2em}{2em}}{\color{color3}\rule{2em}{2em}}{\color{color4}\rule{2em}{2em}}{\color{color5}\rule{2em}{2em}}{\color{linegray}\rule{2em}{2em}}{\color{lightgray}\rule{2em}{2em}}}
+\def\displayfgpalette{{\color{c1}\rule{2em}{2em}}{\color{c2}\rule{2em}{2em}}{\color{c3}\rule{2em}{2em}}{\color{c4}\rule{2em}{2em}}{\color{c5}\rule{2em}{2em}}{\color{darkgray}\rule{2em}{2em}}{\color{bulletgray}\rule{2em}{2em}}}
+
+
 
 \ifx\pdfa\relax%
 \IfFileExists{glyphtounicode.tex}{
@@ -765,33 +669,48 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
 \fi
 \IfFileExists{fontawesome5.sty}{%
     \RequirePackage{fontawesome5}%
-    \def\orcidsymbol{\raisebox{.2ex}{\textcolor{lipicsGray}{\fontsize{9}{12}\bfseries\faOrcid}}}%
-    \def\mailsymbol{\textcolor{lipicsGray}{\fontsize{9}{12}\bfseries \faIcon[regular]{envelope}}}%
-    \def\homesymbol{\textcolor{lipicsGray}{\fontsize{9}{12}\bfseries \faHome}}%
+    \def\orcidsymbol{\raisebox{.2ex}{\textcolor{darkgray}{\fontsize{9}{12}\bfseries\faOrcid}}}%
+    \def\mailsymbol{\textcolor{darkgray}{\fontsize{9}{12}\bfseries \faIcon[regular]{envelope}}}%
+    \def\homesymbol{\textcolor{darkgray}{\fontsize{9}{12}\bfseries \faHome}}%
 }{%
     \ClassWarning{Package fontawesome5 not installed}{Please install package fontawesome5}
-    \def\orcidsymbol{\textcolor{lipicsGray}{\fontsize{9}{12}\bfseries ORCID}}
-    \def\mailsymbol{\textcolor{lipicsGray}{\fontsize{9}{12}\bfseries @}}%
-    \def\homesymbol{\textcolor{lipicsGray}{\fontsize{9}{12}\bfseries H}}%
+    \def\orcidsymbol{\textcolor{darkgray}{\fontsize{9}{12}\bfseries ORCID}}
+    \def\mailsymbol{\textcolor{darkgray}{\fontsize{9}{12}\bfseries @}}%
+    \def\homesymbol{\textcolor{darkgray}{\fontsize{9}{12}\bfseries H}}%
 }%
 
 
 \AtBeginDocument{
-    \@ifpackageloaded{enumitem}{\ClassWarning{Package 'enumitem' incompatible}{Don't use package 'enumitem'; Package enumerate preloaded!}}{}
+    \@ifpackageloaded{enumerate}{\ClassWarning{Package 'enumerate' incompatible}{Don't use package 'enumerate'; Package enumerate preloaded!}}{}
     \@ifpackageloaded{paralist}{\ClassWarning{Package 'paralist' incompatible}{Don't use package 'paralist'; Package enumerate preloaded!}}{}
+    \@ifpackageloaded{algorithmic}{\ClassWarning{Package 'algorithmic' incompatible}{Don't use package 'algorithmic'; Package algorithm2e preloaded!}}{}
+    \@ifpackageloaded{algorithmicx}{\ClassWarning{Package 'algorithmic' incompatible}{Don't use package 'algorithmic'; Package algorithm2e preloaded!}}{}
+    \@ifpackageloaded{algpseudocode}{\ClassWarning{Package 'algorithmic' incompatible}{Don't use package 'algorithmic'; Package algorithm2e preloaded!}}{}
 }
 
-\RequirePackage{enumerate}
-\def\@enum@{\list{\textcolor{lipicsGray}{\bfseries\upshape\mathversion{bold}\csname label\@enumctr\endcsname}}%
-    {\advance\partopsep\topsep
-        \topsep\z@\@plus\p@
-\usecounter{\@enumctr}\def\makelabel##1{\hss\llap{##1}}}}
+\RequirePackage[shortlabels, inline]{enumitem}
+\setlist{left= 0pt .. \i@parindent, topsep=0ex}
+\setlist[enumerate]{format=\color{bulletgray}\small\bfseries\upshape\mathversion{bold}}
+\setlist[itemize, 1]{labelindent={-.15em}}
+\setlist[itemize, 2]{labelindent={-.15em}}
+\setlist[itemize, 3]{labelindent={-.1em}}
+\setlist[enumerate, 1]{\@lipicsDotRight\hspace{-.05em}1, ref=\arabic*, align=left, labelindent=-.17em}
+\setlist[enumerate, 2]{\lipicsClaimDotRight\hspace{-.1em}a, ref=\theenumi.\alph*,
+format=\color{bulletgray}\small\bfseries\upshape\mathversion{bold}, align=left, labelindent=-.15em}
+\setlist[enumerate, 3]{\bfseries\textasteriskcentered 1, ref=\theenumii.\arabic*,
+format=\color{bulletgray}\small\bfseries\upshape\mathversion{bold}, align=left,
+labelindent=0em}
+\setlist[enumerate, 4]{\bfseries\textperiodcentered a, ref=\theenumiii.\alph*,
+format=\color{bulletgray}\small\bfseries\upshape\mathversion{bold}, align=left,
+labelindent=0em}
+
 \def\romanenumerate{\enumerate[(i)]}
 \let\endromanenumerate\endenumerate
 \def\alphaenumerate{\enumerate[(a)]}
 \let\endalphaenumerate\endenumerate
 \def\bracketenumerate{\enumerate[(1)]}
 \let\endbracketenumerate\endenumerate
+
 \RequirePackage{graphicx}
 \RequirePackage{array}
 \RequirePackage{xstring}
@@ -810,10 +729,9 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
 \@ifnextchar[\TPT@setuptnotes\TPTdoTablenotes} % ]
 \RequirePackage{listings}
 \lstset{basicstyle=\small\ttfamily,%
-    backgroundcolor=\color{lipicsLightGray},%
+    backgroundcolor=\color{lightgray},%
 frame=single,framerule=0pt,xleftmargin=\fboxsep,xrightmargin=\fboxsep}
 \RequirePackage[left,mathlines]{lineno}
-\linenumbers
 \renewcommand\linenumberfont{\normalfont\tiny}
 %%%% patch to cope with amsmath
 %%%% http://phaseportrait.blogspot.de/2007/08/lineno-and-amsmath-compatibility.html
@@ -890,13 +808,6 @@ frame=single,framerule=0pt,xleftmargin=\fboxsep,xrightmargin=\fboxsep}
     }}{}%
 \fi%
 
-\IfFileExists{totpages.sty}{
-    \RequirePackage{totpages}
-}{
-    \ClassWarning{Package totpages not installed}{Please install package totpages}
-    \newcounter{TotPages}
-    \setcounter{TotPages}{99}
-}
 \let\C\relax%
 \let\G\relax%
 \let\F\relax%
@@ -913,13 +824,11 @@ frame=single,framerule=0pt,xleftmargin=\fboxsep,xrightmargin=\fboxsep}
     \def\textrightarrow{ -> }%
     \let\mathsf\@empty%
 }%
-\definecolor[named]{urlblue}{cmyk}{1,0.58,0,0.21}
 \hypersetup{
-    breaklinks=true,
     colorlinks=true,
-    citecolor=purple!70!blue!60!black,
-    linkcolor=purple!70!blue!90!black,
-    urlcolor=urlblue,
+    citecolor=c2,
+    linkcolor=c2,
+    urlcolor=c1,
     pdfencoding=unicode,
     bookmarksnumbered,
     pdfborder={0 0 0},
@@ -932,7 +841,6 @@ frame=single,framerule=0pt,xleftmargin=\fboxsep,xrightmargin=\fboxsep}
         pdftitle={\@title \if!\@subtitle!\else\subtitleseperator \@subtitle\fi},
         pdfauthor={\ifx\authoranonymous\relax Anonymous author(s) \else \@authorsforpdf \fi},
         pdfkeywords={\@keywords},
-        pdfcopyright={Copyright (C) \ifx\authoranonymous\relax Anonymous author(s) \else \@copyrightholder; \fi licensed under Creative Commons License CC-BY 4.0},
         pdflang={en},
         pdfmetalang={en},
         pdflicenseurl={https://creativecommons.org/licenses/by/4.0/},
@@ -980,45 +888,23 @@ listof=false]{caption}%"listof" instead of "list" for backward compatibility
 {\captionsetup{compatibility=false}}%cf. http://groups.google.de/group/comp.text.tex/browse_thread/thread/db9310eb540fbbd8/42e30f3b7b3aa17a?lnk=raot
 {}
 \DeclareCaptionLabelFormat{boxed}{%
-    \kern0.05em{\color{lipicsBulletGray}\rule{0.73em}{0.73em}}%
-\hspace*{0.67em}\bothIfFirst{#1}{~}#2}
+    \kern0.05em{\color{bulletgray}\rule{0.73em}{0.73em}}%
+\hspace*{\i@parindent}\hspace*{-.7em}\bothIfFirst{#1}{~}#2.}
 \captionsetup{labelformat=boxed}
 \captionsetup[table]{position=top}
 \RequirePackage[figuresright]{rotating}
 \caption@AtBeginDocument{\@ifpackageloaded{subfig}{\ClassError{lipics}{%
 Do not load the subfig package}{The more recent subcaption package is already loaded}}{}}
-\RequirePackage{subcaption}
-
+\RequirePackage[labelformat=simple]{subcaption}
+\DeclareCaptionLabelFormat{opening}{\@lipicsDotRight\hspace{-.05em}#2~}
+\subcaptionsetup{labelformat=opening}
 
 \def\titlerunning#1{\gdef\@titlerunning{{\let\footnote\@gobble\markboth{#1}{#1}}}}
 \def\authorrunning#1{%
 \gdef\@authorrunning{\markright{\ifx\authoranonymous\relax{Anonymous author(s)} \else\if!#1!\textcolor{red}{Author: Please fill in the \string\authorrunning\space macro}\else#1\fi\fi}}}
 \titlerunning{\@title}
 \authorrunning{\textcolor{red}{Author: Please use the \string\authorrunning\space macro}}
-\def\EventLongTitle#1{\gdef\@EventLongTitle{#1}}
-\EventLongTitle{}
-\def\EventShortTitle#1{\gdef\@EventShortTitle{#1}}
-\EventShortTitle{}
-\def\EventEditors#1{\gdef\@EventEditors{#1}}
-\EventEditors{}
-\def\EventNoEds#1{\gdef\@EventNoEds{#1}\xdef\@Eds{Editor\ifnum#1>1s\fi}}
-\EventNoEds{1}
-\def\EventLogo#1{\gdef\@EventLogo{#1}}
-\EventLogo{}
-\def\EventAcronym#1{\gdef\@EventAcronym{#1}}
-\EventAcronym{}
-\def\EventYear#1{\gdef\@EventYear{#1}}
-\EventYear{}
-\def\EventDate#1{\gdef\@EventDate{#1}}
-\EventDate{}
-\def\EventLocation#1{\gdef\@EventLocation{#1}}
-\EventLocation{}
-\def\SeriesVolume#1{\gdef\@SeriesVolume{#1}}
-\SeriesVolume{}
-\def\ArticleNo#1{\gdef\@ArticleNo{#1}}
-\ArticleNo{}
-\def\DOIPrefix#1{\gdef\@DOIPrefix{#1}}
-\DOIPrefix{10.4230/LIPIcs}
+
 \def\and{\newline}
 \let\orig@author\@author
 \let\@authorsfortoc\@empty
@@ -1034,10 +920,10 @@ Do not load the subfig package}{The more recent subcaption package is already lo
         \expandarg\exploregroups\StrRemoveBraces{\homepageTemp}[\homepage]%
         \stepcounter{currentauthor}
         \ifx\authoranonymous\relax%
-            \ifnum\value{currentauthor}=1
+            \ifnum\value{currentauthor}=1%
                 \ifx\authorcolumns\relax
-                    \begin{minipage}[t]{\textwidth}
-                        \centering
+                    \begin{minipage}[t]{.99\textwidth}%
+                        \centering%
                 \fi
                     {\Large\bfseries%
                     Anonymous author(s)}%
@@ -1054,125 +940,103 @@ Do not load the subfig package}{The more recent subcaption package is already lo
         \fi%
         \ifx\authorcolumns\relax
             \ifx\authoranonymous\relax\else%
-            \ifodd\c@author
-                \ifnum\c@author=\value{currentauthor}
-                    \begin{minipage}[t]{\textwidth}
-                        \begin{minipage}[t]{\textwidth}
-                            \centering
-                \else
-                    \ifodd\value{currentauthor}
-                        \begin{minipage}[t]{\textwidth}
-                            \begin{minipage}[t]{0.49\textwidth}
-                                \centering
-                    \else
-                        \hfill \begin{minipage}[t]{0.49\textwidth}
-                            \centering
-                    \fi
-                \fi
-            \else
-                \ifodd\value{currentauthor}
-                    \begin{minipage}[t]{\textwidth}
-                        \begin{minipage}[t]{0.49\textwidth}
-                            \centering
-                \else
-                    \hfill \begin{minipage}[t]{0.49\textwidth}
-                        \centering
-                \fi
-            \fi
-            \fi
-        \else
-            \ifx\authoranonymous\relax\else\addvspace{0.5\baselineskip}\fi
-        \fi
-        {\Large\bfseries
-            \if!#1!
+            \ifodd\c@author%
+                \ifnum\c@author=\value{currentauthor}%
+                    \begin{minipage}[t]{\textwidth}%
+                        \begin{minipage}[t]{\textwidth}%
+                            \centering%
+                \else%
+                    \ifodd\value{currentauthor}%
+                        \begin{minipage}[t]{\textwidth}%
+                            \begin{minipage}[t]{0.49\textwidth}%
+                                \centering%
+                    \else%
+                        \hfill \begin{minipage}[t]{0.49\textwidth}%
+                            \centering%
+                    \fi%
+                \fi%
+            \else%
+                \ifodd\value{currentauthor}%
+                    \begin{minipage}[t]{\textwidth}%
+                        \begin{minipage}[t]{0.49\textwidth}%
+                            \centering%
+                \else%
+                    \hfill \begin{minipage}[t]{0.49\textwidth}%
+                        \centering%
+                \fi%
+            \fi%
+            \fi%
+        \else%
+            \ifx\authoranonymous\relax\else\addvspace{0.5\baselineskip}\fi%
+        \fi%
+        {\Large\bfseries%
+            \if!#1!%
                 \textcolor{red}{Author: Please enter author name}%
-            \else
-                \ifx\authoranonymous\relax
-                \else
+            \else%
+                \ifx\authoranonymous\relax%
+                \else%
                     #1\,%
                     \if!#4!\else{\href{#4}{\raisebox{-1pt}{\orcidsymbol}}}\fi%
                     \ifx\compactauthor\relax\if!#3!\else{\;\href{mailto:#3}{\mailsymbol}}\fi%
                     \ifx\homepage\@empty\else{\;\href{\homepage}{\homesymbol}}\fi\fi%
-                \fi
-                \if!#5!\else
-                    \ifx\@funding\@empty
-                        \expandafter\g@addto@macro\expandafter\@funding{\textit{\expandafter{\let\footnote\@gobble
-                        #1}}:\space{#5}}
-                    \else
-                        \expandafter\g@addto@macro\expandafter\@funding{;\space\textit{\expandafter{\let\footnote\@gobble
-                        #1}}:\space{#5}}
-                    \fi
-                \fi
-            \fi
-        }
-        {\small
+                \fi%
+                \if!#5!\else%
+                    \ifx\@funding\@empty%
+                        \expandafter\g@addto@macro\expandafter\@funding{\textit{\expandafter{\let\footnote\@gobble%
+                        #1}}:\space{#5}}%
+                    \else%
+                        \expandafter\g@addto@macro\expandafter\@funding{;\space\textit{\expandafter{\let\footnote\@gobble%
+                        #1}}:\space{#5}}%
+                    \fi%
+                \fi%
+            \fi%
+        }%
+        {\small%
             \if!#2!%
                 \textcolor{red}{Author: Please enter affiliation as second parameter of
                 the author macro}%
             \else\ifx\authoranonymous\relax%
-            \else\ifx\compactauthor\relax{\\* \affiliation}\else{\\* #2}\fi\fi\fi
+            \else\ifx\compactauthor\relax{\\* \affiliation}\else{\\* #2}\fi\fi\fi%
             \ifx\compactauthor\relax\else\if!#3!\else{%
-                \ifx\authoranonymous\relax\else\\*\href{mailto:#3}{\texttt{#3}}\fi
-            }\fi\fi
-        }\ifx\authoranonymous\relax\else\par\fi
-        \ifx\authorcolumns\relax
+                \ifx\authoranonymous\relax\else\\*\href{mailto:#3}{\texttt{#3}}\fi%
+            }\fi\fi%
+        }\ifx\authoranonymous\relax\else\par\fi%
+        \ifx\authorcolumns\relax%
             \ifx\authoranonymous\relax\else%
-                \end{minipage}
-                \ifnum\c@author=\value{currentauthor}
-                    \end{minipage}
-                \else
-                    \ifodd\value{currentauthor}
-                    \else
+                \end{minipage}%
+                \ifnum\c@author=\value{currentauthor}%
+                    \end{minipage}%
+                \else%
+                    \ifodd\value{currentauthor}%
+                    \else%
                         \end{minipage}%
-                        \ifx\authoranonymous\relax\else\medskip\fi
-                    \fi
-                \fi
-            \fi
+                        \ifx\authoranonymous\relax\else\medskip\fi%
+                    \fi%
+                \fi%
+            \fi%
         \fi%
     }%
-    \global\advance\c@author\@ne
-    \protected@write\@auxout{}{\string\gdef\string\@authornum{\the\c@author}}
-    \ifnum\c@author=\@ne
+    \global\advance\c@author\@ne%
+    \protected@write\@auxout{}{\string\gdef\string\@authornum{\the\c@author}}%
+    \ifnum\c@author=\@ne%
         \gdef\@authorsfortoc{#1}%
-        \gdef\@authorsforpdf{#1}
-    \else
-        \expandafter\g@addto@macro\expandafter\@authorsforpdf\expandafter{,\space #1}
+        \gdef\@authorsforpdf{#1}%
+    \else%
+        \expandafter\g@addto@macro\expandafter\@authorsforpdf\expandafter{,\space #1}%
         \expandafter\g@addto@macro\expandafter\@authorsfortoc\expandafter{\expandafter\csname\the\c@author authand\endcsname#1}%
         \@namedef{\the\c@author authand}{,\space}%
         \AtBeginDocument{%
-            \expandafter\ifnum\@authornum=2
+            \expandafter\ifnum\@authornum=2%
                 \@namedef{2authand}{\space and\space}%
-            \else
+            \else%
                 \@namedef{\@authornum authand}{,\space and\space}%
-            \fi}
+            \fi}%
     \fi%
 }
-\newcommand*\Copyright[1]{%
-    \def\@copyrightholder{#1}
-    \def\@Copyright{%
-        \setbox\@tempboxa\hbox{\includegraphics[height=14\p@,clip]{cc-by}}%
-        \@rightskip\@flushglue \rightskip\@rightskip
-        \hangindent\dimexpr\wd\@tempboxa+0.5em\relax
-        \href{https://creativecommons.org/licenses/by/4.0/}%
-        {\smash{\lower\baselineskip\hbox{\unhcopy\@tempboxa}}}\enskip
-        \textcopyright\ %
-        \ifx!#1!%
-            \textcolor{red}{Author: Please fill in the \string\Copyright\space macro}%
-        \else%
-        \ifx\authoranonymous\relax{Anonymous author(s)}\else#1\fi%
-        \fi
-        ;\\%
-        licensed under Creative Commons License CC-BY\ifx!#1!\\\null\fi\par%
-    }%
-}
-\Copyright{\textcolor{red}{Author: Please provide a copyright holder}}
-\let\@copyrightholder\@empty
-\def\showLIPIcs{\let\@hideLIPIcs\@undefined}
-\let\@hideLIPIcs\relax
 \def\keywords#1{\def\@keywords{#1}}
 \let\@keywords\@empty
 \def\keywordsHeading{%
-    \textcolor{lipicsGray}{\fontsize{7}{8}\bfseries
+    \textcolor{darkgray}{\fontsize{7}{8}\bfseries
 Keywords and phrases\enskip}}
 
 \RequirePackage{comment}
@@ -1206,15 +1070,15 @@ Keywords and phrases\enskip}}
 {Since 2019, \string\subjclass\space is obsolete in lipics.}}
 \let\@subjclass\@empty
 \def\subjclassHeading{%
-    \textcolor{lipicsGray}{\fontsize{7}{8}\bfseries
+    \textcolor{darkgray}{\fontsize{7}{8}\bfseries
 2012 ACM Subject Classification\enskip}}
 \def\doiHeading{%
-    \textcolor{lipicsGray}{\fontsize{7}{8}\bfseries
+    \textcolor{darkgray}{\fontsize{7}{8}\bfseries
 Digital Object Identifier\enskip}}
 \def\category#1{\def\@category{#1}}
 \let\@category\@empty
 \def\categoryHeading{%
-    \textcolor{lipicsGray}{\fontsize{7}{8}\bfseries
+    \textcolor{darkgray}{\fontsize{7}{8}\bfseries
 Category\enskip}}
 \def\relatedversion#1{\def\@relatedversion{#1}}
 \let\@relatedversion\@empty
@@ -1245,7 +1109,7 @@ Category\enskip}}
 \endgroup%
 }%
 \def\relatedversionHeading{%
-    \textcolor{lipicsGray}{\fontsize{7}{8}\bfseries
+    \textcolor{darkgray}{\fontsize{7}{8}\bfseries
 Related Version\enskip}}
 \def\supplement#1{\def\@supplement{#1}}
 \let\@supplement\@empty
@@ -1306,7 +1170,7 @@ Related Version\enskip}}
 }%
 
 \def\supplementHeading{%
-    \textcolor{lipicsGray}{\fontsize{7}{8}\bfseries
+    \textcolor{darkgray}{\fontsize{7}{8}\bfseries
 Supplementary Material\enskip}}
 \newcommand\flag[2][0.9cm]{%
     \leavevmode\marginpar{%
@@ -1316,20 +1180,20 @@ Supplementary Material\enskip}}
 \def\funding#1{\def\@funding{#1}}
 \let\@funding\@empty
 \def\fundingHeading{%
-    \textcolor{lipicsGray}{\fontsize{7}{8}\bfseries
+    \textcolor{darkgray}{\fontsize{7}{8}\bfseries
 Funding\enskip}}
 \def\acknowledgements#1{\def\@acknowledgements{#1}}
 \let\@acknowledgements\@empty
 \def\acknowledgementsHeading{%
-    \textcolor{lipicsGray}{\fontsize{7}{8}\bfseries
+    \textcolor{darkgray}{\fontsize{7}{8}\bfseries
 Acknowledgements\enskip}}
 
 
 
 \AtBeginDocument{
-    \colorlet{itemColor}{lipicsBulletGray}%
-    \def\@dis@clr{lipicsBulletGray}%
-    \def\@dis@bg{lipicsBulletGray}%
+    \colorlet{itemColor}{bulletgray}%
+    \def\@dis@clr{bulletgray}%
+    \def\@dis@bg{bulletgray}%
 }
 
 \tikzset{
@@ -1362,6 +1226,13 @@ Acknowledgements\enskip}}
         }
     }
 }
+\tikzset{
+    pics/enumbox/.style args={#1}{
+        code = {
+            \path[#1] (0,.3em) rectangle (.2em,.1em); \node(-text) at (.1em,.35ex) {};
+        }
+    }
+}
 
 
 \newcommand{\@theoremstartsym}[1]{\raisebox{1.5ex}{%
@@ -1372,6 +1243,8 @@ Acknowledgements\enskip}}
 \tikz[baseline=(t-text.base)]{\pic (t) at (0,0) {figurebox={#1}}; }}}
 \newcommand{\@itemsym}[1]{\raisebox{.5ex}{%
 \tikz[baseline=(t-text.base)]{\pic (t) at (0,0) {itembox={#1}}; }}}
+\newcommand{\@enumsym}[1]{\raisebox{.5ex}{%
+\tikz[baseline=(t-text.base)]{\pic (t) at (0,0) {enumbox={#1}}; }}}
 
 \DeclareRobustCommand{\lipicsTriangleUp}[1][thick,draw=\@dis@clr, fill=\@dis@bg]{\@theoremstartsym{#1}}
 \DeclareRobustCommand{\lipicsClaimTriangleUp}[1][thin,draw=\@dis@clr,
@@ -1384,63 +1257,72 @@ fill=white]{\@theoremendsym{#1}}
 \DeclareRobustCommand{\lipicsTriangleRight}[1][thick,draw=\@dis@clr, fill=\@dis@bg]{\@itemsym{#1}}
 \DeclareRobustCommand{\lipicsClaimTriangleRight}[1][thin,draw=\@dis@clr,
 fill=white]{\@itemsym{#1}}
+\DeclareRobustCommand{\@lipicsTriangleRight}{\if@claimmode\lipicsClaimTriangleRight\else\lipicsTriangleRight\fi}
+\DeclareRobustCommand{\lipicsDotRight}[1][thick,draw=\@dis@clr,
+fill=\@dis@bg]{{\normalsize\@enumsym{#1}}}
+\DeclareRobustCommand{\lipicsClaimDotRight}[1][thin,draw=\@dis@clr,
+fill=white]{{\normalsize\@enumsym{#1}}}
+\DeclareRobustCommand{\@lipicsDotRight}{\if@claimmode\lipicsClaimDotRight\else\lipicsDotRight\fi}
 
 \thm@headfont{%
-  \textcolor{lipicsBulletGray}{$\lipicsTriangleUp$}\nobreakspace\quad\bfseries}
+  \textcolor{bulletgray}{$\lipicsTriangleUp$}\nobreakspace\quad\bfseries}
 \def\th@remark{%
   \thm@headfont{%
-    \textcolor{lipicsBulletGray}{$\lipicsTriangleUp$}\nobreakspace\quad}%
+    \textcolor{bulletgray}{$\lipicsTriangleUp$}\nobreakspace\quad}%
   \normalfont % body font
   \thm@preskip\topsep \divide\thm@preskip\tw@
   \thm@postskip\thm@preskip
 }
 \def\@endtheorem{\endtrivlist}
 
-\renewcommand\qedsymbol{\textcolor{lipicsBulletGray}{\ensuremath{\lipicsTriangleDown}}}
+\renewcommand\qedsymbol{\textcolor{bulletgray}{\ensuremath{\lipicsTriangleDown}}}
 \renewenvironment{proof}[1][\proofname]{\par
   \pushQED{\qed}%
   \normalfont \topsep6\p@\@plus6\p@\relax
   \trivlist
   \item[\hskip\labelsep
-        \color{lipicsGray}\bfseries
+        \color{darkgray}\bfseries
     #1\@addpunct{\bfseries.}]\ignorespaces
 }{%
-  \popQED\endtrivlist%\@endpefalse
+  \popQED\endtrivlist\@endpefalse
 }
 
-\newcommand{\claimqedhere}{\renewcommand\qedsymbol{\textcolor{lipicsGray}{\ensuremath{\lipicsClaimTriangleDown}}}%
+\newcommand{\claimqedhere}{\renewcommand\qedsymbol{\textcolor{darkgray}{\ensuremath{\lipicsClaimTriangleDown}}}%
 \qedhere%
-\renewcommand\qedsymbol{\textcolor{lipicsGray}{\ensuremath{\blacktriangleleft}}}}
-\newenvironment{claimproof}[1][\proofname]{
+\renewcommand\qedsymbol{\textcolor{darkgray}{\ensuremath{\lipicsTriangleDown}}}}
+
+\newenvironment{claimproof}[1][\proofname]{%
+  \@claimmodetrue%
   \pushQED{\qed}%
   \normalfont \topsep6\p@\@plus6\p@\relax
   \trivlist
   \item[\hskip\labelsep
-        \color{lipicsGray}
+        \color{darkgray}
     #1\@addpunct{.}]\ignorespaces
 }{%
-  \renewcommand\qedsymbol{\textcolor{lipicsBulletGray}{\ensuremath{\lipicsClaimTriangleDown}}}
-  \popQED\endtrivlist%\@endpefalse
-  \renewcommand\qedsymbol{\textcolor{lipicsBulletGray}{\ensuremath{\lipicsTriangleDown}}}
+  \renewcommand\qedsymbol{\textcolor{bulletgray}{\ensuremath{\lipicsClaimTriangleDown}}}
+  \popQED\endtrivlist\@endpefalse%
+  \@claimmodefalse%
+  \renewcommand\qedsymbol{\textcolor{bulletgray}{\ensuremath{\lipicsTriangleDown}}}
 }
 
 % inspired by qed of amsthm class
 \DeclareRobustCommand{\lipicsEnd}{%
     \leavevmode\unskip\penalty9999 \hbox{}\nobreak\hfill
-    \quad\hbox{\textcolor{lipicsBulletGray}{$\lipicsTriangleDown$}}%
+    \quad\hbox{\textcolor{bulletgray}{$\lipicsTriangleDown$}}%
 }
 \DeclareRobustCommand{\lipicsClaimEnd}{%
     \leavevmode\unskip\penalty9999 \hbox{}\nobreak\hfill
-    \quad\hbox{\textcolor{lipicsBulletGray}{$\lipicsClaimTriangleDown$}}%
+    \quad\hbox{\textcolor{bulletgray}{$\lipicsClaimTriangleDown$}}%
 }
 
 \AtBeginDocument{
     \@ifpackageloaded{algorithm2e}{
         \renewcommand{\algorithmcfname}{\bfseries{}Algorithm}
-        \SetAlgoCaptionSeparator{~}
+        \SetAlgoCaptionSeparator{\textbf{.}~}
         \SetAlCapHSkip{0pt}
         \renewcommand{\algocf@captiontext}[2]{%
-            \kern0.05em{\color{lipicsBulletGray}\rule{0.73em}{0.73em}}%
+            \kern0.05em{\raisebox{-.1ex}{\color{bulletgray}\rule{0.73em}{0.73em}}}%
         \hspace*{0.67em}\small #1\algocf@capseparator\nobreakspace#2}
         \renewcommand{\algocf@makecaption}[2]{%
             \parbox[t]{\textwidth}{\algocf@captiontext{#1}{#2}}%
@@ -1486,14 +1368,63 @@ fill=white]{\@itemsym{#1}}
     \RequirePackage{labelschanged}
 \fi
 
+% from https://tex.stackexchange.com/questions/561963/how-to-avoid-parentheses-brackets-in-the-title-in-amsthm-when-only-using-cite?noredirect=1&lq=1
+% (remove extra parenthesis around optional parameter for theorems if the parameter
+% contains only a citation)
+
+\ExplSyntaxOn
+\NewDocumentCommand{\checkcite}{m}
+{%
+    \regex_match:nnTF {\A\Z} { #1 }{}{
+    \regex_match:nnTF {\A \c{cite}(?:\[[^]]*\])?\{.*\} \Z} { #1 }
+    {% only \cite
+        \thmt@space\mdseries#1
+    }
+    {%
+        \regex_match:nnTF {\A .*[,;][\s\~]+\{*?\c{cite}(\[[^]]*\])?\{.*?\}\}*? \Z} { #1 }{
+            \tl_set:Nn \l_tl { #1 }
+            \regex_replace_all:nnN {\A (.*)[,;]([\s\~]+)((?:\{)*\c{cite}(?:\[[^]]*\])?\{.*\}(?:\})*) \Z} {(\1)\~\{\3\}} \l_tl
+            \thmt@space\mdseries\l_tl
+        }{
+            \thmt@space\mdseries(#1)
+        }
+    }%
+    }
+}
+\ExplSyntaxOff
+
+% from thmtools
+\def\thmt@setheadstyle#1{%
+    \thmt@style@headstyle{%
+        \def\NAME{\the\thm@headfont ##1}%
+        \def\NUMBER{\bgroup\@upn{##2}\egroup}%
+        \def\NOTE{\checkcite{##3}}%
+    }%
+    \def\thmt@tmp{#1}%
+    \@onelevel@sanitize\thmt@tmp
+    %\tracingall
+    \ifcsname thmt@headstyle@\thmt@tmp\endcsname
+        \thmt@style@headstyle\@xa{%
+            \the\thmt@style@headstyle
+            \csname thmt@headstyle@#1\endcsname
+        }%
+    \else
+        \thmt@style@headstyle\@xa{%
+            \the\thmt@style@headstyle
+            #1%
+        }%
+    \fi
+    %\showthe\thmt@style@headstyle
+}
+
 \declaretheoremstyle[
     spaceabove=\topsep, spacebelow=\topsep,
     headfont=\normalfont\bfseries,
     headpunct=\normalfont\bfseries.,
-    notefont=\mdseries, notebraces={(}{)},
+    notefont=\mdseries, notebraces={}{},
     bodyfont=\normalfont,
     postheadspace=5pt plus 1pt minus 1pt,
-    headformat=\null\lipicsTriangleUp\hskip.61em{\bfseries\NAME~\NUMBER}\NOTE,
+    headformat=\null\lipicsTriangleUp\hskip.61em{\bfseries\NAME~\NUMBER}{\NOTE},
     qed={\lipicsTriangleDown},
 ]{remstyle}
 
@@ -1501,19 +1432,19 @@ fill=white]{\@itemsym{#1}}
     spaceabove=\topsep, spacebelow=\topsep,
     headfont=\normalfont\bfseries,
     headpunct=\normalfont\bfseries.,
-    notefont=\mdseries, notebraces={(}{)},
+    notefont=\mdseries, notebraces={}{},
     bodyfont=\itshape,
     postheadspace=5pt plus 1pt minus 1pt,
-    headformat=\null\lipicsTriangleUp\hskip.61em{\bfseries\NAME~\NUMBER}\NOTE,
+    headformat=\null\lipicsTriangleUp\hskip.61em{\bfseries\NAME~\NUMBER}{\NOTE},
 ]{plainstyle}
 \declaretheoremstyle[
     spaceabove=\topsep, spacebelow=\topsep,
     headfont=\normalfont\bfseries,
     headpunct=\normalfont\bfseries.,
-    notefont=\mdseries, notebraces={(}{)},
+    notefont=\mdseries, notebraces={}{},
     bodyfont=\itshape,
     postheadspace=5pt plus 1pt minus 1pt,
-    headformat=\null\lipicsTriangleUp\hskip.61em{\bfseries\NAME~\NUMBER}\NOTE,
+    headformat=\null\lipicsTriangleUp\hskip.61em{\bfseries\NAME~\NUMBER}{\NOTE},
     qed={\lipicsTriangleDown},
 ]{plainqstyle}
 
@@ -1521,19 +1452,19 @@ fill=white]{\@itemsym{#1}}
     spaceabove=\topsep, spacebelow=\topsep,
     headfont=\normalfont,
     headpunct=\normalfont.,
-    notefont=\mdseries, notebraces={(}{)},
+    notefont=\mdseries, notebraces={}{},
     bodyfont=\itshape,
     postheadspace=5pt plus 1pt minus 1pt,
-    headformat=\null\lipicsClaimTriangleUp\hskip.61em{\NAME~\NUMBER}\NOTE,
+    headformat=\null\lipicsClaimTriangleUp\hskip.61em{\NAME~\NUMBER}{\NOTE},
 ]{claimstyle}
 \declaretheoremstyle[
     spaceabove=\topsep, spacebelow=\topsep,
     headfont=\normalfont,
     headpunct=\normalfont.,
-    notefont=\mdseries, notebraces={(}{)},
+    notefont=\mdseries, notebraces={}{},
     bodyfont=\itshape,
     postheadspace=5pt plus 1pt minus 1pt,
-    headformat=\null\lipicsClaimTriangleUp\hskip.61em{\NAME~\NUMBER}\NOTE,
+    headformat=\null\lipicsClaimTriangleUp\hskip.61em{\NAME~\NUMBER}{\NOTE},
     qed={\lipicsClaimTriangleDown},
 ]{claimqstyle}
 
@@ -1821,12 +1752,16 @@ fill=white]{\@itemsym{#1}}
 ]{thoughtqq}
 
 \declaretheorem[
+    preheadhook={\@claimmodetrue},
+    postfoothook={\@claimmodefalse},
     style=claimstyle,
     sibling=theorem,
     refname={Claim,Claims},
     Refname={Claim,Claims}
 ]{claim}
 \declaretheorem[
+    preheadhook={\@claimmodetrue},
+    postfoothook={\@claimmodefalse},
     name=Claim,
     style=claimqstyle,
     sibling=theorem,
@@ -1834,6 +1769,8 @@ fill=white]{\@itemsym{#1}}
     Refname={Claim,Claims}
 ]{claimq}
 \declaretheorem[
+    preheadhook={\@claimmodetrue},
+    postfoothook={\@claimmodefalse},
     name=Claim,
     style=claimqstyle,
     sibling=theorem,
@@ -1843,8 +1780,6 @@ fill=white]{\@itemsym{#1}}
 
 
 \theoremstyle{plainstyle}
-\widowpenalty=5000
-\clubpenalty=5000
 
 % modify thm-restate: endsymbol whenever printing not the numbered variant
 % from thm-restate.sty:
@@ -1938,6 +1873,22 @@ fill=white]{\@itemsym{#1}}
     %% now empty, just used as a marker.
 }
 
+\ifx\usestocmargin\@undefined
+    \def\makeLineNumber{{\makebox[0pt][r]{\linenumberfont\LineNumber\hspace*{3.1em}}}}
+\else
+    \def\makeLineNumber{{\makebox[0pt][r]{\linenumberfont\LineNumber\hspace*{3.2em}}}}
+    \linenumbers
+\fi
+\ifx\authoranonymous\relax
+    \linenumbers
+\fi
+
+\RequirePackage[defaultlines=4,all]{nowidow}
+
+\AtBeginDocument{
+    \emergencystretch 2em%
+    \hfuzz 1\p@
+}
 \endinput
 %%
 %% End of file `no-lipics-v2022.cls'.
