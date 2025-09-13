@@ -24,37 +24,330 @@
 %% -----------------------------------------------------------------
 %%
 \ProvidesClass{no-lipics}
-    [2024/11/18 v1.11.4 No-LIPIcs article]
-\NeedsTeXFormat{LaTeX2e}[2022/11/01]
+    [2025/09/13 v1.15.0 No-LIPIcs article]
+\NeedsTeXFormat{LaTeX2e}[2022/01/01]
 \ClassWarningNoLine{no-lipics}{This is a modified version of LIPIcs.\MessageBreak%
 DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
-\newif\if@nobotseplist  \@nobotseplistfalse
-\newif\if@claimmode  \@claimmodefalse
-\def\@endparenv{%
-\addpenalty\@endparpenalty\if@nobotseplist\else\addvspace\@topsepadd\fi\@endpetrue}
-\def\@doendpe{%
-    \@endpetrue
-    \def\par{\@restorepar
-        \everypar{}%
-        \par
-        \if@nobotseplist
-            \addvspace\topsep
-            \addvspace\partopsep
-            \global\@nobotseplistfalse
-        \fi
-    \@endpefalse}%
-    \everypar{{\setbox\z@\lastbox}%
-        \everypar{}%
-        \if@nobotseplist\global\@nobotseplistfalse\fi
-\@endpefalse}}
 
-\def\@title{\textcolor{red}{Author: Please provide a title}}
-\let\@subtitle\@empty
-\def\subtitle#1{\gdef\@subtitle{#1}}
-\def\subtitleseperator{: }
+%% Class options
 
-\def\i@parindent{5mm}
+\def\lipics@opterrshort{Option  "\CurrentOption" not supported}
+\def\lipics@opterrlong{The option "\CurrentOption" from article.cls is not supported by no-lipics.cls.}
+\DeclareOption{a5paper}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
+\DeclareOption{b5paper}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
+\DeclareOption{legalpaper}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
+\DeclareOption{executivepaper}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
+\DeclareOption{landscape}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
+\DeclareOption{10pt}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
+\DeclareOption{11pt}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
+\DeclareOption{12pt}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
+\DeclareOption{oneside}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
+\DeclareOption{twoside}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
+\DeclareOption{titlepage}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
+\DeclareOption{notitlepage}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
+\DeclareOption{onecolumn}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
+\DeclareOption{twocolumn}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
+\DeclareOption{openbib}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
+\DeclareOption{autoref}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
+
+\DeclareOption{stoc}{\let\usestocmargin\relax}
+\DeclareOption{numberwithinsect}{\let\numberwithinsect\relax}
+\DeclareOption{anonymous}{\let\authoranonymous\relax}
+\DeclareOption{lmodern}{\let\uselmodern\relax}
+\DeclareOption{footnotebackref}{\let\fnotebackref\relax}
+\DeclareOption{authorcolumns}{\let\authorcolumns\relax}
+\DeclareOption{refcheck}{\let\userefcheck\relax}
+\DeclareOption{reflite}{\let\usereflite\relax}
+
+\DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
+\ProcessOptions
+
+\LoadClass[twoside,notitlepage]{article}
+
+%% Packages
+
+\RequirePackage{microtype}
+\RequirePackage{textcomp}
+\RequirePackage{amssymb}
+\PassOptionsToPackage{retainmissing}{MnSymbol}
+\AtBeginDocument{\@ifpackageloaded{MnSymbol}%
+    {\expandafter\let\csname ver@amssymb.sty\endcsname\relax
+        \let\complement\@undefined
+\RequirePackage{amssymb}}{}}
+
+\ifx\uselmodern\relax
+    \RequirePackage{lmodern}
+    \RequirePackage[USenglish]{babel}
+    \RequirePackage{amsmath}
+\else
+    \RequirePackage{iftex}
+    \ifluatex
+        \RequirePackage{fontspec}
+        \RequirePackage[USenglish]{babel}
+
+        \IfFormatAtLeastTF{2024/01/01}{%
+            \RequirePackage[fracspacing]{newpx}%
+        }{%
+            \ClassWarningNoLine{no-lipics}{Compatibility mode for old LaTeX}{}
+            \RequirePackage{newpxtext}%
+            \RequirePackage[fracspacing]{newpxmath}[2019/10/02]%
+            \RequirePackage[nomath]{lmodern}%
+            \RequirePackage[mathscr]{eucal}%
+        }%
+
+        % from impnattypo, adapted
+        \RequirePackage{luatexbase,luacode}
+        \begin{luacode}
+            local glyph_id = node.id "glyph"
+            local glue_id  = node.id "glue"
+            local hlist_id = node.id "hlist"
+
+            last_line_twice_parindent = function (head)
+                while head do
+                    local _w,_h,_d = node.dimensions(head)
+                    if head.id == glue_id and head.subtype ~= 15 and (4.5 * _w < tex.dimen.textwidth) then
+                        local p = node.new("penalty")
+                        p.penalty = 10000
+                        node.insert_after(head,head.prev,p)
+                    end
+                    head = head.next
+                end
+                return true
+            end
+
+            luatexbase.add_to_callback("pre_linebreak_filter",last_line_twice_parindent,"lastparline")
+        \end{luacode}
+
+        % adapted from
+        % https://tex.stackexchange.com/questions/396134/how-to-perform-an-action-when-an-overfull-or-underfull-box-is-encountered/493311#493311
+
+        \directlua{
+            GLYPH = node.id("glyph")
+            GLUE  = node.id("glue")
+            %
+            function hpackshow (indicator,num,nd,f,l)
+            print('HPACK: ' .. indicator .. ' ' .. num)
+            if (indicator == 'overfull') then
+            local pt = num / 65536.0
+            str = string.format("| overfull \@percentchar #.2fpt",pt)
+            nds = {}
+            nds[0]=node.new(GLYPH,1)
+                for i = 1,string.len(str) do
+                  nds[i] = node.new(GLYPH,1)
+                  nds[i].font = font.current()
+                  nds[i-1].next = nds[i]
+                end
+
+                j = 1
+                for s in string.utfvalues(str) do
+                  local char = unicode.utf8.char(s)
+                  nds[j].char = s
+                  if unicode.utf8.match(char,"\@percentchar s") then
+                    nds[j] = node.new(GLUE)
+                    nds[j].width = space
+                    nds[j].shrink = shrink
+                    nds[j].stretch = stretch
+                  end
+                  j = j+1
+                end
+            return nds[0]
+            end
+            end
+            %
+            luatexbase.add_to_callback('hpack_quality',hpackshow,'my hpack logger')
+        }
+
+        \AtBeginDocument{
+            \pdfvariable suppressoptionalinfo \numexpr
+            0
+            +   1   % PTEX.FullBanner
+            +   2   % PTEX.FileName
+            +   4   % PTEX.PageNumber
+            +   8   % PTEX.InfoDict
+            +  16   % Creator
+            +  32   % CreationDate
+            +  64   % ModDate
+            + 128   % Producer
+            + 256   % Trapped
+            + 512   % ID
+            \relax
+        }
+    \else
+        \ClassWarningNoLine{no-lipics}{Overfull hbox messages available only with LuaLatex}{}
+
+        \RequirePackage[USenglish]{babel}
+
+        \IfFormatAtLeastTF{2024/01/01}{%
+            \RequirePackage[fracspacing]{newpx}
+            \RequirePackage[OT1]{fontenc}
+        }{%
+            \ClassWarningNoLine{no-lipics}{Compatibility mode for old LaTeX}{}
+            \RequirePackage{newpxtext}
+            \RequirePackage[OT1]{fontenc}
+            \RequirePackage[mathscr]{eucal}
+            \RequirePackage[fracspacing]{newpxmath}[2019/10/02]
+        }
+
+        \renewcommand{\sfdefault}{lmss}
+        \renewcommand{\ttdefault}{lmtt}
+        \SetMathAlphabet{\mathsf}{normal}{OT1}{lmss}{m}{n}
+        \SetMathAlphabet{\mathtt}{normal}{OT1}{lmtt}{m}{n}
+        \SetMathAlphabet{\mathsf}{bold}  {OT1}{lmss}{bx}{n}
+        \SetMathAlphabet{\mathtt}{bold}  {OT1}{lmtt}{m}{n}
+
+        \AtBeginDocument{
+            \pdfinfoomitdate=1
+            \pdftrailerid{}
+            \pdfsuppressptexinfo=-1
+        }
+    \fi
+\fi
+
+% undefine openbox to avoid package conflict
+\let\openbox\undefined
+\RequirePackage{amsthm}
+\RequirePackage{thmtools}
+\RequirePackage{thm-restate}
+\RequirePackage{tikz}
+
+
+%% Page geometry, general settings, etc
+
+\ifx\usestocmargin\@undefined
+    \def\i@parindent{1.5em}
+\else
+    \def\i@parindent{1.6em}
+\fi
 \setlength\parindent{\i@parindent}
+\def\i@parindent{1.41em}
+\brokenpenalty=10000
+\doublehyphendemerits=1000000000
+
+\def\ps@plain{\let\@mkboth\@gobbletwo
+    \let\@evenhead\@empty
+    \let\@oddhead\@empty
+    \let\@oddfoot\@empty
+\let\@oddfoot\@empty}
+
+% default font size
+
+\renewcommand\small{%
+    \@setfontsize\small\@ixpt{11.5}%
+    \abovedisplayskip 3.5\p@ \@plus2\p@ \@minus2\p@
+    \abovedisplayshortskip \z@ \@plus2\p@
+    \belowdisplayshortskip 3.5\p@ \@plus2\p@ \@minus2\p@
+    \def\@listi{\leftmargin\leftmargini
+        \topsep 3.5\p@ \@plus2\p@ \@minus2\p@
+        \parsep 2\p@ \@plus\p@ \@minus\p@
+\itemsep \parsep}%
+    \belowdisplayskip \abovedisplayskip
+}
+\renewcommand\footnotesize{%
+    \@setfontsize\footnotesize{8.5}{9.5}%
+    \abovedisplayskip 3.5\p@ \@plus2\p@ \@minus2\p@
+    \abovedisplayshortskip \z@ \@plus\p@
+    \belowdisplayshortskip 3.5\p@ \@plus\p@ \@minus2\p@
+    \def\@listi{\leftmargin\leftmargini
+        \topsep 3\p@ \@plus\p@ \@minus\p@
+        \parsep 2\p@ \@plus\p@ \@minus\p@
+\itemsep \parsep}%
+    \belowdisplayskip \abovedisplayskip
+}
+\renewcommand\large{\@setfontsize\large{11}{13}}
+\renewcommand\Large{\@setfontsize\Large{12}{14}}
+
+% margins
+
+\ifx\usestocmargin\@undefined
+    % trick to suppress typearea warning.
+    % while lines are indeed ~20% too long, for scientific papers this is barely
+    % acceptable.
+    \renewcommand\normalsize{%
+        \@setfontsize\normalsize{13}{14}%
+        \abovedisplayskip 5\p@ \@plus3\p@ \@minus3\p@
+        \abovedisplayshortskip \z@ \@plus3\p@
+        \belowdisplayshortskip 5\p@ \@plus3\p@ \@minus3\p@
+        \belowdisplayskip \abovedisplayskip
+    \let\@listi\@listI}
+    \PassOptionsToPackage{headinclude,BCOR=13.125mm,DIV=15}{typearea}
+    \RequirePackage{typearea}
+
+    \renewcommand\normalsize{%
+        \@setfontsize\normalsize{10}{13.5}%
+        \abovedisplayskip 5\p@ \@plus3\p@ \@minus3\p@
+        \abovedisplayshortskip \z@ \@plus3\p@
+        \belowdisplayshortskip 5\p@ \@plus3\p@ \@minus3\p@
+        \belowdisplayskip \abovedisplayskip
+    \let\@listi\@listI}
+
+\else
+    \RequirePackage[margin=1in]{geometry}
+    \renewcommand\normalsize{%
+        \@setfontsize\normalsize\@xipt{13}%
+        \abovedisplayskip 6.5\p@ \@plus3\p@ \@minus3\p@
+        \abovedisplayshortskip \z@ \@plus3\p@
+        \belowdisplayshortskip 6.5\p@ \@plus3\p@ \@minus3\p@
+        \belowdisplayskip \abovedisplayskip
+    \let\@listi\@listI}
+\fi
+\normalsize
+
+% page setup
+
+\ifx\usestocmargin\@undefined
+\def\ps@headings{%
+    \def\@evenhead{\large\bfseries
+    \makebox[0pt][r]{\thepage\hspace*{\i@parindent}}\leftmark\hfil}%
+    \def\@oddhead{\large\bfseries\ifx\authoranonymous\relax\leftmark\else\rightmark\fi\hfil
+    \makebox[0pt][l]{\hspace*{\i@parindent}\thepage}}%
+    \let\@evenfoot\@empty%
+    \let\@oddfoot\@empty
+    \let\@mkboth\markboth
+    \let\sectionmark\@gobble
+\let\subsectionmark\@gobble}
+\else
+\def\ps@headings{%
+    \def\@oddhead{\large\bfseries\leftmark\hfil
+    \makebox[0pt][l]{\hspace*{\i@parindent}\thepage}}%
+    \def\@evenhead{\large\bfseries
+    \makebox[0pt][r]{\thepage\hspace*{\i@parindent}}\leftmark\hfil}%
+    \let\@evenfoot\@empty%
+    \let\@oddfoot\@empty
+    \let\@mkboth\markboth
+    \let\sectionmark\@gobble
+\let\subsectionmark\@gobble}
+\fi
+\pagestyle{headings}
+
+%% Default colors, extra symbols
+
+% IBM Design Library color-blind optimized palette
+\definecolor{color1}{HTML}{648FFF} % blue
+\definecolor{color2}{HTML}{785EF0} % purple
+\definecolor{color3}{HTML}{DC267F} % magenta
+\definecolor{color4}{HTML}{FE6100} % orange
+\definecolor{color5}{HTML}{FFB000} % yellow
+\definecolor{linegray}{rgb}{0.6,0.59,0.61}
+\definecolor{lightgray}{rgb}{0.8,0.8,0.8}
+\colorlet{color6}{linegray}
+\colorlet{color7}{lightgray}
+
+\colorlet{c1}{color1!60!black}
+\colorlet{c2}{color2!60!black}
+\colorlet{c3}{color3!60!black}
+\colorlet{c4}{color4!60!black}
+\colorlet{c5}{color5!60!black}
+\definecolor{darkgray}{rgb}{0.31,0.31,0.33}
+\definecolor{bulletgray}{rgb}{0.45,0.45,0.46}
+\colorlet{c6}{darkgray}
+\colorlet{c7}{bulletgray}
+
+\def\displaypalette{{\color{color1}\rule{2em}{2em}}{\color{color2}\rule{2em}{2em}}{\color{color3}\rule{2em}{2em}}{\color{color4}\rule{2em}{2em}}{\color{color5}\rule{2em}{2em}}{\color{linegray}\rule{2em}{2em}}{\color{lightgray}\rule{2em}{2em}}}
+\def\displayfgpalette{{\color{c1}\rule{2em}{2em}}{\color{c2}\rule{2em}{2em}}{\color{c3}\rule{2em}{2em}}{\color{c4}\rule{2em}{2em}}{\color{c5}\rule{2em}{2em}}{\color{darkgray}\rule{2em}{2em}}{\color{bulletgray}\rule{2em}{2em}}}
+
+
+
+%% Sections, etc
 
 \def\partn{%
    \if@noskipsec \leavevmode \fi
@@ -67,7 +360,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
     \ifnum \c@secnumdepth >\m@ne
         \refstepcounter{part}%
         \addcontentsline{toc}{part}{%
-            \protect\numberline{\bfseries\partname{} \thepart:}\;
+            {\bfseries\partname{} \thepart:}\;
           #1}%
     \else
         \addcontentsline{toc}{part}{ #1}%
@@ -137,119 +430,29 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
 \def\@seccntformat#1{\csname the#1\endcsname}
 \def\@biblabel#1{\textcolor{darkgray}{\bfseries#1}}
 
-\def\ps@plain{\let\@mkboth\@gobbletwo
-    \let\@evenhead\@empty
-    \let\@oddhead\@empty
-    \let\@oddfoot\@empty
-\let\@oddfoot\@empty}
-\def\lipics@opterrshort{Option  "\CurrentOption" not supported}
-\def\lipics@opterrlong{The option "\CurrentOption" from article.cls is not supported by lipics.cls.}
-\DeclareOption{a5paper}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
-\DeclareOption{b5paper}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
-\DeclareOption{legalpaper}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
-\DeclareOption{executivepaper}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
-\DeclareOption{landscape}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
-\DeclareOption{10pt}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
-\DeclareOption{11pt}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
-\DeclareOption{12pt}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
-\DeclareOption{oneside}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
-\DeclareOption{twoside}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
-\DeclareOption{titlepage}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
-\DeclareOption{notitlepage}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
-\DeclareOption{onecolumn}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
-\DeclareOption{twocolumn}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
-\DeclareOption{openbib}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
-\DeclareOption{autoref}{\@latexerr{\lipics@opterrshort}{\lipics@opterrlong}}
-\DeclareOption{stoc}{\let\usestocmargin\relax}
-\DeclareOption{numberwithinsect}{\let\numberwithinsect\relax}
-\DeclareOption{anonymous}{\let\authoranonymous\relax}
-\DeclareOption{lmodern}{\let\uselmodern\relax}
-\DeclareOption{footnotebackref}{\let\fnotebackref\relax}
-\DeclareOption{authorcolumns}{\let\authorcolumns\relax}
-\DeclareOption{refcheck}{\let\userefcheck\relax}
-\let\compactauthor\relax
-\DeclareOption{oldauthorstyle}
-{\let\compactauthor\@empty}
-\DeclareOption{compactauthor}{\let\compactauthor\relax}
-\DeclareOption{pdfa}{\let\pdfa\relax}
-\DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
-\ProcessOptions
+\renewcommand\section{\@startsection {section}{1}{\z@}%
+    {-2.3ex \@plus -1ex \@minus -.2ex}%
+    {1.8ex \@plus.2ex}%
+    {\Large\bfseries\raggedright}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
+    {-1.8ex\@plus -1ex \@minus -.2ex}%
+    {1.3ex \@plus .2ex}%
+    {\Large\bfseries\raggedright}}
+\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
+    {-1.8ex\@plus -1ex \@minus -.2ex}%
+    {1.3ex \@plus .2ex}%
+    {\normalsize\bfseries\raggedright}}
+\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
+    {-1.8ex \@plus-1ex \@minus-.2ex}%
+    {1.3ex \@plus .2ex}%
+    {\normalsize\bfseries\raggedright}}
+\renewcommand\subparagraph{\@startsection{subparagraph}{5}{\z@}%
+    {.5ex \@plus1ex \@minus .2ex}%
+    {-1em}%
+    {\normalsize\bfseries}}
 
-\LoadClass[twoside,notitlepage]{article}
 
-\setcounter{tocdepth}{2}
-
-% redefine contentsline
-\renewcommand*\l@section[2]{%
-    \ifnum \c@tocdepth >\z@
-        \addpenalty\@secpenalty
-        \addvspace{.5em \@plus\p@}%
-        \setlength\@tempdima{\parindent}%
-        \begingroup
-        \parindent \z@ \rightskip \@pnumwidth
-        \parfillskip -\@pnumwidth
-        \leavevmode \bfseries
-        \advance\leftskip\@tempdima
-        \hskip -\leftskip
-        #1\nobreak\hfil
-        \nobreak\hb@xt@\@pnumwidth{\hss #2%
-        \kern-\p@\kern\p@}\par
-        \endgroup
-\fi}
-
-\let\mtl@section\l@section
-\renewcommand*\l@section[2]{\mtl@section{{#1}}{ #2\hspace{-.04em}}}
-\renewcommand*\l@part[2]{%
-    \ifnum \c@tocdepth >-2\relax
-        \addpenalty\@secpenalty
-        \addvspace{1em \@plus\p@}%
-        \setlength\@tempdima{3em}%
-        \begingroup
-        \parindent \z@ \rightskip \@pnumwidth
-        \parfillskip -\@pnumwidth
-        {\leavevmode
-            \large \bfseries #1\hfil
-            \hb@xt@\@pnumwidth{\hss #2%
-        \kern-\p@\kern\p@}}\par
-        \nobreak
-        \if@compatibility
-            \global\@nobreaktrue
-            \everypar{\global\@nobreakfalse\everypar{}}%
-        \fi
-        \endgroup
-    \fi}
-
-\let\mtl@part\l@part
-\renewcommand*\l@part[2]{\mtl@part{{#1}}{}}
-
-\let\old@dottedcontentsline\@dottedtocline
-\def\@dottedtocline#1#2#3#4#5{%
-\old@dottedcontentsline{#1}{#2}{#3}{#4}{{{#5}}}}
-
-\renewcommand\small{%
-    \@setfontsize\small\@ixpt{11.5}%
-    \abovedisplayskip 3.5\p@ \@plus2\p@ \@minus2\p@
-    \abovedisplayshortskip \z@ \@plus2\p@
-    \belowdisplayshortskip 3.5\p@ \@plus2\p@ \@minus2\p@
-    \def\@listi{\leftmargin\leftmargini
-        \topsep 3.5\p@ \@plus2\p@ \@minus2\p@
-        \parsep 2\p@ \@plus\p@ \@minus\p@
-\itemsep \parsep}%
-    \belowdisplayskip \abovedisplayskip
-}
-\renewcommand\footnotesize{%
-    \@setfontsize\footnotesize{8.5}{9.5}%
-    \abovedisplayskip 3.5\p@ \@plus2\p@ \@minus2\p@
-    \abovedisplayshortskip \z@ \@plus\p@
-    \belowdisplayshortskip 3.5\p@ \@plus\p@ \@minus2\p@
-    \def\@listi{\leftmargin\leftmargini
-        \topsep 3\p@ \@plus\p@ \@minus\p@
-        \parsep 2\p@ \@plus\p@ \@minus\p@
-\itemsep \parsep}%
-    \belowdisplayskip \abovedisplayskip
-}
-\renewcommand\large{\@setfontsize\large{11}{13}}
-\renewcommand\Large{\@setfontsize\Large{12}{14}}
+%% Itemize, enumerate, etc
 
 \def\@listi{\leftmargin\leftmargini%
     \parsep\z@ \@plus\p@%
@@ -270,6 +473,39 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
     \parsep    \z@
     \partopsep \p@ \@plus\z@ \@minus\p@
     \itemsep   \z@ \@plus\p@}
+
+\renewcommand\labelitemi{%
+    \textcolor{bulletgray}{%
+        \ifnum\@listdepth=\@ne%
+            \@lipicsTriangleRight%
+        \else%
+            $\lipicsClaimTriangleRight$%
+    \fi}}
+\renewcommand\labelitemii{%
+    \textcolor{bulletgray}{$\lipicsClaimTriangleRight$}}
+\renewcommand\labelitemiii{%
+    \textcolor{bulletgray}{\bfseries\textasteriskcentered}}
+\renewcommand\labelitemiv{%
+    \textcolor{bulletgray}{\bfseries\textperiodcentered}}
+
+
+\renewenvironment{description}
+{\list{}{\advance\partopsep\topsep\topsep\z@\@plus\p@
+        \labelwidth\z@ \itemindent-\leftmargin
+\let\makelabel\descriptionlabel}}
+{\ifnum\@listdepth=\@ne\global\@nobotseplisttrue\fi\endlist}
+
+\renewcommand*\descriptionlabel[1]{%
+\hspace\labelsep\textcolor{darkgray}{\bfseries\mathversion{bold}#1}}
+
+
+%% Title page
+
+\def\@title{\textcolor{red}{Author: Please provide a title}}
+\let\@subtitle\@empty
+\def\subtitle#1{\gdef\@subtitle{#1}}
+\def\subtitleseperator{: }
+
 \renewcommand\maketitle{\par
     \begingroup
     \thispagestyle{plain}
@@ -302,12 +538,10 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
 }
 \def\@maketitle{%
     \newpage
-    \setcounter{page}{0}
     \null\vskip-2\baselineskip
     \vskip-\headsep
     \@titlerunning
     \@authorrunning
-    %%\let \footnote \thanks
     \parindent\z@ \raggedright
     \if!\@title!\def\@title{\textcolor{red}{Author: Please fill in a title}}\fi
     {\centering\LARGE\bfseries\mathversion{bold}\@title \if!\@subtitle!\else{\\\Large\bfseries\mathversion{bold}\@subtitle}\fi \par}%
@@ -320,53 +554,9 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
         \fontsize{9.5}{12}\selectfont\@author}%
     \fi
 \par}
-\renewcommand\tableofcontents{%
-    \section*{\contentsname}%
-    \@starttoc{toc}}
-\setcounter{secnumdepth}{4}
-\renewcommand\section{\@startsection {section}{1}{\z@}%
-    {-2.3ex \@plus -1ex \@minus -.2ex}%
-    {1.8ex \@plus.2ex}%
-    {\Large\bfseries\raggedright}}
-\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
-    {-1.8ex\@plus -1ex \@minus -.2ex}%
-    {1.3ex \@plus .2ex}%
-    {\Large\bfseries\raggedright}}
-\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
-    {-1.8ex\@plus -1ex \@minus -.2ex}%
-    {1.3ex \@plus .2ex}%
-    {\normalsize\bfseries\raggedright}}
-\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
-    {-1.8ex \@plus-1ex \@minus-.2ex}%
-    {1.3ex \@plus .2ex}%
-    {\normalsize\bfseries\raggedright}}
-\renewcommand\subparagraph{\@startsection{subparagraph}{5}{\z@}%
-    {.5ex \@plus1ex \@minus .2ex}%
-    {-1em}%
-    {\normalsize\bfseries}}
-\renewcommand\labelitemi{%
-    \textcolor{bulletgray}{%
-        \ifnum\@listdepth=\@ne%
-            \@lipicsTriangleRight%
-        \else%
-            $\lipicsClaimTriangleRight$%
-    \fi}}
-\renewcommand\labelitemii{%
-    \textcolor{bulletgray}{$\lipicsClaimTriangleRight$}}
-\renewcommand\labelitemiii{%
-    \textcolor{bulletgray}{\bfseries\textasteriskcentered}}
-\renewcommand\labelitemiv{%
-    \textcolor{bulletgray}{\bfseries\textperiodcentered}}
 
+%% Abstract
 
-\renewenvironment{description}
-{\list{}{\advance\partopsep\topsep\topsep\z@\@plus\p@
-        \labelwidth\z@ \itemindent-\leftmargin
-\let\makelabel\descriptionlabel}}
-{\ifnum\@listdepth=\@ne\global\@nobotseplisttrue\fi\endlist}
-\renewcommand*\descriptionlabel[1]{%
-\hspace\labelsep\textcolor{darkgray}{\bfseries\mathversion{bold}#1}}
-\def\topmattervskip{0.7}
 \renewenvironment{abstract}{%
     \vskip\topmattervskip\bigskipamount
     \noindent
@@ -416,8 +606,9 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
     \fi
 }
 
-\renewenvironment{thebibliography}[1]
-{%
+%% Bibliography
+
+\renewenvironment{thebibliography}[1]{%
     \clearpage
     \section*{\bibname}
     \addcontentsline{toc}{section}{\bibname}
@@ -440,125 +631,106 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
 {\def\@noitemerr
     {\@latex@warning{Empty `thebibliography' environment}}%
 \endlist}
+
+%% Footnotes
+
+\setlength{\skip\footins}{1\baselineskip \@plus 4\p@ \@minus 2\p@}
+
 \renewcommand\footnoterule{%
     \kern-8\p@
     {\vspace{.5ex}\color{bulletgray}\hrule\@width40mm\@height1\p@}%
 \kern6.6\p@}
+
 \renewcommand\@makefntext[1]{%
     \parindent\z@\hangindent\i@parindent
     \leavevmode
 \hb@xt@\i@parindent{\@makefnmark\hss}#1}
 
-\usepackage{microtype}
-\RequirePackage{textcomp}
-\RequirePackage[mathscr]{eucal}
-\RequirePackage{amssymb}
-\PassOptionsToPackage{retainmissing}{MnSymbol}
-\AtBeginDocument{\@ifpackageloaded{MnSymbol}%
-    {\expandafter\let\csname ver@amssymb.sty\endcsname\relax
-        \let\complement\@undefined
-\RequirePackage{amssymb}}{}}
 
-\RequirePackage{soul}
-\sodef\textsolittle{}{.12em}{.5em\@plus.08em\@minus.06em}%
-{.4em\@plus.275em\@minus.183em}
+%% Table of contents
 
-\ifx\uselmodern\relax
-    \RequirePackage{lmodern}
-    \RequirePackage[USenglish]{babel}
-    \RequirePackage{amsmath}
-\else
-    \RequirePackage{iftex}
-    \ifluatex
-        \RequirePackage{fontspec}
-        \RequirePackage[USenglish]{babel}
-        \RequirePackage{newpxtext}
-        \RequirePackage[fracspacing]{newpxmath}[2019/10/02]
-        \RequirePackage[nomath]{lmodern}
+\setcounter{tocdepth}{2}
 
-        \RequirePackage[mathscr]{eucal}
+\renewcommand*\l@section[2]{%
+    \ifnum \c@tocdepth >\z@
+        \addpenalty\@secpenalty
+        \addvspace{.5em \@plus\p@}%
+        \setlength\@tempdima{\parindent}%
+        \begingroup
+        \parindent \z@ \rightskip \@pnumwidth
+        \parfillskip -\@pnumwidth
+        \leavevmode \bfseries
+        \advance\leftskip\@tempdima
+        \hskip -\leftskip
+        #1\nobreak\hfil
+        \nobreak\hb@xt@\@pnumwidth{\hss #2%
+        \kern-\p@\kern\p@}\par
+        \endgroup
+\fi}
 
-        % from impnattypo, adapted
-        \RequirePackage{luatexbase,luacode}
-        \begin{luacode}
-            local glyph_id = node.id "glyph"
-            local glue_id  = node.id "glue"
-            local hlist_id = node.id "hlist"
+\let\mtl@section\l@section
+\renewcommand*\l@section[2]{\mtl@section{{#1}}{ #2\hspace{-.04em}}}
+\renewcommand*\l@part[2]{%
+    \ifnum \c@tocdepth >-2\relax
+        \addpenalty\@secpenalty
+        \addvspace{1em \@plus\p@}%
+        \setlength\@tempdima{3em}%
+        \begingroup
+        \parindent \z@ \rightskip \@pnumwidth
+        \parfillskip -\@pnumwidth
+        {\leavevmode
+            \large \bfseries #1\hfil
+            \hb@xt@\@pnumwidth{\hss #2%
+        \kern-\p@\kern\p@}}\par
+        \nobreak
+        \if@compatibility
+            \global\@nobreaktrue
+            \everypar{\global\@nobreakfalse\everypar{}}%
+        \fi
+        \endgroup
+    \fi}
 
-            last_line_twice_parindent = function (head)
-                while head do
-                    local _w,_h,_d = node.dimensions(head)
-                    if head.id == glue_id and head.subtype ~= 15 and (4.5 * _w < tex.dimen.textwidth) then
-                        local p = node.new("penalty")
-                        p.penalty = 10000
-                        node.insert_after(head,head.prev,p)
-                    end
-                    head = head.next
-                end
-                return true
-            end
+\let\mtl@part\l@part
+\renewcommand*\l@part[2]{\mtl@part{{#1}}{}}
 
-            luatexbase.add_to_callback("pre_linebreak_filter",last_line_twice_parindent,"lastparline")
-        \end{luacode}
+\let\old@dottedcontentsline\@dottedtocline
+\def\@dottedtocline#1#2#3#4#5{%
+\old@dottedcontentsline{#1}{#2}{#3}{#4}{{{#5}}}}
 
-        % adapted from
-        % https://tex.stackexchange.com/questions/396134/how-to-perform-an-action-when-an-overfull-or-underfull-box-is-encountered/493311#493311
+\renewcommand\tableofcontents{%
+    \section*{\contentsname}%
+    \@starttoc{toc}}
+\setcounter{secnumdepth}{4}
 
-        \directlua{
-            GLYPH = node.id("glyph")
-            GLUE  = node.id("glue")
-            %
-            function hpackshow (indicator,num,nd,f,l)
-            print('HPACK: ' .. indicator .. ' ' .. num)
-            if (indicator == 'overfull') then
-            local pt = num / 65536.0
-            str = string.format("| overfull \@percentchar #.2fpt",pt)
-            nds = {}
-            nds[0]=node.new(GLYPH,1)
-                for i = 1,string.len(str) do
-                  nds[i] = node.new(GLYPH,1)
-                  nds[i].font = font.current()
-                  nds[i-1].next = nds[i]
-                end
 
-                j = 1
-                for s in string.utfvalues(str) do
-                  local char = unicode.utf8.char(s)
-                  nds[j].char = s
-                  if unicode.utf8.match(char,"\@percentchar s") then
-                    nds[j] = node.new(GLUE)
-                    nds[j].width = space
-                    nds[j].shrink = shrink
-                    nds[j].stretch = stretch
-                  end
-                  j = j+1
-                end
-            return nds[0]
-            end
-            end
-            %
-            luatexbase.add_to_callback('hpack_quality',hpackshow,'my hpack logger')
-        }
-    \else
-        \ClassWarningNoLine{no-lipics}{Overfull hbox messages available only with LuaLatex}{}
+%% Proof environments, etc
 
-        \RequirePackage[USenglish]{babel}
+\newif\if@nobotseplist  \@nobotseplistfalse
 
-        \RequirePackage{newpxtext}
-        \RequirePackage[OT1]{fontenc}
-        \RequirePackage[mathscr]{eucal}
-        \RequirePackage[fracspacing]{newpxmath}[2019/10/02]
-        \renewcommand{\sfdefault}{lmss}
-        \renewcommand{\ttdefault}{lmtt}
-        \SetMathAlphabet{\mathsf}{normal}{OT1}{lmss}{m}{n}
-        \SetMathAlphabet{\mathtt}{normal}{OT1}{lmtt}{m}{n}
-        \SetMathAlphabet{\mathsf}{bold}  {OT1}{lmss}{bx}{n}
-        \SetMathAlphabet{\mathtt}{bold}  {OT1}{lmtt}{m}{n}
-    \fi
-\fi
+\newif\if@claimmode  \@claimmodefalse
 
-\brokenpenalty=10000
-\doublehyphendemerits=1000000000
+\def\@endparenv{%
+\addpenalty\@endparpenalty\if@nobotseplist\else\addvspace\@topsepadd\fi\@endpetrue}
+
+\def\@doendpe{%
+    \@endpetrue
+    \def\par{\@restorepar
+        \everypar{}%
+        \par
+        \if@nobotseplist
+            \addvspace\topsep
+            \addvspace\partopsep
+            \global\@nobotseplistfalse
+        \fi
+    \@endpefalse}%
+    \everypar{{\setbox\z@\lastbox}%
+        \everypar{}%
+        \if@nobotseplist\global\@nobotseplistfalse\fi
+\@endpefalse}}
+
+
+
+%% Utility macros
 
 \AtBeginDocument{%
     \let\mathshift=$
@@ -568,105 +740,14 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
     }%
 }
 
-\let\openbox\undefined
-
-\setlength{\skip\footins}{1\baselineskip \@plus 4\p@ \@minus 2\p@}
-\ifx\usestocmargin\@undefined
-    % trick to suppress typearea warning.
-    % while lines are indeed ~20% too long, for scientific papers this is barely
-    % acceptable.
-    \renewcommand\normalsize{%
-        \@setfontsize\normalsize{13}{14}%
-        \abovedisplayskip 5\p@ \@plus3\p@ \@minus3\p@
-        \abovedisplayshortskip \z@ \@plus3\p@
-        \belowdisplayshortskip 5\p@ \@plus3\p@ \@minus3\p@
-        \belowdisplayskip \abovedisplayskip
-    \let\@listi\@listI}
-    \PassOptionsToPackage{headinclude,BCOR=13.125mm,DIV=15}{typearea}
-    \RequirePackage{typearea}
-
-    \renewcommand\normalsize{%
-        \@setfontsize\normalsize{10}{13.5}%
-        \abovedisplayskip 5\p@ \@plus3\p@ \@minus3\p@
-        \abovedisplayshortskip \z@ \@plus3\p@
-        \belowdisplayshortskip 5\p@ \@plus3\p@ \@minus3\p@
-        \belowdisplayskip \abovedisplayskip
-    \let\@listi\@listI}
-
-\else
-    \RequirePackage[margin=1in]{geometry}
-    \renewcommand\normalsize{%
-        \@setfontsize\normalsize\@xipt{13}%
-        \abovedisplayskip 6.5\p@ \@plus3\p@ \@minus3\p@
-        \abovedisplayshortskip \z@ \@plus3\p@
-        \belowdisplayshortskip 6.5\p@ \@plus3\p@ \@minus3\p@
-        \belowdisplayskip \abovedisplayskip
-    \let\@listi\@listI}
-\fi
-\normalsize
-
-\ifx\usestocmargin\@undefined
-\def\ps@headings{%
-    \def\@evenhead{\large\bfseries
-    \makebox[0pt][r]{\thepage\hspace*{\i@parindent}}\leftmark\hfil}%
-    \def\@oddhead{\large\bfseries\ifx\authoranonymous\relax\leftmark\else\rightmark\fi\hfil
-    \makebox[0pt][l]{\hspace*{\i@parindent}\thepage}}%
-    \let\@evenfoot\@empty%
-    \let\@oddfoot\@empty
-    \let\@mkboth\markboth
-    \let\sectionmark\@gobble
-\let\subsectionmark\@gobble}
-\else
-\def\ps@headings{%
-    \def\@oddhead{\large\bfseries\leftmark\hfil
-    \makebox[0pt][l]{\hspace*{\i@parindent}\thepage}}%
-    \def\@evenhead{\large\bfseries
-    \makebox[0pt][r]{\thepage\hspace*{\i@parindent}}\leftmark\hfil}%
-    \let\@evenfoot\@empty%
-    \let\@oddfoot\@empty
-    \let\@mkboth\markboth
-    \let\sectionmark\@gobble
-\let\subsectionmark\@gobble}
-\fi
-\pagestyle{headings}
-
-\RequirePackage{amsthm}
-\RequirePackage{thmtools}
-\RequirePackage{thm-restate}
-\RequirePackage{tikz}
-
-% IBM Design Library color-blind optimized palette
-\definecolor{color1}{HTML}{648FFF} % blue
-\definecolor{color2}{HTML}{785EF0} % purple
-\definecolor{color3}{HTML}{DC267F} % magenta
-\definecolor{color4}{HTML}{FE6100} % orange
-\definecolor{color5}{HTML}{FFB000} % yellow
-\definecolor{linegray}{rgb}{0.6,0.59,0.61}
-\definecolor{lightgray}{rgb}{0.8,0.8,0.8}
-\colorlet{color6}{linegray}
-\colorlet{color7}{lightgray}
-
-\colorlet{c1}{color1!60!black}
-\colorlet{c2}{color2!60!black}
-\colorlet{c3}{color3!60!black}
-\colorlet{c4}{color4!60!black}
-\colorlet{c5}{color5!60!black}
-\definecolor{darkgray}{rgb}{0.31,0.31,0.33}
-\definecolor{bulletgray}{rgb}{0.45,0.45,0.46}
-\colorlet{c6}{darkgray}
-\colorlet{c7}{bulletgray}
-
-\def\displaypalette{{\color{color1}\rule{2em}{2em}}{\color{color2}\rule{2em}{2em}}{\color{color3}\rule{2em}{2em}}{\color{color4}\rule{2em}{2em}}{\color{color5}\rule{2em}{2em}}{\color{linegray}\rule{2em}{2em}}{\color{lightgray}\rule{2em}{2em}}}
-\def\displayfgpalette{{\color{c1}\rule{2em}{2em}}{\color{c2}\rule{2em}{2em}}{\color{c3}\rule{2em}{2em}}{\color{c4}\rule{2em}{2em}}{\color{c5}\rule{2em}{2em}}{\color{darkgray}\rule{2em}{2em}}{\color{bulletgray}\rule{2em}{2em}}}
 
 
 
-\ifx\pdfa\relax%
-\IfFileExists{glyphtounicode.tex}{
-    \input glyphtounicode
-    \pdfgentounicode=1
-}{}%
-\fi
+%%
+
+
+\def\topmattervskip{0.7}
+
 \IfFileExists{fontawesome5.sty}{%
     \RequirePackage{fontawesome5}%
     \def\orcidsymbol{\raisebox{.2ex}{\textcolor{darkgray}{\fontsize{9}{12}\bfseries\faOrcid}}}%
@@ -689,6 +770,7 @@ DO NOT USE TO PREPARE OFFICIAL LIPICS-STYLE DOCUMENTS\MessageBreak}{}
 }
 
 \RequirePackage[shortlabels, inline]{enumitem}
+\setlistdepth{9}
 \setlist{left= 0pt .. \i@parindent, topsep=0ex}
 \setlist[enumerate]{format=\color{bulletgray}\small\bfseries\upshape\mathversion{bold}}
 \setlist[itemize, 1]{labelindent={-.15em}}
@@ -752,12 +834,33 @@ frame=single,framerule=0pt,xleftmargin=\fboxsep,xrightmargin=\fboxsep}
     \patchBothAmsMathEnvironmentsForLineno{gather}%
 \patchBothAmsMathEnvironmentsForLineno{multline}}
 
+\RequirePackage[unicode,pagebackref]{hyperref}%
+% fix backref
+\newcounter{@@backref}
+\def\Hy@backout#1{%
+    \@bsphack%
+    \ifBR@enable%
+        \ifBR@verbose%
+            \PackageInfo{backref}{Back cite \string`#1\string'}%
+        \fi%
+        \stepcounter{@@backref}%
+        \label@noarg{backref:\the@@backref}%
+        \hypertarget{t:backref:\the@@backref}{}%
+        \protected@write\@auxout{}{%
+            \string\@writefile{brf}{%
+                \string\backcite{#1}{{\thepage}{backref:\the@@backref}{\@currentHref}}%
+            }%
+        }%
+    \else%
+        \ifBR@verbose%
+            \PackageInfo{backref}{Disabled back cite \string`#1\string'}%
+        \fi%
+    \fi%
+    \@esphack%
+}
 
-\ifx\pdfa\relax%
-  \RequirePackage[pdfa,unicode,pagebackref]{hyperref}%
-\else%
-  \RequirePackage[unicode,pagebackref]{hyperref}%
-\fi%
+\long\def\backrefxxxdupe#1#2#3{#1}
+\long\def\backrefxxx#1#2#3{\hyperlink{t:#2}{\pageref*{#2}}}
 
 \ifx\fnotebackref\relax
     % from footnotebackref.sty
@@ -798,15 +901,6 @@ frame=single,framerule=0pt,xleftmargin=\fboxsep,xrightmargin=\fboxsep}
 \fi
 
 \let\usehyperxmp\@empty%
-\ifx\pdfa\relax%
-  \IfFileExists{hyperxmp.sty}{%
-    \RequirePackage{hyperxmp}%
-    \@ifpackagelater{hyperxmp}{2019/04/05}{%
-      \let\usehyperxmp\relax%
-    }{%
-      \ClassWarning{Package hyperxmp outdated}{You are using an outdated version of the package hyperxmp. Please update!}%
-    }}{}%
-\fi%
 
 \let\C\relax%
 \let\G\relax%
@@ -825,6 +919,7 @@ frame=single,framerule=0pt,xleftmargin=\fboxsep,xrightmargin=\fboxsep}
     \let\mathsf\@empty%
 }%
 \hypersetup{
+    hypertexnames=false,
     colorlinks=true,
     citecolor=c2,
     linkcolor=c2,
@@ -897,7 +992,7 @@ listof=false]{caption}%"listof" instead of "list" for backward compatibility
 Do not load the subfig package}{The more recent subcaption package is already loaded}}{}}
 \RequirePackage[labelformat=simple]{subcaption}
 \DeclareCaptionLabelFormat{opening}{\@lipicsDotRight\hspace{-.05em}#2~}
-\subcaptionsetup{labelformat=opening}
+\captionsetup[subfigure]{labelformat=opening}
 
 \def\titlerunning#1{\gdef\@titlerunning{{\let\footnote\@gobble\markboth{#1}{#1}}}}
 \def\authorrunning#1{%
@@ -921,18 +1016,18 @@ Do not load the subfig package}{The more recent subcaption package is already lo
         \stepcounter{currentauthor}
         \ifx\authoranonymous\relax%
             \ifnum\value{currentauthor}=1%
-                \ifx\authorcolumns\relax
+                \ifx\authorcolumns\relax%
                     \begin{minipage}[t]{.99\textwidth}%
                         \centering%
-                \fi
+                \fi%
                     {\Large\bfseries%
                     Anonymous author(s)}%
                     {\\* {Anonymous affiliation(s)}}%
-                \ifx\authorcolumns\relax
-                    \end{minipage}
-                \fi
-            \fi
-        \fi
+                \ifx\authorcolumns\relax%
+                    \end{minipage}%
+                \fi%
+            \fi%
+        \fi%
         \ifx\authoranonymous\relax%
             \setcounter{currentauthor}{1}%
             \def\@authornum{1}%
@@ -977,8 +1072,8 @@ Do not load the subfig package}{The more recent subcaption package is already lo
                 \else%
                     #1\,%
                     \if!#4!\else{\href{#4}{\raisebox{-1pt}{\orcidsymbol}}}\fi%
-                    \ifx\compactauthor\relax\if!#3!\else{\;\href{mailto:#3}{\mailsymbol}}\fi%
-                    \ifx\homepage\@empty\else{\;\href{\homepage}{\homesymbol}}\fi\fi%
+                    \if!#3!\else{\;\href{mailto:#3}{\mailsymbol}}\fi%
+                    \ifx\homepage\@empty\else{\;\href{\homepage}{\homesymbol}}\fi%
                 \fi%
                 \if!#5!\else%
                     \ifx\@funding\@empty%
@@ -996,10 +1091,7 @@ Do not load the subfig package}{The more recent subcaption package is already lo
                 \textcolor{red}{Author: Please enter affiliation as second parameter of
                 the author macro}%
             \else\ifx\authoranonymous\relax%
-            \else\ifx\compactauthor\relax{\\* \affiliation}\else{\\* #2}\fi\fi\fi%
-            \ifx\compactauthor\relax\else\if!#3!\else{%
-                \ifx\authoranonymous\relax\else\\*\href{mailto:#3}{\texttt{#3}}\fi%
-            }\fi\fi%
+            \else\\* \affiliation\fi\fi%
         }\ifx\authoranonymous\relax\else\par\fi%
         \ifx\authorcolumns\relax%
             \ifx\authoranonymous\relax\else%
@@ -1352,6 +1444,10 @@ fill=white]{{\normalsize\@enumsym{#1}}}
 \Crefname{algocf}{Algorithm}{Algorithms}
 \crefname{algocfline}{Line}{Lines}
 \Crefname{algocfline}{Line}{Lines}
+\crefname{problem}{the}{the}
+\Crefname{problem}{The}{The}
+
+\creflabelformat{problem}{#2#1#3 problem}
 
 \ifx\userefcheck\relax
     \RequirePackage{refcheck}
@@ -1373,20 +1469,35 @@ fill=white]{{\normalsize\@enumsym{#1}}}
 % contains only a citation)
 
 \ExplSyntaxOn
-\NewDocumentCommand{\checkcite}{m}
+
+
+\tl_new:N \g__nolipics_thm_optarg%
+\addtotheorempreheadhook{%
+    \tl_if_empty:cTF {thmt@optarg}%
+    {\tl_gclear_new:N \g__nolipics_thm_optarg}%
+    {%
+        \tl_gset:No \g__nolipics_thm_optarg { \thmt@optarg}%
+    }%
+}
+
+\addtotheorempostfoothook{%
+    \tl_gclear_new:N \g__nolipics_thm_optarg%
+}
+
+\NewDocumentCommand{\checkcite}{m O{\thmt@space\mdseries}}
 {%
     \regex_match:nnTF {\A\Z} { #1 }{}{
     \regex_match:nnTF {\A \c{cite}(?:\[[^]]*\])?\{.*\} \Z} { #1 }
     {% only \cite
-        \thmt@space\mdseries#1
+        #2#1
     }
     {%
         \regex_match:nnTF {\A .*[,;][\s\~]+\{*?\c{cite}(\[[^]]*\])?\{.*?\}\}*? \Z} { #1 }{
             \tl_set:Nn \l_tl { #1 }
             \regex_replace_all:nnN {\A (.*)[,;]([\s\~]+)((?:\{)*\c{cite}(?:\[[^]]*\])?\{.*\}(?:\})*) \Z} {(\1)\~\{\3\}} \l_tl
-            \thmt@space\mdseries\l_tl
+            #2\l_tl
         }{
-            \thmt@space\mdseries(#1)
+            #2(#1)
         }
     }%
     }
@@ -1801,6 +1912,10 @@ fill=white]{{\normalsize\@enumsym{#1}}}
                 % occasions.
                 \thmt@rst@storecounters{#3}%
             \else
+                \ExplSyntaxOn
+                \RenewDocumentCommand{\dglabel}{st^t"mO{}D(){}}{}
+                \ExplSyntaxOff
+
                 % this one should use other numbers...
                 % first, fake the theorem number.
                 \@xa\protected@edef\csname the#2q\endcsname{%
@@ -1889,6 +2004,354 @@ fill=white]{{\normalsize\@enumsym{#1}}}
     \emergencystretch 2em%
     \hfuzz 1\p@
 }
+
+
+\long\def\problembox#1{%
+        #1
+    \vspace{\topsep}%
+}
+
+
+\ExplSyntaxOn
+\newcounter{@@p}
+\NewDocumentEnvironment{problem}{s t+ t- t= o m}{%
+    \newcounter{@@p@\the@@p}%
+    \crefalias{@@p@\the@@p}{problem}
+    %\typeout{@@p@\the@@p}
+    \IfValueTF{#5}{%
+        \expandafter\gdef\csname the@@p@\the@@p \endcsname{{\protect #5}}
+    }{%
+        \expandafter\gdef\csname the@@p@\the@@p \endcsname{{\protect #6}}
+    }%
+    \setcounter{@@p@\the@@p}{\the@@p}\refstepcounter{@@p@\the@@p}%
+    \stepcounter{@@p}%
+    \NewDocumentCommand{\PLabelWidth}{}{4em}%
+    \clist_gclear_new:N \g__problem_pitem_iname_clist
+    \clist_gclear_new:N \g__problem_pitem_itext_clist
+    \NewDocumentCommand{\PItem}{o m m}{%
+        \IfValueT{##1}{
+            \DeclareDocumentCommand{\PLabelWidth}{}{##1}
+        }
+        \clist_gput_right:Nn \g__problem_pitem_iname_clist {{##2}}
+        \clist_gput_right:Nn \g__problem_pitem_itext_clist {{##3}}
+    }
+    \NewDocumentCommand{\PInput}{m}{\PItem{Input}{##1}}% Store problem input
+    \NewDocumentCommand{\POutput}{m}{\PItem{Output}{##1}}% Store problem output
+    \NewDocumentCommand{\PTask}{m}{\PItem{Task}{##1}}% Store problem task
+    \NewDocumentCommand{\PParameter}{m}{\PItem[5em]{Parameter}{##1}}% Store problem paramter
+    \NewDocumentCommand{\PObject}{m}{\PItem[9em]{Maintained~Object}{##1}}% Store maintained object
+    \NewDocumentCommand{\PInit}{m}{\PItem[9em]{Initialization}{##1}}% Store initialization
+    \NewDocumentCommand{\PUpdate}{m}{\PItem[9em]{Update~Operations}{##1}}% Store update
+    \NewDocumentCommand{\PQuery}{m}{\PItem[9em]{Query~Operations}{##1}}% Store query
+    \NewDocumentCommand{\PInvariant}{m}{\PItem[9em]{Invariants}{##1}}% Store invariants
+}{%
+    \IfBooleanF{#2}{\vspace{\topsep}}%
+    \par\noindent
+    \begin{minipage}{1\linewidth}%
+        \IfBooleanF{#2}{
+            \vskip0ex%
+            \noindent\rlap{\color{linegray}\vrule\@width\textwidth\@height1\p@}%
+            {\null\fboxsep0mm\colorbox[rgb]{1,1,1}{\raisebox{-1.37ex}{%
+            \lipicsTriangleUp\hskip.61em}\hfill\null}}%
+            \vskip-.5ex
+        }
+        \IfBooleanT{#4}{
+            \vskip1ex%
+            \noindent\rlap{\rlap{\color{linegray}\vrule\@width\textwidth\@height1\p@}%
+            {\null\fboxsep0mm\colorbox[rgb]{1,1,1}{\raisebox{-.5ex}{%
+            \!\lipicsDotRight\hskip.9em}\hfill\null}}}%
+            {\null\hfill\fboxsep0mm\colorbox[rgb]{1,1,1}{\hskip.9em\raisebox{-.5ex}{%
+            \lipicsDotRight\!}}}%
+            \vskip0ex
+        }
+        %.5\topsep%
+        \noindent{\hskip\i@parindent\normalfont\bfseries Problem~\textsc{#6}.\hskip\i@parindent}
+        \IfBooleanTF{#1}{\par\begin{description*}[leftmargin=0pt,itemjoin={;\hspace{1.5em}}]}%
+            {\begin{description}[leftmargin=!,labelwidth=\PLabelWidth]}
+        \clist_set_eq:NN \l_tmpa_clist \g__problem_pitem_iname_clist%
+        \clist_set_eq:NN \l_tmpb_clist \g__problem_pitem_itext_clist%
+        \bool_until_do:nn {\clist_if_empty_p:N \l_tmpa_clist}{%
+            \clist_pop:NN \l_tmpa_clist \l_tmpa_tl%
+            \clist_pop:NN \l_tmpb_clist \l_tmpb_tl%
+            \item[\l_tmpa_tl.] {\l_tmpb_tl}
+        }%
+        \IfBooleanTF{#1}{\end{description*}}{\end{description}}%
+        \IfBooleanF{#3}{
+            \vskip-1ex%
+            \noindent\rlap{\color{linegray}\vrule\@width\textwidth\@height1\p@}%
+            {\null\hfill\fboxsep0mm\colorbox[rgb]{1,1,1}{\raisebox{.235ex}{%
+            \lipicsTriangleDown}}}%
+        }
+    \end{minipage}%
+    \IfBooleanF{#3}{\vspace{\topsep}}%
+}%
+
+
+\IfFormatAtLeastTF{2024/01/01}{%
+% for each label, maintain
+% - macro that stores the description
+% - macro that stores a list of dependencies (i.e. list of labels)
+% - macro that stores a list of labels that use the label (computed automatically on
+%   second compilation run)
+
+
+\cs_new:Npn \dglbl_create_or_update_parents:Nn #1#2 {%
+    % check if macro c__dglbl_#1_parents_clist exists
+    \clist_if_exist:cF { g__dglbl_#1_parents_clist } {
+        % does not, create new
+        \clist_new:c {g__dglbl_#1_parents_clist}
+    }
+
+    % append new element to list
+    \clist_gput_right:cn {g__dglbl_#1_parents_clist} {#2}
+}
+
+% Defines a new label, with the specified description and dependency list.
+% Usage: \dglabel*^"{<labelname>}[<lname_clist>](<description>)
+% All options/flags are optional, except for <labelname>, and may be freely combined
+%
+% \dglabel{<labelname>}   just as \label{<labelname>}, but registers <labelname> in the  dependency tree
+% \dglabel{<labelname>}[<lname_clist>]  additionally registers each label of the comma
+%                                       separated list <lname_clist> as a dependency of <labelname>
+% \dglabel{<labelname>}(<description>)  additionally use <description> in the index of results
+% \dglabel*{<labelname>}    Highlight the entry for <labelname> in the index of results
+% \dglabel^{<labelname>}    Do not create a top-level entry for <labelname> in the index of results
+% \dglabel"{<labelname>}[<lname_clist>]   Do not list dependencies of <labelname> directly
+% under <labelname>, but start a new top-level tree in the index of results for <labelname>
+% \dglabel^"{<labelname>}[<lname_clist>]   Do not list dependencies of <labelname> directly
+% under <labelname>, and do not start a new top-level tree in the index of results for <labelname>
+\NewDocumentCommand{\dglabel}{s t^ t" m O{} D(){}}{%
+    % issue label
+    \label{#4}%
+    \tl_gclear_new:N \g__dglbl_descr_tl%
+    % check if there is an optional description available
+    \tl_if_empty:oTF {#6} {%
+        % check if we are in an environment where "lemma description is defined"
+        \tl_if_empty:cF {g__nolipics_thm_optarg}%
+        {%
+            \tl_gset_eq:NN \g__dglbl_descr_tl \g__nolipics_thm_optarg%
+            % Check for star to see if label should be marked as important
+            \IfBooleanT{#1}{%
+                \tl_gput_left:Nn \g__dglbl_descr_tl {\color{color3}\bfseries}%
+                \tl_gput_right:Nn \g__dglbl_descr_tl {\color{black}\mdseries}%
+            }%
+        }%
+    }{%
+        \tl_gset:Nn \g__dglbl_descr_tl {#6}%
+        \IfBooleanT{#1}{%
+            \tl_gput_left:Nn \g__dglbl_descr_tl {\color{color3}\bfseries}%
+            \tl_gput_right:Nn \g__dglbl_descr_tl {\color{black}\mdseries}%
+        }%
+    }%
+    \IfBooleanTF{#2}{%
+        \IfBooleanTF{#3}{%
+            \protected@write\@auxout{}{{\@dglabelimm^"{#4}[#5]{\tl_use:N \g__dglbl_descr_tl}}}%
+        }{%
+            \protected@write\@auxout{}{{\@dglabelimm^{#4}[#5]{\tl_use:N \g__dglbl_descr_tl}}}%
+        }%
+    }{%
+        \IfBooleanTF{#3}{%
+            \protected@write\@auxout{}{{\@dglabelimm"{#4}[#5]{\tl_use:N \g__dglbl_descr_tl}}}%
+        }{%
+            \protected@write\@auxout{}{{\@dglabelimm{#4}[#5]{\tl_use:N \g__dglbl_descr_tl}}}%
+        }%
+    }%
+    \tl_gclear_new:N \g__dglbl_descr_tl%
+}
+
+\NewDocumentCommand{\@dglabelimm}{t^ t" m O{} m}{%
+    \tl_gset:cn {g__dglbl_#3_descr_tl} {#5}
+
+    \clist_if_exist:NF \g__dglbl_pubres_clist {%
+        % does not, create new
+        \clist_new:N \g__dglbl_pubres_clist%
+    }%
+    \clist_if_exist:NF \g__dglbl_splres_clist {%
+        % does not, create new
+        \clist_new:N \g__dglbl_splres_clist%
+    }%
+    % register dependencies
+    \tl_if_empty:oF {#4} {%
+        \clist_gset:cn {g__dglbl_#3_children_clist} {#4}%
+        % register current label as parent for each dependency given
+        \clist_set:Nn \l_tmpa_clist {#4}%
+        \bool_until_do:nn {\clist_if_empty_p:N \l_tmpa_clist}{%
+            \clist_pop:NN \l_tmpa_clist \l_tmpa_tl%
+            \dglbl_create_or_update_parents:Nn \l_tmpa_tl {#3}%
+        }%
+    }%
+    \IfBooleanF{#1}{%
+        % register current label globally
+        \clist_gput_right:Nx \g__dglbl_pubres_clist {#3}%
+    }%
+    \IfBooleanT{#2}{%
+        % register current label globally as a depth separator
+        \clist_gput_right:Nx \g__dglbl_splres_clist {#3}%
+    }%
+}
+
+\NewDocumentCommand{\dgdepends}{O{Depends~on~} m O{.}}{%
+    \clist_if_exist:cT { g__dglbl_#2_children_clist } {%
+        #1\cref{\clist_use:c{ g__dglbl_#2_children_clist }} #3%
+    }%
+}
+\NewDocumentCommand{\dgparents}{O{Needed~by~} m O{.}}{%
+    \clist_if_exist:cT { g__dglbl_#2_parents_clist } {%
+        #1\cref{\clist_use:c{ g__dglbl_#2_parents_clist }} #3%
+    }%
+}
+\NewDocumentCommand{\dgdescr}{m}{%
+    \clist_if_exist:cT { g__dglbl_#1_descr_tl } {%
+        \tl_use:c{ g__dglbl_#1_descr_tl }%
+    }%
+}
+
+\cs_generate_variant:Nn \regex_match:nnTF {noTF}
+
+\NewDocumentCommand{\dgname}{m O{\bfseries}}{%
+    \bgroup
+    \ifx\userefcheck\relax
+        {{\ttfamily \tl_to_str:e {#1}~}}
+    \else
+        \ifx\usereflite\relax
+            {{\ttfamily \tl_to_str:e {#1}~}}
+        \fi
+    \fi
+    {{#2 \Cref{#1}}}%
+    \clist_if_exist:cT { g__dglbl_#1_descr_tl } {%
+        \tl_if_empty:cF {g__dglbl_#1_descr_tl} {
+            \tl_set_eq:Nc \l__tmpa_tl {  g__dglbl_ #1 _descr_tl }
+
+            \regex_match:noTF {\A \c{cite}(?:\[[^]]*\])?\{.*\} \Z} { \l__tmpa_tl }
+            {% only \cite
+                \thmt@space\l__tmpa_tl
+            }
+            {%
+                \regex_match:noTF {\A .*[,;][\s\~]+\{*?\c{cite}(\[[^]]*\])?\{.*?\}\}*? \Z} { \l__tmpa_tl } {
+                    \tl_set:No \l_tl {\l__tmpa_tl }
+                    \regex_replace_all:nnN {\A (.*)[,;]([\s\~]+)((?:\{)*\c{cite}(?:\[[^]]*\])?\{.*\}(?:\})*) \Z} {\1\~\{\3\}} \l_tl
+                    :\thmt@space\l_tl
+                }{
+                    :\thmt@space \l__tmpa_tl
+                }
+            }%
+
+        }%
+    }%
+    {{#2.}}
+    \egroup
+}
+
+% Prints the summary for the label.
+\NewDocumentCommand{\dgsummary}{m}{%
+    \dgname{#1}~\dgdepends{#1}~\dgparents{#1}~%
+}
+
+\cs_new:Npn \dglbl_lor_print_desc:nn #1#2 {%
+    % keep a pair of lists (label, level)
+    % initially, push (#1,1) and 2 dummy elements with level 0
+    % take next two elements from list (la1,lv1) (la2,lv2); keep (la2,lv2) in the list
+    % if lv1 > 0
+    %   issue \item \dgname{la1}
+    %   push all children c of la1 as (c,lv1+1);
+    %       if this is a nonzero amount, issue a \begin{itemize} and continue
+    %       else issue \end{itemize} (lv2 - lv1) times
+
+    \clist_clear_new:N \l_labels_clist
+    \clist_put_right:Nn \l_labels_clist {#1}
+
+    \tl_set:Nn \l_item_end {@end}
+
+    \bool_until_do:nn {\clist_if_empty_p:N \l_labels_clist}{
+        \clist_pop:NNT  \l_labels_clist \l_label_one_tl {
+            % check if we should end an itemize
+            \tl_if_eq:NNTF \l_label_one_tl \l_item_end {
+                \end{itemize}
+            }{
+                \item \dgname{\l_label_one_tl}
+                    % check if this label's children should be printed here (pr as a
+                    % separate tree)
+                    \clist_if_in:NVTF \g__dglbl_splres_clist \l_label_one_tl {
+                        \clist_if_in:NVT \g__dglbl_pubres_clist \l_label_one_tl {
+                            \begin{itemize}
+                                \item[] \textit{(refer~to~entry~of~\cref{\l_label_one_tl})}
+                            \end{itemize}
+                        }
+                    }{
+                    % check for children of \l_label_one_tl
+                        \clist_if_exist:cT { g__dglbl_ \l_label_one_tl _children_clist } {
+                            % push all children
+                            \clist_set_eq:Nc \l_tmpe_clist { g__dglbl_ \l_label_one_tl _children_clist }
+                            \begin{itemize}
+                            \clist_push:NV \l_labels_clist {\l_item_end}
+                            \clist_push:NV \l_labels_clist \l_tmpe_clist
+                        }
+                    }
+            }
+        }
+    }
+}
+
+
+\NewDocumentCommand{\tableofresults}{}{%
+    \bgroup
+    \backrefsetup{disable}
+    \setlist[itemize,1]{itemsep=2ex, label=\textcolor{bulletgray}{$\lipicsTriangleRight$}}
+    \setlist[itemize,2]{label=\textcolor{bulletgray!50}{\bfseries\textbullet}}
+    \setlist[itemize,3]{label=\textcolor{bulletgray!70}{\bfseries\textopenbullet}}
+    \setlist[itemize,4]{label=\textcolor{bulletgray!50}{\bfseries\textbullet\textbullet}}
+    \setlist[itemize,5]{label=\textcolor{bulletgray!70}{\bfseries\textopenbullet\textopenbullet}}
+    \setlist[itemize,6]{label=\textcolor{bulletgray!70}{\bfseries\textasteriskcentered}}
+    \setlist[itemize,7]{label=\textcolor{bulletgray!70}{\bfseries\textasteriskcentered\textbullet}}
+    \setlist[itemize,8]{label=\textcolor{bulletgray!70}{\bfseries\textasteriskcentered\textopenbullet}}
+    \setlist[itemize,9]{label=\textcolor{bulletgray!70}{\bfseries\textasteriskcentered\textbullet\textbullet}}
+    \renewlist{itemize}{itemize}{9}
+
+    \clist_if_exist:NT \g__dglbl_pubres_clist {%
+        \clearpage
+        \section*{Index~of~Results}
+        \addcontentsline{toc}{section}{Index~of~Results}
+        % parse through global list of labels; for each of them start a call to printdp
+        \begin{itemize}
+            \clist_set_eq:NN \l_tmpc_clist \g__dglbl_pubres_clist%
+            \bool_until_do:nn {\clist_if_empty_p:N \l_tmpc_clist}{%
+                \clist_pop:NN \l_tmpc_clist \l_tmpc_tl%
+                % check if \l_tmpc_tl has no parents (i.e. is top-level)
+                \clist_if_exist:cF { g__dglbl_ \tl_use:N \l_tmpc_tl _parents_clist  } {
+                    % call function to print item and children
+                    \dglbl_lor_print_desc:nn {\l_tmpc_tl} {10}
+                }
+            }%
+            \clist_set_eq:NN \l_tmpc_clist \g__dglbl_splres_clist%
+            \clist_remove_duplicates:N \l_tmpc_clist
+            \bool_until_do:nn {\clist_if_empty_p:N \l_tmpc_clist}{%
+                \clist_pop:NN \l_tmpc_clist \l_tmpc_tl%
+                \clist_if_in:NVT \g__dglbl_pubres_clist \l_tmpc_tl {
+                    \dglbl_lor_print_desc:nn {\l_tmpc_tl} {10}
+                }
+            }%
+        \end{itemize}
+    }
+    \backrefsetup{enable}
+    \egroup
+}
+}{%
+\NewDocumentCommand{\dglabel}{s t^ t" m O{} D(){}}{%
+    % issue label
+    \label{#4}
+}
+\NewDocumentCommand{\@dglabelimm}{t^ t" m O{} m}{}
+\NewDocumentCommand{\dgdepends}{O{Depends~on~} m O{.}}{}
+\NewDocumentCommand{\dgparents}{O{Needed~by~} m O{.}}{}
+\NewDocumentCommand{\dgdescr}{m}{}
+\NewDocumentCommand{\dgname}{m O{\bfseries}}{}
+\NewDocumentCommand{\dgsummary}{m}{}
+\NewDocumentCommand{\tableofresults}{}{
+    \ClassWarningNoLine{no-lipics}{The~Table~of~Results~requires~an~up-to-date~LaTeX~installation}{}
+}
+}
+\ExplSyntaxOff
+
 \endinput
 %%
 %% End of file `no-lipics-v2022.cls'.
